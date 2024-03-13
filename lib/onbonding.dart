@@ -76,7 +76,7 @@ class _OnbondingState extends State<Onbonding> {
                           Stack(
                             children: [
                               Image.asset("image/onbonding1.png",
-                                  fit: BoxFit.fill,
+                                  fit: BoxFit.cover,
                                   height: height / 1.5,
                                   width: width),
                             ],
@@ -109,14 +109,14 @@ class _OnbondingState extends State<Onbonding> {
                                   ),
                                   SizedBox(height: height / 30),
                                   Text(
-                                    "In publishing and graphic design, Lorem is",
+                                    "Ingrese texto de bienvenida",
                                     style: TextStyle(
                                         fontFamily: 'Gilroy Medium',
                                         color: Colors.white,
                                         fontSize: 12),
                                   ),
                                   Text(
-                                    "a placeholder text commonly",
+                                    "para el usuario",
                                     style: TextStyle(
                                         fontFamily: 'Gilroy Medium',
                                         color: Colors.white,
@@ -135,8 +135,8 @@ class _OnbondingState extends State<Onbonding> {
                         children: <Widget>[
                           Stack(
                             children: [
-                              Image.asset("image/onbonding2.png",
-                                  fit: BoxFit.fill,
+                              Image.asset("image/paco.jpg",
+                                  fit: BoxFit.cover,
                                   height: height / 1.5,
                                   width: width),
                             ],
@@ -190,8 +190,8 @@ class _OnbondingState extends State<Onbonding> {
                         children: <Widget>[
                           Stack(
                             children: [
-                              Image.asset("image/onbonding3.png",
-                                  fit: BoxFit.fill,
+                              Image.asset("image/paco2.png",
+                                  fit: BoxFit.cover,
                                   height: height / 1.5,
                                   width: width)
                             ],

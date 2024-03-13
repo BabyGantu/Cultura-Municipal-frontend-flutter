@@ -95,8 +95,29 @@ class _BookingState extends State<Booking> {
     });
     notifire = Provider.of<ColorNotifire>(context, listen: true);
     return Scaffold(
-      backgroundColor: notifire.getprimerycolor,
+      extendBodyBehindAppBar: true,
+      backgroundColor: notifire.backgrounde,
       //! Message Bootam sheet
+      // appBar: AppBar(
+      //   elevation: 0,
+      //   backgroundColor: Colors.transparent,
+      //   iconTheme: IconThemeData(
+      //     color: Colors.white,
+      //   ),
+      //   title: Row(
+      //     children: [
+      //       Text(
+      //         "My Booking".tr,
+      //         style: TextStyle(
+      //             fontSize: 18,
+      //             fontWeight: FontWeight.w900,
+      //             fontFamily: 'Gilroy Medium',
+      //             color: Colors.white),
+      //       ),
+      //     ],
+      //   ),
+      //
+      // ),
       floatingActionButton: SizedBox(
         height: 45,
         width: 410,
@@ -104,287 +125,298 @@ class _BookingState extends State<Booking> {
             onPressed: () {
               Get.to(() => const Bottombar());
             },
-            child: Custombutton.button(
+            child: Custombutton.button1(
                 notifire.getbuttonscolor,
                 "Buy More Ticket".tr,
                 SizedBox(width: width / 7.0),
                 SizedBox(width: width / 8))),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-      body: SingleChildScrollView(
-        child: !isLoading
-            ? Column(
-                children: [
-                  Stack(
-                    children: [
-                      CarouselSlider(
-                        options: CarouselOptions(height: height / 4),
-                        items: eventData != null
-                            ? eventData["event_cover_img"].map<Widget>((i) {
-                                return Builder(
-                                  builder: (BuildContext context) {
-                                    return Container(
-                                        width: Get.width,
-                                        decoration: const BoxDecoration(
-                                            color: Colors.transparent),
-                                        child: Image.network(
-                                            Config.base_url + i,
-                                            fit: BoxFit.cover));
-                                  },
-                                );
-                              }).toList()
-                            : [].map<Widget>((i) {
-                                return Builder(
-                                  builder: (BuildContext context) {
-                                    return Container(
-                                        width: 100,
-                                        margin: const EdgeInsets.symmetric(
-                                            horizontal: 1),
-                                        decoration: const BoxDecoration(
-                                            color: Colors.transparent),
-                                        child: Image.network(
-                                            Config.base_url + i,
-                                            fit: BoxFit.fill));
-                                  },
-                                );
-                              }).toList(),
-                        // ),
+      body: CustomScrollView(
+        slivers: [
+          SliverPersistentHeader(
+            pinned: true,
+            floating: true,
+            delegate: MySliverAppBar(expandedHeight: 200.0,eventData: eventData,),
+          ),
+          SliverToBoxAdapter(
+            child: Column(
+              children: [
+                Column(
+                  children: [
+                    // Stack(
+                    //   children: [
+                    //     CarouselSlider(
+                    //       options: CarouselOptions(height: height / 4),
+                    //       items: eventData != null
+                    //           ? eventData["event_cover_img"].map<Widget>((i) {
+                    //         return Builder(
+                    //           builder: (BuildContext context) {
+                    //             return Container(
+                    //                 width: Get.width,
+                    //                 decoration: const BoxDecoration(
+                    //                     color: Colors.transparent),
+                    //                 child: Image.network(
+                    //                     Config.base_url + i,
+                    //                     fit: BoxFit.cover));
+                    //           },
+                    //         );
+                    //       }).toList()
+                    //           : [].map<Widget>((i) {
+                    //         return Builder(
+                    //           builder: (BuildContext context) {
+                    //             return Container(
+                    //                 width: 100,
+                    //                 margin: const EdgeInsets.symmetric(
+                    //                     horizontal: 1),
+                    //                 decoration: const BoxDecoration(
+                    //                     color: Colors.transparent),
+                    //                 child: Image.network(Config.base_url + i,fit: BoxFit.fill));
+                    //           },
+                    //         );
+                    //       }).toList(),
+                    //       // ),
+                    //     ),
+                    //     Column(
+                    //       children: [
+                    //         SizedBox(height: height / 20),
+                    //         //! -------- AppBar -------
+                    //         // Row(
+                    //         //   children: [
+                    //         //     SizedBox(width: width / 20),
+                    //         //     GestureDetector(
+                    //         //         onTap: () {
+                    //         //           Navigator.pop(context);
+                    //         //         },
+                    //         //         child: const Icon(Icons.arrow_back,
+                    //         //             color: Colors.white)),
+                    //         //     SizedBox(width: width / 80),
+                    //         //     Text("My Booking".tr,
+                    //         //         style: TextStyle(
+                    //         //             fontSize: 18,
+                    //         //             fontWeight: FontWeight.w900,
+                    //         //             fontFamily: 'Gilroy Medium',
+                    //         //             color: Colors.white)),
+                    //         //   ],
+                    //         // ),
+                    //         SizedBox(height: height / 7),
+                    //         //! ----------- Call Direction My Ticket Button ---------
+                    //         Padding(
+                    //           padding: EdgeInsets.symmetric(
+                    //               horizontal: Get.width * 0.05),
+                    //           child: Card(
+                    //             color: notifire.containercolore,
+                    //             elevation: 2,
+                    //             shadowColor: notifire.getcardcolor,
+                    //             shape: RoundedRectangleBorder(
+                    //                 borderRadius: BorderRadius.circular(15)),
+                    //             child: Row(
+                    //               mainAxisAlignment:
+                    //               MainAxisAlignment.spaceEvenly,
+                    //               children: [
+                    //                 rowBooking(
+                    //                     title: eventData != null
+                    //                         ? eventData["ticket_type"]
+                    //                         : "",
+                    //                     image: "image/fire.png",
+                    //                     onTap: () {}),
+                    //                 rowBooking(
+                    //                     title: "Directions".tr,
+                    //                     image: "image/Directions.png",
+                    //                     onTap: () async {
+                    //                       Get.to(() => DirectionPage(
+                    //                           lastLatLng: LatLng(
+                    //                               double.parse(
+                    //                                   eventData["event_latitude"]
+                    //                                       .toString()),
+                    //                               double.parse(eventData[
+                    //                               "event_longtitude"]
+                    //                                   .toString())),
+                    //                           etitle: eventData["event_title"]));
+                    //                     }),
+                    //                 rowBooking(
+                    //                     title: "My Ticket".tr,
+                    //                     image: "image/Ticket.png",
+                    //                     onTap: () async {
+                    //                       Get.to(() => Final(tID: widget.tID),
+                    //                           duration: Duration.zero);
+                    //                     }),
+                    //               ],
+                    //             ),
+                    //           ),
+                    //         ),
+                    //       ],
+                    //     ),
+                    //   ],
+                    // ),
+                    SizedBox(height: height / 15),
+                    //! title
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Text(
+                        eventData != null ? eventData["event_title"] : "",
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.w500,
+                            fontFamily: 'Gilroy Medium',
+                            color: notifire.textcolor),
                       ),
-                      Column(
+                    ),
+                    SizedBox(height: height / 40),
+                    //! -------- Event_sponsore List ------
+                    ListView.builder(
+                      padding: EdgeInsets.zero,
+                      itemCount: event_sponsore.length,
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      itemBuilder: (ctx, i) {
+                        return sponserList(event_sponsore, i);
+                      },
+                    ),
+
+                    SizedBox(height: height / 40),
+                    concert(
+                        "image/date.png",
+                        eventData != null ? eventData["event_sdate"] : "",
+                        eventData != null ? eventData["event_time_day"] : ""),
+                    SizedBox(height: height / 50),
+                    concert(
+                        "image/direction.png",
+                        eventData != null ? eventData["event_address_title"] : "",
+                        eventData != null ? eventData["event_address"] : ""),
+                    member.isNotEmpty
+                        ? SizedBox(height: height / 40)
+                        : const SizedBox(),
+                    //!--------- Members Image --------
+                    member.isNotEmpty
+                        ? Padding(
+                      padding: const EdgeInsets.only(left: 20),
+                      child: Row(
                         children: [
-                          SizedBox(height: height / 20),
-                          //! -------- AppBar -------
-                          Row(
-                            children: [
-                              SizedBox(width: width / 20),
-                              GestureDetector(
-                                  onTap: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: const Icon(Icons.arrow_back,
-                                      color: Colors.white)),
-                              SizedBox(width: width / 80),
-                              Text("My Booking".tr,
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w900,
-                                      fontFamily: 'Gilroy Medium',
-                                      color: Colors.white)),
-                            ],
-                          ),
-                          SizedBox(height: height / 10),
-                          //! ----------- Call Direction My Ticket Button ---------
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                                horizontal: Get.width * 0.05),
-                            child: Card(
-                              color: notifire.getcardcolor,
-                              elevation: 2,
-                              shadowColor: notifire.getcardcolor,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15)),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  rowBooking(
-                                      title: eventData != null
-                                          ? eventData["ticket_type"]
-                                          : "",
-                                      image: "image/fire.png",
-                                      onTap: () {}),
-                                  rowBooking(
-                                      title: "Directions".tr,
-                                      image: "image/Directions.png",
-                                      onTap: () async {
-                                        Get.to(() => DirectionPage(
-                                            lastLatLng: LatLng(
-                                                double.parse(
-                                                    eventData["event_latitude"]
-                                                        .toString()),
-                                                double.parse(eventData[
-                                                        "event_longtitude"]
-                                                    .toString())),
-                                            etitle: eventData["event_title"]));
-                                      }),
-                                  rowBooking(
-                                      title: "My Ticket".tr,
-                                      image: "image/Ticket.png",
-                                      onTap: () async {
-                                        Get.to(() => Final(tID: widget.tID),
-                                            duration: Duration.zero);
-                                      }),
-                                ],
-                              ),
-                            ),
+                          Text(
+                            "Members".tr,
+                            style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w700,
+                                fontFamily: 'Gilroy Medium',
+                                color: Colors.grey),
                           ),
                         ],
                       ),
-                    ],
-                  ),
-                  SizedBox(height: height / 30),
-                  //! title
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Text(
-                      eventData != null ? eventData["event_title"] : "",
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w500,
-                          fontFamily: 'Gilroy Medium',
-                          color: notifire.getdarkscolor),
-                    ),
-                  ),
-                  SizedBox(height: height / 40),
-                  //! -------- Event_sponsore List ------
-                  ListView.builder(
-                    padding: EdgeInsets.zero,
-                    itemCount: event_sponsore.length,
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemBuilder: (ctx, i) {
-                      return sponserList(event_sponsore, i);
-                    },
-                  ),
+                    )
+                        : const SizedBox(),
+                    member.isNotEmpty
+                        ? SizedBox(height: height / 60)
+                        : const SizedBox(),
 
-                  SizedBox(height: height / 40),
-                  concert(
-                      "image/date.png",
-                      eventData != null ? eventData["event_sdate"] : "",
-                      eventData != null ? eventData["event_time_day"] : ""),
-                  SizedBox(height: height / 50),
-                  concert(
-                      "image/direction.png",
-                      eventData != null ? eventData["event_address_title"] : "",
-                      eventData != null ? eventData["event_address"] : ""),
-                  member.isNotEmpty
-                      ? SizedBox(height: height / 40)
-                      : const SizedBox(),
-                  //!--------- Members Image --------
-                  member.isNotEmpty
-                      ? Padding(
-                          padding: const EdgeInsets.only(left: 20),
-                          child: Row(
-                            children: [
-                              Text(
-                                "Members".tr,
+                    Padding(
+                      padding: const EdgeInsets.only(left: 24),
+                      child: Row(
+                        children: [
+                          member.isNotEmpty
+                              ? FlutterImageStack(
+                              totalCount: 0,
+                              itemRadius: 34,
+                              itemCount: 5,
+                              itemBorderWidth: 1.5,
+                              imageList: member)
+                              : const SizedBox(),
+                          SizedBox(width: Get.width * 0.01),
+                          member.isNotEmpty
+                              ? CircleAvatar(
+                            radius: 20,
+                            backgroundColor: notifire.getbuttonscolor,
+                            child: Text("+${member.length}",
                                 style: TextStyle(
-                                    fontSize: 17,
+                                    fontSize: 15,
                                     fontWeight: FontWeight.w700,
                                     fontFamily: 'Gilroy Medium',
-                                    color: Colors.grey),
-                              ),
-                            ],
-                          ),
-                        )
-                      : const SizedBox(),
-                  member.isNotEmpty
-                      ? SizedBox(height: height / 60)
-                      : const SizedBox(),
-
-                  Padding(
-                    padding: const EdgeInsets.only(left: 24),
-                    child: Row(
-                      children: [
-                        member.isNotEmpty
-                            ? FlutterImageStack(
-                                totalCount: 0,
-                                itemRadius: 34,
-                                itemCount: 5,
-                                itemBorderWidth: 1.5,
-                                imageList: member)
-                            : const SizedBox(),
-                        SizedBox(width: Get.width * 0.01),
-                        member.isNotEmpty
-                            ? CircleAvatar(
-                                radius: 20,
-                                backgroundColor: notifire.getbuttonscolor,
-                                child: Text("+${member.length}",
-                                    style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w700,
-                                        fontFamily: 'Gilroy Medium',
-                                        color: Colors.white)),
-                              )
-                            : const SizedBox(),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: height / 60),
-                  //! ------- About Event -------
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20),
-                    child: Row(
-                      children: [
-                        Text(
-                          "About Event".tr,
-                          style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.w700,
-                              fontFamily: 'Gilroy Medium',
-                              color: Colors.grey),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: height / 40),
-                  Container(
-                    width: Get.width * 0.97,
-                    color: Colors.transparent,
-                    child: Padding(
-                        padding: const EdgeInsets.only(left: 20, right: 20),
-                        child: HtmlWidget(
-                            eventData != null ? eventData["event_about"] : "",
-                            textStyle: TextStyle(
-                                fontWeight: FontWeight.w400,
-                                color: notifire.getdarkscolor,
-                                fontSize: 12,
-                                fontFamily: 'Gilroy Medium'))),
-                  ),
-                  event_gallery.isNotEmpty
-                      ? SizedBox(height: height / 50)
-                      : const SizedBox(),
-                  event_gallery.isNotEmpty
-                      ? Padding(
-                          padding: const EdgeInsets.only(left: 20),
-                          child: Row(
-                            children: [
-                              Text("Gallery".tr,
-                                  style: TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.w700,
-                                      fontFamily: 'Gilroy Medium',
-                                      color: notifire.gettextcolor)),
-                            ],
-                          ),
-                        )
-                      : const SizedBox(),
-                  event_gallery.isNotEmpty
-                      ? SizedBox(height: height / 40)
-                      : const SizedBox(),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20),
-                    child: Ink(
-                      height: Get.height * 0.14,
-                      width: Get.width,
-                      child: ListView.builder(
-                        itemCount: event_gallery.length,
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (ctx, i) {
-                          return galeryEvent(event_gallery, i);
-                        },
+                                    color: Colors.white)),
+                          )
+                              : const SizedBox(),
+                        ],
                       ),
                     ),
-                  ),
-                  event_gallery.isNotEmpty
-                      ? SizedBox(height: Get.height * 0.12)
-                      : const SizedBox(),
-                ],
-              )
-            : isLoadingCircular(),
+                    SizedBox(height: height / 60),
+                    //! ------- About Event -------
+                    Padding(
+                      padding: const EdgeInsets.only(left: 20),
+                      child: Row(
+                        children: [
+                          Text(
+                            "About Event".tr,
+                            style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.w700,
+                                fontFamily: 'Gilroy Medium',
+                                color: Colors.grey),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: height / 40),
+                    Container(
+                      width: Get.width * 0.97,
+                      color: Colors.transparent,
+                      child: Padding(
+                          padding: const EdgeInsets.only(left: 20, right: 20),
+                          child: HtmlWidget(
+                              eventData != null ? eventData["event_about"] : "",
+                              textStyle: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  color: notifire.textcolor,
+                                  fontSize: 12,
+                                  fontFamily: 'Gilroy Medium'))),
+                    ),
+                    event_gallery.isNotEmpty
+                        ? SizedBox(height: height / 50)
+                        : const SizedBox(),
+                    event_gallery.isNotEmpty
+                        ? Padding(
+                      padding: const EdgeInsets.only(left: 20),
+                      child: Row(
+                        children: [
+                          Text("Gallery".tr,
+                              style: TextStyle(
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w700,
+                                  fontFamily: 'Gilroy Medium',
+                                  color: notifire.gettextcolor)),
+                        ],
+                      ),
+                    )
+                        : const SizedBox(),
+                    event_gallery.isNotEmpty
+                        ? SizedBox(height: height / 40)
+                        : const SizedBox(),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 20),
+                      child: Ink(
+                        height: Get.height * 0.14,
+                        width: Get.width,
+                        child: ListView.builder(
+                          itemCount: event_gallery.length,
+                          shrinkWrap: true,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (ctx, i) {
+                            return galeryEvent(event_gallery, i);
+                          },
+                        ),
+                      ),
+                    ),
+                    event_gallery.isNotEmpty
+                        ? SizedBox(height: Get.height * 0.12)
+                        : const SizedBox(),
+                  ],
+                )
+              ],
+            ),
+          ),
+        ],
+
+
       ),
     );
   }
@@ -442,7 +474,7 @@ class _BookingState extends State<Booking> {
                             fontSize: 15,
                             fontWeight: FontWeight.w500,
                             fontFamily: 'Gilroy Medium',
-                            color: notifire.getdarkscolor)),
+                            color: notifire.textcolor)),
                   ),
                   SizedBox(height: height / 300),
                   Text("Organizer".tr,
@@ -480,7 +512,7 @@ class _BookingState extends State<Booking> {
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                   fontFamily: 'Gilroy Medium',
-                  color: notifire.getdarkscolor)),
+                  color: notifire.textcolor)),
           SizedBox(height: height / 300),
           Ink(
             width: Get.width * 0.705,
@@ -501,7 +533,7 @@ class _BookingState extends State<Booking> {
     return InkWell(
       onTap: onTap,
       child: Container(
-        color: notifire.getcardcolor,
+        color: notifire.containercolore,
         child: Column(
           children: [
             SizedBox(height: height / 100),
@@ -512,11 +544,229 @@ class _BookingState extends State<Booking> {
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                     fontFamily: 'Gilroy Medium',
-                    color: notifire.getdarkscolor)),
+                    color: notifire.textcolor)),
             SizedBox(height: height / 100),
           ],
         ),
       ),
     );
   }
+}
+
+
+
+class MySliverAppBar extends SliverPersistentHeaderDelegate {
+
+  final double expandedHeight;
+  var eventData;
+  var tID;
+
+
+
+  MySliverAppBar({required this.expandedHeight,required this.eventData});
+  late ColorNotifire notifire;
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    notifire = Provider.of<ColorNotifire>(context, listen: true);
+    return Stack(
+      clipBehavior: Clip.none,
+      fit: StackFit.expand,
+      children: [
+        CarouselSlider(
+          options: CarouselOptions(height: height / 4),
+          items: eventData != null
+              ? eventData["event_cover_img"].map<Widget>((i) {
+            return Builder(
+              builder: (BuildContext context) {
+                return Container(
+                    width: Get.width,
+                    decoration: const BoxDecoration(
+                        color: Colors.transparent),
+                    child: Image.network(
+                        Config.base_url + i,
+                        fit: BoxFit.cover));
+              },
+            );
+          }).toList()
+              : [].map<Widget>((i) {
+            return Builder(
+              builder: (BuildContext context) {
+                return Container(
+                    width: 100,
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 1),
+                    decoration: const BoxDecoration(
+                        color: Colors.transparent),
+                    child: Image.network(Config.base_url + i,fit: BoxFit.fill));
+              },
+            );
+          }).toList(),
+          // ),
+        ),
+        Center(
+          child: Opacity(
+            opacity: shrinkOffset / expandedHeight,
+            child:  Container(
+              height: 60,
+              color: notifire.containercolore,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 20),
+                child: Row(
+                  children: [
+                    SizedBox(width: 10,),
+                    InkWell(
+                        onTap: () {
+                          Get.back();
+                        },
+                        child: Icon(Icons.arrow_back,color: notifire.textcolor,)),
+                    Spacer(),
+                    Text(
+                      "My Booking".tr,
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w900,
+                          fontFamily: 'Gilroy Medium',
+                          color: notifire.textcolor),
+                    ),
+                    Spacer(flex: 4),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+        Positioned(
+          top: expandedHeight / 45 - shrinkOffset,
+          left: 0,
+          right: 0,
+          child: Opacity(
+            opacity: (1 - shrinkOffset / expandedHeight),
+            child: Column(
+              children: [
+
+                SizedBox(height: 30,),
+                Row(
+                  children: [
+                    SizedBox(width: 10,),
+                    InkWell(
+                        onTap: () {
+                          Get.back();
+                        },
+                        child: Icon(Icons.arrow_back,color: Colors.white,)),
+                    SizedBox(width: 10,),
+                    Text(
+                      "My Booking".tr,
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w900,
+                          fontFamily: 'Gilroy Medium',
+                          color: Colors.white),
+                    ),
+                  ],
+                ),
+                //! -------- AppBar -------
+                // Row(
+                //   children: [
+                //     SizedBox(width: width / 20),
+                //     GestureDetector(
+                //         onTap: () {
+                //           Navigator.pop(context);
+                //         },
+                //         child: const Icon(Icons.arrow_back,
+                //             color: Colors.white)),
+                //     SizedBox(width: width / 80),
+                //     Text("My Booking".tr,
+                //         style: TextStyle(
+                //             fontSize: 18,
+                //             fontWeight: FontWeight.w900,
+                //             fontFamily: 'Gilroy Medium',
+                //             color: Colors.white)),
+                //   ],
+                // ),
+                SizedBox(height: height / 8.5),
+                //! ----------- Call Direction My Ticket Button ---------
+                Padding(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: Get.width * 0.05),
+                  child: Card(
+                    color: notifire.containercolore,
+                    elevation: 2,
+                    shadowColor: notifire.getcardcolor,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15)),
+                    child: Row(
+                      mainAxisAlignment:
+                      MainAxisAlignment.spaceEvenly,
+                      children: [
+                        rowBooking(
+                            title: eventData != null
+                                ? eventData["ticket_type"]
+                                : "",
+                            image: "image/fire.png",
+                            onTap: () {}),
+                        rowBooking(
+                            title: "Directions".tr,
+                            image: "image/Directions.png",
+                            onTap: () async {
+                              Get.to(() => DirectionPage(
+                                  lastLatLng: LatLng(
+                                      double.parse(
+                                          eventData["event_latitude"]
+                                              .toString()),
+                                      double.parse(eventData[
+                                      "event_longtitude"]
+                                          .toString())),
+                                  etitle: eventData["event_title"]));
+                            }),
+                        rowBooking(
+                            title: "My Ticket".tr,
+                            image: "image/Ticket.png",
+                            onTap: () async {
+                              Get.to(() => Final(tID: tID),
+                                  duration: Duration.zero);
+                            }),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  rowBooking({Function()? onTap, String? image, title}) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        color: notifire.containercolore,
+        child: Column(
+          children: [
+            SizedBox(height: height / 100),
+            Image.asset(image!, height: height / 18),
+            const SizedBox(height: 4),
+            Text(title,
+                style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    fontFamily: 'Gilroy Medium',
+                    color: notifire.textcolor)),
+            SizedBox(height: height / 100),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
+  double get maxExtent => expandedHeight;
+
+  @override
+  double get minExtent => kToolbarHeight;
+
+  @override
+  bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) => true;
+
 }

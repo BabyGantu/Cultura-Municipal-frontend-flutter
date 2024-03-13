@@ -1,7 +1,10 @@
 // ignore_for_file: avoid_print, prefer_const_constructors, unnecessary_brace_in_string_interps, non_constant_identifier_names
 
 import 'dart:developer';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import '../payment/flutterwave.dart';
+import '../payment/mercadopogo.dart';
 import '../utils/botton.dart';
 import '../utils/colornotifire.dart';
 import 'package:flutter/cupertino.dart';
@@ -23,7 +26,6 @@ import 'package:goevent2/payment/StripeWeb.dart';
 import 'package:goevent2/payment/finalticket.dart';
 import 'package:goevent2/spleshscreen.dart';
 import 'package:goevent2/utils/AppWidget.dart';
-
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:goevent2/Controller/AppController.dart';
 import 'package:goevent2/AppModel/Homedata/HomedataController.dart';
@@ -51,7 +53,7 @@ class _TicketState extends State<Ticket> {
   int _select = 0;
   bool isChecked = false;
   //! payment var
-  String? selectidpay = "0";
+  String? selectidpay = "3";
   int _groupValue = 0;
   String? paymenttital;
   Map ticketlist = {};
@@ -125,10 +127,9 @@ class _TicketState extends State<Ticket> {
       }
     });
   }
-
+  late ColorNotifire notifire;
   void _handlePaymentError(PaymentFailureResponse response) {
-    print(
-        'Error Response: ${"ERROR: " + response.code.toString() + " - " + response.message!}');
+    print('Error Response: ${"ERROR: " + response.code.toString() + " - " + response.message!}');
     ApiWrapper.showToastMessage(response.message!);
   }
 
@@ -138,14 +139,23 @@ class _TicketState extends State<Ticket> {
 
   @override
   Widget build(BuildContext context) {
+    notifire = Provider.of<ColorNotifire>(context, listen: true);
     Future.delayed(const Duration(seconds: 0), () {
       setState(() {});
     });
     dMode.notifire = Provider.of<ColorNotifire>(context, listen: true);
     return Scaffold(
-      backgroundColor: dMode.notifire.getprimerycolor,
+      // extendBodyBehindAppBar: true,
+      backgroundColor: notifire.backgrounde,
       //! Continue Button
-
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        iconTheme: IconThemeData(
+            color: notifire.textcolor,
+        ),
+        title: Text("Ticket".tr, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, fontFamily: 'Gilroy Medium', color: notifire.textcolor),),
+      ),
       floatingActionButton: SizedBox(
         height: 45,
         width: 410,
@@ -154,7 +164,7 @@ class _TicketState extends State<Ticket> {
             continuebottomSheet();
             // buyNoworder('otid');
           },
-          child: Custombutton.button(
+          child: Custombutton.button1(
               dMode.notifire.getbuttonscolor,
               "CONTINUE".tr,
               SizedBox(width: width / 5),
@@ -164,69 +174,55 @@ class _TicketState extends State<Ticket> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: Column(
         children: [
-          SizedBox(height: height / 20),
-          //! ------- AppBar -------
-          Row(
-            children: [
-              SizedBox(width: width / 20),
-              GestureDetector(
-                  onTap: () {
-                    Get.back();
-                  },
-                  child: Icon(Icons.arrow_back,
-                      color: dMode.notifire.getdarkscolor)),
-              SizedBox(width: width / 80),
-              Text(
-                "Ticket".tr,
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w900,
-                    fontFamily: 'Gilroy Medium',
-                    color: dMode.notifire.getdarkscolor),
-              ),
-            ],
-          ),
+          // SizedBox(height: height / 20),
+          //! ------- AppBar -------!//
+          // Row(
+          //   children: [
+          //     SizedBox(width: width / 20),
+          //     GestureDetector(
+          //         onTap: () {
+          //           Get.back();
+          //         },
+          //         child: Icon(Icons.arrow_back,
+          //             color: dMode.notifire.getdarkscolor)),
+          //     SizedBox(width: width / 80),
+          //     Text("Ticket".tr, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, fontFamily: 'Gilroy Medium', color: dMode.notifire.getdarkscolor),
+          //     ),
+          //   ],
+          // ),
           Expanded(
             child: SingleChildScrollView(
               child: isloading
                   ? Column(
                       children: [
-                        SizedBox(height: height / 25),
-
+                        SizedBox(height: 10),
+                        //! -------- ticketlist -------
                         Row(
                           children: [
                             Padding(
                               padding: const EdgeInsets.only(left: 20),
-                              child: Text(
-                                "Ticket Type".tr,
-                                style: TextStyle(
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w600,
-                                    fontFamily: 'Gilroy Bold',
-                                    color: dMode.notifire.getdarkscolor),
+                              child: Text("Ticket Type".tr, style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, fontFamily: 'Gilroy Bold', color: notifire.textcolor),
                               ),
                             ),
                           ],
                         ),
-                        SizedBox(height: height / 60),
-                        //! -------- ticketlist -------
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: SizedBox(
-                            height: Get.height * 0.08,
-                            child: ListView.builder(
-                              itemCount: ticketlist.isEmpty
-                                  ? 0
-                                  : ticketlist["ticketlist"].length,
-                              shrinkWrap: true,
-                              scrollDirection: Axis.horizontal,
-                              itemBuilder: (ctx, i) {
-                                return tic(ticketlist["ticketlist"], i);
-                              },
-                            ),
+                        SizedBox(
+                          height: Get.height * 0.08,
+                          child: ListView.builder(
+                            itemCount: ticketlist.isEmpty
+                                ? 0
+                                : ticketlist["ticketlist"].length,
+                            shrinkWrap: true,
+                            scrollDirection: Axis.horizontal,
+                            itemBuilder: (ctx, i) {
+                              return tic(ticketlist["ticketlist"], i);
+                            },
                           ),
                         ),
-                        SizedBox(height: height / 40),
+
+                        SizedBox(height: 20),
+
+                        //! ------ seat count button --------
                         Row(
                           children: [
                             Padding(
@@ -235,22 +231,19 @@ class _TicketState extends State<Ticket> {
                                   style: TextStyle(
                                       fontSize: 15,
                                       fontFamily: 'Gilroy Bold',
-                                      color: dMode.notifire.getdarkscolor)),
+                                      color: notifire.textcolor)),
                             ),
                           ],
                         ),
-                        SizedBox(height: height / 50),
-                        //! ------ seat count button --------
+                        SizedBox(height: 10),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
                           child: Container(
                             height: height / 12,
                             width: width,
                             decoration: BoxDecoration(
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(10)),
-                                border: Border.all(
-                                    color: Colors.grey.shade200, width: 1)),
+                                borderRadius: const BorderRadius.all(Radius.circular(10)),
+                                border: Border.all(color: notifire.bordercolore, width: 1)),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -278,17 +271,12 @@ class _TicketState extends State<Ticket> {
                                                 color: Color(0xff5669ff)))),
                                   ),
                                 ),
-                                Text(_counter > 9 ? '$_counter' : '0$_counter',
-                                    style: TextStyle(
-                                        fontSize: 15,
-                                        fontFamily: 'Gilroy Normal',
-                                        color: dMode.notifire.getdarkscolor,
-                                        fontWeight: FontWeight.w600)),
+                                Text(_counter > 9 ? '$_counter' : '0$_counter',style: TextStyle(fontSize: 15, fontFamily: 'Gilroy Normal', color: notifire.textcolor, fontWeight: FontWeight.w600)),
                                 GestureDetector(
                                   onTap: () {
                                     setState(() {});
-                                    if (_counter <
-                                        int.parse(ticketlimit.toString())) {
+                                    print("ticketlimit:----+++${{ticketlimit}}");
+                                    if(_counter < int.parse(ticketlimit.toString())) {
                                       _counter++;
                                       ticketpriceCount(_counter);
                                       walletCalculation(status);
@@ -313,7 +301,11 @@ class _TicketState extends State<Ticket> {
                             ),
                           ),
                         ),
-                        SizedBox(height: height * 0.03),
+
+
+                        SizedBox(height: 30),
+
+                        //! ----- Voucher Code -----
                         Row(
                           children: [
                             Padding(
@@ -322,12 +314,11 @@ class _TicketState extends State<Ticket> {
                                   style: TextStyle(
                                       fontSize: 15,
                                       fontFamily: 'Gilroy Bold',
-                                      color: dMode.notifire.getdarkscolor)),
+                                      color: notifire.textcolor)),
                             ),
                           ],
                         ),
-                        SizedBox(height: Get.height * 0.02),
-                        //! ----- Voucher Code -----
+                        SizedBox(height: 10),
                         InkWell(
                           onTap: () {
                             setState(() {});
@@ -350,9 +341,7 @@ class _TicketState extends State<Ticket> {
 
                                       ticketTotal = (double.parse(
                                                   ticketTotal.toString()) -
-                                              double.parse(
-                                                  value["c_value"].toString()))
-                                          .toStringAsFixed(2);
+                                              double.parse(value["c_value"].toString())).toStringAsFixed(2);
                                     }
                                   })
                                 : null;
@@ -363,7 +352,7 @@ class _TicketState extends State<Ticket> {
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
                                 border: Border.all(
-                                    color: Colors.grey.shade200, width: 1)),
+                                    color: notifire.bordercolore, width: 1)),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
@@ -408,8 +397,10 @@ class _TicketState extends State<Ticket> {
                             ),
                           ),
                         ),
+
+
                         //! ----- Applied Voucher -------
-                        SizedBox(height: Get.height * 0.04),
+                        SizedBox(height: 30),
 
                         couponcode != ""
                             ? Container(
@@ -428,20 +419,11 @@ class _TicketState extends State<Ticket> {
                                       padding: const EdgeInsets.only(
                                           left: 10, top: 10),
                                       child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceEvenly,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          Text(
-                                              "Applied Voucher Code"
-                                                  .tr
-                                                  .toUpperCase(),
-                                              style: TextStyle(
-                                                  fontSize: 13,
-                                                  fontFamily: 'Gilroy Medium',
-                                                  color: dMode
-                                                      .notifire.gettext1color)),
+                                          Text("Applied Voucher Code".tr.toUpperCase(),
+                                              style: TextStyle(fontSize: 13, fontFamily: 'Gilroy Medium', color: dMode.notifire.gettext1color)),
                                           Text(couponcode,
                                               style: TextStyle(
                                                   fontSize: 15,
@@ -456,8 +438,7 @@ class _TicketState extends State<Ticket> {
                                                 style: TextStyle(
                                                     fontSize: 13,
                                                     fontFamily: 'Gilroy Medium',
-                                                    color: dMode.notifire
-                                                        .gettext1color)),
+                                                    color: dMode.notifire.gettext1color)),
                                           ),
                                         ],
                                       ),
@@ -483,17 +464,15 @@ class _TicketState extends State<Ticket> {
                                       },
                                       child: const Padding(
                                         padding: EdgeInsets.all(6),
-                                        child: Icon(Icons.close,
-                                            size: 20, color: Colors.grey),
+                                        child: Icon(Icons.close,size: 20, color: Colors.grey),
                                       ),
                                     ),
                                   ],
                                 ),
                               )
                             : SizedBox(),
-                        SizedBox(height: height / 40),
+                        //!------ Wallet get data --------
 
-                        //!------ Walet get data --------
                         walletAmount != "0"
                             ? Container(
                                 margin: EdgeInsets.symmetric(horizontal: 16),
@@ -502,62 +481,35 @@ class _TicketState extends State<Ticket> {
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(15),
                                     border: Border.all(
-                                        color: Colors.grey.shade200)),
+                                        color: notifire.bordercolore)),
                                 child: Column(
                                   children: [
                                     Row(
                                       children: [
-                                        Text("Pay from wallet".tr,
-                                            style: TextStyle(
-                                                fontSize: 15,
-                                                fontFamily: 'Gilroy Bold',
-                                                color: dMode
-                                                    .notifire.getdarkscolor)),
+                                        Text("Pay from wallet".tr, style: TextStyle(fontSize: 15, fontFamily: 'Gilroy Bold', color: notifire.textcolor)),
                                       ],
                                     ),
                                     SizedBox(height: Get.height * 0.01),
                                     Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
                                         Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            Text("GoEvent Balance".tr,
-                                                style: TextStyle(
-                                                    fontSize: 15,
-                                                    fontFamily: 'Gilroy Bold',
-                                                    color: dMode.notifire
-                                                        .getdarkscolor)),
+                                            Text("GoEvent Balance".tr, style: TextStyle(fontSize: 15, fontFamily: 'Gilroy Bold', color: notifire.textcolor)),
                                             Row(
                                               children: [
-                                                Text(
-                                                    "Available for Payment ".tr,
-                                                    style: TextStyle(
-                                                        fontSize: 15,
-                                                        fontFamily:
-                                                            'Gilroy Medium',
-                                                        color: Colors.grey)),
-                                                Text(
-                                                    "${mainData["currency"]}${tempWallet}",
-                                                    style: TextStyle(
-                                                        fontSize: 15,
-                                                        fontFamily:
-                                                            'Gilroy Medium',
-                                                        color: dMode.notifire
-                                                            .getdarkscolor)),
+                                                Text("Available for Payment ".tr, style: TextStyle(fontSize: 15, fontFamily: 'Gilroy Medium', color: Colors.grey)),
+                                                Text("${mainData["currency"]}${tempWallet}", style: TextStyle(fontSize: 15, fontFamily: 'Gilroy Medium',color: notifire.textcolor)),
                                               ],
-                                            )
+                                            ),
                                           ],
                                         ),
                                         Transform.scale(
                                           scale: 0.7,
                                           child: CupertinoSwitch(
-                                            activeColor:
-                                                dMode.notifire.getbuttonscolor,
+                                            activeColor: dMode.notifire.getbuttonscolor,
                                             value: status,
                                             onChanged: (value) {
                                               setState(() {});
@@ -574,53 +526,17 @@ class _TicketState extends State<Ticket> {
                             : SizedBox(),
 
                         //! ----- Coupon Code sub total -------
-                        SizedBox(height: Get.height * 0.06),
-
-                        priceRow(
-                          title: "Sub Total:".tr,
-                          subtitle: "${mainData["currency"]}${subtotal}",
-                          textcolor: dMode.notifire.gettext1color,
-                          fontSize: 18,
-                        ),
+                        SizedBox(height: 30),
+                        priceRow(title: "Sub Total:".tr, subtitle: "${mainData["currency"]}${subtotal}", textcolor: dMode.notifire.gettext1color, fontSize: 17,),
                         SizedBox(height: Get.height * 0.006),
-                        status
-                            ? priceRow(
-                                title: "Wallet:".tr,
-                                subtitle: "${mainData["currency"]}${useWallet}",
-                                textcolor: Colors.green,
-                                fontSize: 20,
-                              )
-                            : SizedBox(),
-                        walletAmount == "0"
-                            ? SizedBox(height: Get.height * 0.006)
-                            : SizedBox(),
-                        couponcode != ""
-                            ? priceRow(
-                                title: "Coupon Code:".tr,
-                                subtitle:
-                                    "${mainData["currency"]}${couponamount} ",
-                                textcolor: darktextColor,
-                                fontSize: 18,
-                              )
-                            : SizedBox(),
-                        couponcode != ""
-                            ? SizedBox(height: Get.height * 0.006)
-                            : SizedBox(),
-
-                        priceRow(
-                          title: "Tax:".tr,
-                          subtitle: "${mainData["currency"]}${ticketax}",
-                          textcolor: dMode.notifire.gettext1color,
-                          fontSize: 20,
-                        ),
+                        status ? priceRow(title: "Wallet:".tr, subtitle: "${mainData["currency"]}${useWallet}", textcolor: Colors.green, fontSize: 17,) : SizedBox(),
+                        walletAmount == "0" ? SizedBox(height: Get.height * 0.006) : SizedBox(),
+                        couponcode != "" ? priceRow(title: "Coupon Code:".tr, subtitle: "${mainData["currency"]}${couponamount} ", textcolor: darktextColor, fontSize: 17,) : SizedBox(),
+                        couponcode != "" ? SizedBox(height: Get.height * 0.006) : SizedBox(),
+                        priceRow(title: "Tax:".tr, subtitle: "${mainData["currency"]}${ticketax}", textcolor: dMode.notifire.gettext1color, fontSize: 17,),
                         SizedBox(height: Get.height * 0.006),
-                        priceRow(
-                          title: "Total:".tr,
-                          subtitle: "${mainData["currency"]}${ticketTotal}",
-                          textcolor: dMode.notifire.gettext1color,
-                          fontSize: 20,
-                        ),
-                        SizedBox(height: Get.height * 0.12)
+                        priceRow(title: "Total:".tr, subtitle: "${mainData["currency"]}${ticketTotal}", textcolor: dMode.notifire.gettext1color, fontSize: 17,),
+                        SizedBox(height: Get.height * 0.12),
                       ],
                     )
                   : isLoadingCircular(),
@@ -735,10 +651,9 @@ class _TicketState extends State<Ticket> {
         padding: const EdgeInsets.all(8.0),
         child: Container(
           decoration: BoxDecoration(
-              color:
-                  _select == i ? dMode.notifire.getbuttonscolor : Colors.white,
+              color: _select == i ? dMode.notifire.getbuttonscolor : Colors.white,
               borderRadius: const BorderRadius.all(Radius.circular(10)),
-              border: Border.all(width: 1, color: Colors.grey)),
+              border: Border.all(width: 1, color: notifire.bordercolore)),
           height: height / 14,
           width: width / 2.5,
           child: Center(
@@ -757,7 +672,7 @@ class _TicketState extends State<Ticket> {
 
   continuebottomSheet() {
     return showModalBottomSheet<dynamic>(
-      backgroundColor: dMode.notifire.getprimerycolor,
+      backgroundColor: notifire.backgrounde,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
@@ -823,7 +738,7 @@ class _TicketState extends State<Ticket> {
                             fontSize: 14,
                             fontWeight: FontWeight.w700,
                             fontFamily: 'Gilroy Normal',
-                            color: dMode.notifire.getdarkscolor),
+                            color: notifire.textcolor),
                       ),
                     ],
                   ),
@@ -854,33 +769,71 @@ class _TicketState extends State<Ticket> {
                           "Accept terms & Condition is required");
                     }
                   },
-                  child: Center(
-                    child: Container(
-                      decoration: BoxDecoration(
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(10)),
-                          color: dMode.notifire.getbuttonscolor),
-                      height: height / 15,
-                      width: width / 1.5,
-                      child: Row(
-                        children: [
-                          SizedBox(width: width / 5),
-                          Text("CONTINUE".tr,
-                              style: TextStyle(
-                                  fontFamily: 'Gilroy Medium',
-                                  color: Colors.white,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600)),
-                          SizedBox(width: width / 7),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 9),
-                            child: Image.asset("image/arrow.png"),
-                          ),
-                        ],
-                      ),
+                  child: SizedBox(
+                    height: 45,
+                    width: width / 1.5,
+                    child: Custombutton.button1(
+                      dMode.notifire.getbuttonscolor,
+                      "CONTINUE".tr,
+                      SizedBox(width: width / 5),
+                      SizedBox(width: width / 8),
                     ),
                   ),
                 ),
+
+                // GestureDetector(
+                //   onTap: () {
+                //     //! Open Payment Sheet
+                //     if (isChecked == true) {
+                //       if (status == true) {
+                //         if (double.parse(ticketTotal.toString()) > 0) {
+                //           Get.back();
+                //           paymentSheet();
+                //         } else {
+                //           //! book ticket
+                //           buyNoworder(0);
+                //         }
+                //       } else {
+                //         if (double.parse(ticketTotal.toString()) != 0.00) {
+                //           Get.back();
+                //           paymentSheet();
+                //         } else {
+                //           buyNoworder(0);
+                //         }
+                //       }
+                //     } else {
+                //       ApiWrapper.showToastMessage(
+                //           "Accept terms & Condition is required");
+                //     }
+                //   },
+                //   child: Center(
+                //     child: Container(
+                //       decoration: BoxDecoration(
+                //           borderRadius:
+                //               const BorderRadius.all(Radius.circular(10)),
+                //           color: dMode.notifire.getbuttonscolor),
+                //       height: height / 15,
+                //       width: width / 1.5,
+                //       child: Row(
+                //         children: [
+                //           SizedBox(width: width / 5),
+                //           Text("CONTINUE".tr,
+                //               style: TextStyle(
+                //                   fontFamily: 'Gilroy Medium',
+                //                   color: Colors.white,
+                //                   fontSize: 15,
+                //                   fontWeight: FontWeight.w600)),
+                //           SizedBox(width: width / 7),
+                //           Padding(
+                //             padding: const EdgeInsets.symmetric(vertical: 9),
+                //             child: Image.asset("image/arrow.png"),
+                //           ),
+                //         ],
+                //       ),
+                //     ),
+                //   ),
+                // ),
+
                 SizedBox(height: height / 200),
               ],
             ),
@@ -890,83 +843,138 @@ class _TicketState extends State<Ticket> {
     );
   }
 
+  // Future paymentSheet() {
+  //   return showModalBottomSheet(
+  //     backgroundColor: dMode.notifire.getprimerycolor,
+  //     shape: const RoundedRectangleBorder(
+  //         borderRadius: BorderRadius.only(
+  //             topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+  //     context: context,
+  //     builder: (context) {
+  //       return StatefulBuilder(
+  //           builder: (BuildContext context, StateSetter setState) {
+  //         return SingleChildScrollView(
+  //           child: Column(
+  //             children: [
+  //               SizedBox(height: height / 38),
+  //               Center(
+  //                 child: Container(
+  //                   height: height / 80,
+  //                   width: width / 5,
+  //                   decoration: const BoxDecoration(
+  //                       color: Colors.grey,
+  //                       borderRadius: BorderRadius.all(Radius.circular(20))),
+  //                 ),
+  //               ),
+  //               SizedBox(height: height / 50),
+  //               Row(
+  //                 children: [
+  //                   SizedBox(width: width / 14),
+  //                   Text("Select Payment Method".tr,
+  //                       style: TextStyle(
+  //                           color: dMode.notifire.getdarkscolor,
+  //                           fontSize: height / 40,
+  //                           fontFamily: 'Gilroy_Bold')),
+  //                 ],
+  //               ),
+  //               SizedBox(height: height / 50),
+  //               //! --------- List view paymente ----------
+  //               ListView.builder(
+  //                 shrinkWrap: true,
+  //                 itemCount: pData.paymentList.length,
+  //                 scrollDirection: Axis.vertical,
+  //                 physics: NeverScrollableScrollPhysics(),
+  //                 itemBuilder: (ctx, i) {
+  //                   return Padding(
+  //                     padding: const EdgeInsets.symmetric(vertical: 8),
+  //                     child: sugestlocationtype(
+  //                       borderColor: selectidpay == pData.paymentList[i]["id"]
+  //                           ? buttonColor
+  //                           : const Color(0xffD6D6D6),
+  //                       title: pData.paymentList[i]["title"],
+  //                       titleColor: dMode.notifire.getdarkscolor,
+  //                       val: 0,
+  //                       image: Config.base_url + pData.paymentList[i]["img"],
+  //                       adress: pData.paymentList[i]["subtitle"],
+  //                       ontap: () async {
+  //                         setState(() {
+  //                           razorpaykey = pData.paymentList[i]["attributes"];
+  //                           paymenttital = pData.paymentList[i]["title"];
+  //                           selectidpay = pData.paymentList[i]["id"];
+  //                           _groupValue = i;
+  //                         });
+  //                       },
+  //                       radio: Radio(
+  //                         activeColor: buttonColor,
+  //                         value: i,
+  //                         groupValue: _groupValue,
+  //                         onChanged: (value) {
+  //                           setState(() {});
+  //                           // _groupValue = i;
+  //                         },
+  //                       ),
+  //                     ),
+  //                   );
+  //                 },
+  //               ),
+  //
+  //               SizedBox(height: 10),
+  //               InkWell(
+  //                   onTap: () {
+  //                     //!---- Stripe Payment ------
+  //
+  //                     if (paymenttital == "Stripe") {
+  //                       Get.back();
+  //                       stripePayment();
+  //                     } else if (paymenttital == "Paypal") {
+  //                       //!---- PayPal Payment ------
+  //                       Get.to(() => PayPalPayment(totalAmount: ticketTotal))!
+  //                           .then((otid) {
+  //                         if (otid != null) {
+  //                           buyNoworder(otid);
+  //                           ApiWrapper.showToastMessage(
+  //                               "Payment Successfully");
+  //                         } else {
+  //                           Get.back();
+  //                         }
+  //                       });
+  //                     } else if (paymenttital == "Razorpay") {
+  //                       //!---- Razorpay Payment ------
+  //                       Get.back();
+  //                       openCheckout();
+  //                     }
+  //                   },
+  //                   child: paynowbutton()),
+  //               SizedBox(height: Get.height * 0.06),
+  //             ],
+  //           ),
+  //         );
+  //       });
+  //     },
+  //   );
+  // }
+
+
+
   Future paymentSheet() {
     return showModalBottomSheet(
+      isDismissible: false,
       backgroundColor: dMode.notifire.getprimerycolor,
       shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
               topLeft: Radius.circular(20), topRight: Radius.circular(20))),
       context: context,
       builder: (context) {
-        return Wrap(
-          children: [
-            StatefulBuilder(
-                builder: (BuildContext context, StateSetter setState) {
-              return Column(
-                children: [
-                  SizedBox(height: height / 38),
-                  Center(
-                    child: Container(
-                      height: height / 80,
-                      width: width / 5,
-                      decoration: const BoxDecoration(
-                          color: Colors.grey,
-                          borderRadius: BorderRadius.all(Radius.circular(20))),
-                    ),
-                  ),
-                  SizedBox(height: height / 50),
-                  Row(
-                    children: [
-                      SizedBox(width: width / 14),
-                      Text("Select Payment Method".tr,
-                          style: TextStyle(
-                              color: dMode.notifire.getdarkscolor,
-                              fontSize: height / 40,
-                              fontFamily: 'Gilroy_Bold')),
-                    ],
-                  ),
-                  SizedBox(height: height / 50),
-                  //! --------- List view paymente ----------
-                  ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: pData.paymentList.length,
-                    itemBuilder: (ctx, i) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        child: sugestlocationtype(
-                          borderColor: selectidpay == pData.paymentList[i]["id"]
-                              ? buttonColor
-                              : const Color(0xffD6D6D6),
-                          title: pData.paymentList[i]["title"],
-                          titleColor: dMode.notifire.getdarkscolor,
-                          val: 0,
-                          image:
-                              Config.base_url + pData.paymentList[i]["img"],
-                          adress: pData.paymentList[i]["subtitle"],
-                          ontap: () async {
-                            setState(() {
-                              razorpaykey = pData.paymentList[i]["attributes"];
-                              paymenttital = pData.paymentList[i]["title"];
-                              selectidpay = pData.paymentList[i]["id"];
-                              _groupValue = i;
-                            });
-                          },
-                          radio: Radio(
-                            activeColor: buttonColor,
-                            value: i,
-                            groupValue: _groupValue,
-                            onChanged: (value) {
-                              setState(() {});
-                              // _groupValue = i;
-                            },
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-
-                  SizedBox(height: 10),
-                  InkWell(
+        return  StatefulBuilder(
+            builder: (context, setState)  {
+              return ClipRRect(
+                borderRadius: const BorderRadius.only(topLeft: Radius.circular(15),topRight: Radius.circular(15)),
+                child: Scaffold(
+                  // backgroundColor: notifier.containercoloreproper,
+                  // backgroundColor: Colors.white,
+                  backgroundColor: Colors.transparent,
+                  floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+                  floatingActionButton: InkWell(
                       onTap: () {
                         //!---- Stripe Payment ------
 
@@ -979,24 +987,124 @@ class _TicketState extends State<Ticket> {
                               .then((otid) {
                             if (otid != null) {
                               buyNoworder(otid);
-                              ApiWrapper.showToastMessage(
-                                  "Payment Successfully");
+                              ApiWrapper.showToastMessage("Payment Successfully");
                             } else {
                               Get.back();
                             }
                           });
                         } else if (paymenttital == "Razorpay") {
-                          //!---- Razorpay Payment ------
+                          //!---- Razorpay Payment ------!
                           Get.back();
                           openCheckout();
+                        } else if (paymenttital == "Flutterwave") {
+                          //!---- Flutterwave Payment ------!
+                          Get.to(() => Flutterwave(
+                              totalAmount: ticketTotal.toString(),
+                              email: getData.read("UserLogin")["email"]
+                          ))!
+                              .then((otid) {
+                            if (otid != null) {
+                              // Book_Ticket( uid: widget.uid, bus_id: widget.bus_id,pick_id: widget.pick_id, dropId: widget.dropId, ticketPrice: widget.ticketPrice,trip_date: widget.trip_date,paymentId: "$otid",boardingCity: widget.boardingCity,dropCity: widget.dropCity,busPicktime: widget.busPicktime,busDroptime: widget.busDroptime,Difference_pick_drop: widget.differencePickDrop);
+                              Fluttertoast.showToast(msg: 'Payment Successfully',timeInSecForIosWeb: 4);
+                            } else {
+                              Get.back();
+                            }
+                          });
+                          // Get.back();
+                        }else if (paymenttital == "MercadoPago") {
+                          //!---- Flutterwave Payment ------!
+                          Get.to(() => merpago(
+                            totalAmount: (double.parse(ticketTotal.toString())).toString(),
+                          ))!
+                              .then((otid) {
+                            if (otid != null) {
+                              // Book_Ticket( uid: widget.uid, bus_id: widget.bus_id,pick_id: widget.pick_id, dropId: widget.dropId, ticketPrice: widget.ticketPrice,trip_date: widget.trip_date,paymentId: "$otid",boardingCity: widget.boardingCity,dropCity: widget.dropCity,busPicktime: widget.busPicktime,busDroptime: widget.busDroptime,Difference_pick_drop: widget.differencePickDrop);
+                              Fluttertoast.showToast(msg: 'Payment Successfully',timeInSecForIosWeb: 4);
+                            } else {
+                              Get.back();
+                            }
+                          });
+                          // Get.back();
                         }
                       },
                       child: paynowbutton()),
-                  SizedBox(height: Get.height * 0.06),
-                ],
+                  body: Container(
+                    height: 380,
+                    decoration:  BoxDecoration(
+                        color: notifire.backgrounde,
+                        // color: Colors.yellowAccent,
+
+                        // border: Border.all(color: notifier.textColor),
+                        borderRadius: const BorderRadius.only(topLeft: Radius.circular(15),topRight: Radius.circular(15))
+                    ),
+                    child:  Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget> [
+
+                        const SizedBox(height: 13,),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: Text('Payment Getway Method'.tr,style:  TextStyle(fontWeight: FontWeight.bold,fontSize: 18,color: notifire.textcolor)),
+                        ),
+                        const SizedBox(height: 4,),
+                        Expanded(
+                          child: ListView.separated(
+                            // shrinkWrap: true,
+                            // itemCount: pData.paymentList.length,
+                            // scrollDirection: Axis.vertical,
+                            // physics: NeverScrollableScrollPhysics(),
+                            separatorBuilder: (context, index) {
+                              return const SizedBox(width: 0,);
+                            },
+                            shrinkWrap: true,
+                            scrollDirection: Axis.vertical,
+                            physics: const BouncingScrollPhysics(),
+                            itemCount: pData.paymentList.length,
+                            itemBuilder: (ctx, i) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 8),
+                                child: sugestlocationtype(
+                                  borderColor: selectidpay == pData.paymentList[i]["id"]
+                                      ? buttonColor
+                                      : const Color(0xffD6D6D6),
+                                  title: pData.paymentList[i]["title"],
+                                  titleColor: notifire.textcolor,
+                                  val: 0,
+                                  image: Config.base_url + pData.paymentList[i]["img"],
+                                  adress: pData.paymentList[i]["subtitle"],
+                                  ontap: () async {
+                                    setState(() {
+                                      razorpaykey = pData.paymentList[i]["attributes"];
+                                      paymenttital = pData.paymentList[i]["title"];
+                                      selectidpay = pData.paymentList[i]["id"];
+                                      _groupValue = i;
+                                    });
+                                  },
+                                  radio: Theme(
+                                    data: ThemeData(unselectedWidgetColor: notifire.textcolor),
+                                    child: Radio(
+                                      activeColor: buttonColor,
+                                      value: i,
+                                      groupValue: _groupValue,
+                                      onChanged: (value) {
+                                        setState(() {});
+                                        // _groupValue = i;
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               );
-            }),
-          ],
+            }
         );
       },
     );
@@ -1004,7 +1112,7 @@ class _TicketState extends State<Ticket> {
 
   Widget paynowbutton() {
     return Padding(
-      padding: EdgeInsets.only(bottom: Get.height * 0.04),
+      padding: EdgeInsets.only(bottom: Get.height * 0.01),
       child: Container(
         height: height / 16,
         width: width / 1.1,

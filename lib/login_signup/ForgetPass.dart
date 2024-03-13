@@ -1,6 +1,5 @@
 // ignore_for_file: file_names, avoid_print
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:goevent2/Api/ApiWrapper.dart';
@@ -14,8 +13,8 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PasswordsetPage extends StatefulWidget {
-  final String? number;
-  const PasswordsetPage({Key? key, this.number}) : super(key: key);
+  final String? email;
+  const PasswordsetPage({Key? key, this.email}) : super(key: key);
 
   @override
   _PasswordsetPageState createState() => _PasswordsetPageState();
@@ -23,7 +22,7 @@ class PasswordsetPage extends StatefulWidget {
 
 class _PasswordsetPageState extends State<PasswordsetPage> {
   late ColorNotifire notifire;
-  final auth = FirebaseAuth.instance;
+  //final auth = FirebaseAuth.instance;
 
   final fpassword = TextEditingController();
   final spassword = TextEditingController();
@@ -61,7 +60,7 @@ class _PasswordsetPageState extends State<PasswordsetPage> {
   Widget build(BuildContext context) {
     notifire = Provider.of<ColorNotifire>(context, listen: true);
     return Scaffold(
-      backgroundColor: notifire.getprimerycolor,
+      backgroundColor: notifire.backgrounde,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -141,6 +140,7 @@ class _PasswordsetPageState extends State<PasswordsetPage> {
                     child: _obscureText
                         ? Image.asset("image/Hide.png", height: 22)
                         : Image.asset("image/Show.png", height: 22)),
+                context: context,
               ),
             ),
             SizedBox(height: Get.height * 0.02),
@@ -160,6 +160,7 @@ class _PasswordsetPageState extends State<PasswordsetPage> {
                     child: _obscureText1
                         ? Image.asset("image/Hide.png", height: 22)
                         : Image.asset("image/Show.png", height: 22)),
+                context: context,
               ),
             ),
             SizedBox(height: height / 20),
@@ -176,11 +177,14 @@ class _PasswordsetPageState extends State<PasswordsetPage> {
                   ApiWrapper.showToastMessage("Please fill required field!");
                 }
               },
-              child: Custombutton.button(
-                notifire.getbuttonscolor,
-                "SEND".tr,
-                SizedBox(width: width / 3.5),
-                SizedBox(width: width / 7),
+              child: SizedBox(
+                height: 45,
+                child: Custombutton.button1(
+                  notifire.getbuttonscolor,
+                  "SEND".tr,
+                  SizedBox(width: width / 3.5),
+                  SizedBox(width: width / 7),
+                ),
               ),
             ),
           ],
@@ -191,7 +195,7 @@ class _PasswordsetPageState extends State<PasswordsetPage> {
 
   //! user Login Api
   forgetpass() {
-    var data = {"mobile": widget.number, "password": fpassword.text};
+    var data = {"mobile": widget.email, "password": fpassword.text};
     print(data);
 
     ApiWrapper.dataPost(Config.forgetpassword, data).then((val) {

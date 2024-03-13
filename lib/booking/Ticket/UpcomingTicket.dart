@@ -79,7 +79,7 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
   Widget build(BuildContext context) {
     notifire = Provider.of<ColorNotifire>(context, listen: true);
     return Scaffold(
-      backgroundColor: notifire.getprimerycolor,
+      backgroundColor: notifire.backgrounde,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         child: !isLoading
@@ -133,9 +133,9 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
         margin: const EdgeInsets.symmetric(vertical: 4),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
         decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey.shade200),
+            border: Border.all(color: notifire.bordercolore),
             borderRadius: BorderRadius.circular(15),
-            color: notifire.getprimerycolor),
+            color: notifire.containercolore),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -146,6 +146,7 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                   height: height / 7,
                   width: width * 0.32,
                   decoration: const BoxDecoration(
+                    // color: Colors.red,
                       borderRadius: BorderRadius.all(Radius.circular(20))),
                   child: Stack(
                     children: [
@@ -156,6 +157,7 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                             placeholder: "image/skeleton.gif",
                             fit: BoxFit.cover,
                             width: width,
+                            height: height,
                             image: Config.base_url + user[i]["event_img"]),
                       ),
                       SizedBox(height: height / 70),
@@ -174,7 +176,7 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                                color: notifire.getdarkscolor,
+                                color: notifire.textcolor,
                                 fontSize: 16,
                                 fontFamily: 'Gilroy Medium',
                                 fontWeight: FontWeight.w600)),
@@ -269,7 +271,7 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
     showModalBottomSheet(
         isDismissible: false,
         isScrollControlled: true,
-        backgroundColor: notifire.getprimerycolor,
+        backgroundColor: notifire.containercolore,
         shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
         clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -305,7 +307,7 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                       style: TextStyle(
                           fontSize: 16,
                           fontFamily: 'Gilroy Medium',
-                          color: notifire.getdarkscolor),
+                          color: notifire.textcolor),
                     ),
                     SizedBox(height: Get.height * 0.02),
                     ListView.builder(
@@ -313,25 +315,29 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemBuilder: (ctx, i) {
-                        return RadioListTile(
-                          dense: true,
-                          value: i,
-                          activeColor: buttonColor,
-                          tileColor: notifire.getdarkscolor,
-                          selected: true,
-                          groupValue: selectedRadioTile,
-                          title: Text(
-                            cancelList[i]["title"],
-                            style: TextStyle(
-                                fontSize: 16,
-                                fontFamily: 'Gilroy Medium',
-                                color: notifire.getdarkscolor),
+                        return Theme(
+                          data: ThemeData(unselectedWidgetColor: notifire.textcolor),
+                          child: RadioListTile(
+                            dense: true,
+                            value: i,
+                            activeColor: buttonColor,
+
+                            // tileColor: notifire.textcolor,
+                            selected: true,
+                            groupValue: selectedRadioTile,
+                            title: Text(
+                              cancelList[i]["title"],
+                              style: TextStyle(
+                                  fontSize: 16,
+                                  fontFamily: 'Gilroy Medium',
+                                  color: notifire.textcolor),
+                            ),
+                            onChanged: (val) {
+                              setState(() {});
+                              selectedRadioTile = val;
+                              rejectmsg = cancelList[i]["title"];
+                            },
                           ),
-                          onChanged: (val) {
-                            setState(() {});
-                            selectedRadioTile = val;
-                            rejectmsg = cancelList[i]["title"];
-                          },
                         );
                       },
                     ),

@@ -76,43 +76,38 @@ class _BottombarState extends State<Bottombar> {
       child: Scaffold(
           bottomNavigationBar: BottomNavigationBar(
               type: BottomNavigationBarType.fixed,
-              unselectedItemColor: const Color(0xff6978A0).withOpacity(.80),
-              backgroundColor: notifire.getprimerycolor,
+              unselectedItemColor: notifire.bottommenucolore,
+              backgroundColor: notifire.backgrounde,
               selectedLabelStyle: const TextStyle(
-                  fontFamily: 'Gilroy_Medium', fontWeight: FontWeight.w500),
+                  fontFamily: 'Gilroy_Medium', fontWeight: FontWeight.w500,),
               fixedColor: buttonColor,
-              unselectedLabelStyle:
-                  const TextStyle(fontFamily: 'Gilroy_Medium'),
+              unselectedFontSize: 13,
+              selectedFontSize: 13,
+              unselectedLabelStyle: const TextStyle(fontFamily: 'Gilroy_Medium'),
               currentIndex: _selectedIndex,
               showSelectedLabels: true,
               showUnselectedLabels: true,
               items: [
                 BottomNavigationBarItem(
                     icon: Image.asset(Images.home,
-                        color: _selectedIndex == 0
-                            ? buttonColor
-                            : const Color(0xff6978A0).withOpacity(.80),
+                        color: _selectedIndex == 0 ? buttonColor : notifire.bottommenucolore,
                         height: MediaQuery.of(context).size.height / 35),
                     label: 'Explore'.tr),
                 BottomNavigationBarItem(
-                    icon: Image.asset(Images.search,
-                        color: _selectedIndex == 1
-                            ? buttonColor
-                            : const Color(0xff6978A0).withOpacity(.80),
-                        height: MediaQuery.of(context).size.height / 35),
-                    label: 'Search'.tr),
+                    icon: Image.asset(Images.search, color: _selectedIndex == 1 ? buttonColor : notifire.bottommenucolore, height: MediaQuery.of(context).size.height / 33),
+                    label: 'Map'.tr),
                 BottomNavigationBarItem(
                     icon: Image.asset(Images.calendar,
                         color: _selectedIndex == 2
                             ? buttonColor
-                            : const Color(0xff6978A0).withOpacity(.80),
+                            : notifire.bottommenucolore,
                         height: MediaQuery.of(context).size.height / 35),
                     label: 'Booking'.tr),
                 BottomNavigationBarItem(
                   icon: Image.asset(Images.rectangle,
                       color: _selectedIndex == 3
                           ? buttonColor
-                          : const Color(0xff6978A0).withOpacity(.80),
+                          : notifire.bottommenucolore,
                       height: MediaQuery.of(context).size.height / 35),
                   label: 'Favorite'.tr,
                 ),
@@ -120,7 +115,7 @@ class _BottombarState extends State<Bottombar> {
                   icon: Image.asset(Images.user,
                       color: _selectedIndex == 4
                           ? buttonColor
-                          : const Color(0xff6978A0).withOpacity(.80),
+                          : notifire.bottommenucolore,
                       height: MediaQuery.of(context).size.height / 35),
                   label: 'Profile'.tr,
                 ),

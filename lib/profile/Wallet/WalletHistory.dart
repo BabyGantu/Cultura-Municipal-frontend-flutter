@@ -67,7 +67,7 @@ class _WalletWalletReportPageState extends State<WalletReportPage> {
       setState(() {});
     });
     return Scaffold(
-      backgroundColor: notifire.getprimerycolor,
+      backgroundColor: notifire.backgrounde,
       floatingActionButton: SizedBox(
         height: 45,
         width: 410,
@@ -77,7 +77,7 @@ class _WalletWalletReportPageState extends State<WalletReportPage> {
               walletgetdata();
             });
           },
-          child: Custombutton.button(
+          child: Custombutton.button1(
               notifire.getbuttonscolor,
               "Add AMOUNT".tr.toUpperCase(),
               SizedBox(width: width / 6.5),
@@ -99,7 +99,7 @@ class _WalletWalletReportPageState extends State<WalletReportPage> {
                 },
                 child: Row(
                   children: [
-                    Icon(Icons.arrow_back, color: notifire.getdarkscolor),
+                    Icon(Icons.arrow_back, color: notifire.textcolor),
                     SizedBox(width: width / 80),
                     Text(
                       "Wallet".tr,
@@ -107,7 +107,7 @@ class _WalletWalletReportPageState extends State<WalletReportPage> {
                           fontSize: 18,
                           fontWeight: FontWeight.w900,
                           fontFamily: 'Gilroy Medium',
-                          color: notifire.getdarkscolor),
+                          color: notifire.textcolor),
                     ),
                   ],
                 ),
@@ -170,45 +170,48 @@ class _WalletWalletReportPageState extends State<WalletReportPage> {
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                     fontFamily: 'Gilroy Bold',
-                    color: notifire.getdarkscolor),
+                    color: notifire.textcolor),
               ),
             ),
           ),
-          Column(
-            children: [
-              walletitem.isNotEmpty
-                  ? SizedBox(
-                      height: Get.height * 0.65,
-                      child: ListView.builder(
-                        itemCount: walletitem.length,
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        padding: EdgeInsets.only(bottom: Get.height * 0.02),
-                        shrinkWrap: true,
-                        itemBuilder: (ctx, i) {
-                          return walletList(walletitem, i);
-                        },
-                      ),
-                    )
-                  : Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image(
-                            image: const AssetImage("image/33.png"),
-                            height: Get.height * 0.14),
-                        SizedBox(height: Get.height * 0.02),
-                        Center(
-                          child: Text("Looks like you haven't booked yet".tr,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                color: notifire.gettextcolor,
-                                fontSize: 16,
-                                fontFamily: 'Gilroy Bold',
-                              )),
+          Padding(
+            padding: const EdgeInsets.only(left: 10,right: 10),
+            child: Column(
+              children: [
+                walletitem.isNotEmpty
+                    ? SizedBox(
+                        height: Get.height * 0.65,
+                        child: ListView.builder(
+                          itemCount: walletitem.length,
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          padding: EdgeInsets.only(bottom: Get.height * 0.02),
+                          shrinkWrap: true,
+                          itemBuilder: (ctx, i) {
+                            return walletList(walletitem, i);
+                          },
                         ),
-                        SizedBox(height: Get.height * 0.02),
-                      ],
-                    ),
-            ],
+                      )
+                    : Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Image(
+                              image: const AssetImage("image/33.png"),
+                              height: Get.height * 0.14),
+                          SizedBox(height: Get.height * 0.02),
+                          Center(
+                            child: Text("Looks like you haven't booked yet".tr,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: notifire.gettextcolor,
+                                  fontSize: 16,
+                                  fontFamily: 'Gilroy Bold',
+                                )),
+                          ),
+                          SizedBox(height: Get.height * 0.02),
+                        ],
+                      ),
+              ],
+            ),
           )
         ],
       ),
@@ -219,14 +222,14 @@ class _WalletWalletReportPageState extends State<WalletReportPage> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Card(
-        color: notifire.getcardcolor,
+        color: notifire.containercolore,
         elevation: 0,
         child: Container(
           width: Get.width * 0.90,
           height: Get.height * 0.08,
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: Colors.grey.shade200, width: 0.5)),
+              border: Border.all(color: notifire.bordercolore, width: 0.5)),
           child:
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             SizedBox(width: Get.width * 0.02),
@@ -248,7 +251,7 @@ class _WalletWalletReportPageState extends State<WalletReportPage> {
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                         fontFamily: 'Gilroy Bold',
-                        color: notifire.getdarkscolor),
+                        color: notifire.textcolor),
                   ),
                 ),
                 Ink(

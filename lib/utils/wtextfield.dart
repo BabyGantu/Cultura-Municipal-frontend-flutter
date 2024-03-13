@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
+import 'colornotifire.dart';
+
+late ColorNotifire notifire;
 
 class Customtextfild3 {
-  static Widget textField(
-      controller, textcolor, hinttext, wid, type, no, align, readOnly) {
+  static Widget textField(controller, textcolor, hinttext, wid, type, no, align, readOnly,{required context}) {
+    notifire = Provider.of<ColorNotifire>(context, listen: true);
     return Container(
       color: Colors.transparent,
       height: 45,
@@ -22,10 +26,10 @@ class Customtextfild3 {
               OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
           enabledBorder: OutlineInputBorder(
-              borderSide: const BorderSide(color: Color(0xff80818d), width: 1),
+              borderSide:  BorderSide(color: notifire.bordercolore, width: 1),
               borderRadius: BorderRadius.circular(10)),
           focusedBorder: OutlineInputBorder(
-              borderSide: const BorderSide(color: Color(0xff5669FF), width: 1),
+              borderSide:  BorderSide(color: notifire.bordercolore, width: 1),
               borderRadius: BorderRadius.circular(10)),
         ),
       ),

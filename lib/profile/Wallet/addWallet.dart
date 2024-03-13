@@ -5,6 +5,7 @@ import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:goevent2/Api/ApiWrapper.dart';
 import 'package:goevent2/Api/Config.dart';
@@ -24,6 +25,9 @@ import 'package:goevent2/utils/media.dart';
 import 'package:provider/provider.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../payment/flutterwave.dart';
+import '../../payment/mercadopogo.dart';
 
 class AddWalletPage extends StatefulWidget {
   final String? amount;
@@ -107,13 +111,12 @@ class _AddWalletPageState extends State<AddWalletPage> {
 
   @override
   Widget build(BuildContext context) {
-    print(pData.paymentList.length);
     notifire = Provider.of<ColorNotifire>(context, listen: true);
     Future.delayed(const Duration(seconds: 0), () {
       setState(() {});
     });
     return Scaffold(
-      backgroundColor: notifire.getprimerycolor,
+      backgroundColor: notifire.backgrounde,
       floatingActionButton: SizedBox(
         height: 45,
         width: 410,
@@ -126,7 +129,7 @@ class _AddWalletPageState extends State<AddWalletPage> {
               ApiWrapper.showToastMessage("please enter amount");
             }
           },
-          child: Custombutton.button(
+          child: Custombutton.button1(
               notifire.getbuttonscolor,
               "Add".tr.toUpperCase(),
               SizedBox(width: width / 3.5),
@@ -148,7 +151,7 @@ class _AddWalletPageState extends State<AddWalletPage> {
                 },
                 child: Row(
                   children: [
-                    Icon(Icons.arrow_back, color: notifire.getdarkscolor),
+                    Icon(Icons.arrow_back, color: notifire.textcolor),
                     SizedBox(width: width / 80),
                     Text(
                       "Add Wallet".tr,
@@ -156,7 +159,7 @@ class _AddWalletPageState extends State<AddWalletPage> {
                           fontSize: 18,
                           fontWeight: FontWeight.w900,
                           fontFamily: 'Gilroy Medium',
-                          color: notifire.getdarkscolor),
+                          color: notifire.textcolor),
                     ),
                   ],
                 ),
@@ -217,7 +220,7 @@ class _AddWalletPageState extends State<AddWalletPage> {
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
                     fontFamily: 'Gilroy Bold',
-                    color: notifire.getdarkscolor),
+                    color: notifire.textcolor),
               ),
             ),
           ),
@@ -234,13 +237,13 @@ class _AddWalletPageState extends State<AddWalletPage> {
                   keyboardType: TextInputType.number,
                   prefixIcon: InkWell(
                     child: Image.asset("image/wallet.png",
-                        scale: 3.5, color: notifire.getdarkscolor),
+                        scale: 3.5, color: notifire.textcolor),
                     onTap: () {
                       setState(() {
                         amount = amount + 10;
                       });
                     },
-                  ),
+                  ), context: context,
                 ),
                 SizedBox(height: Get.height * 0.03),
                 Wrap(
@@ -330,7 +333,7 @@ class _AddWalletPageState extends State<AddWalletPage> {
           decoration: BoxDecoration(
               color: notifire.getcardcolor,
               borderRadius: BorderRadius.circular(6),
-              border: Border.all(color: Colors.grey.shade300, width: 1)),
+              border: Border.all(color: notifire.bordercolore, width: 1)),
           child: Center(
             child: Text(
               title ?? "",
@@ -340,18 +343,141 @@ class _AddWalletPageState extends State<AddWalletPage> {
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   fontFamily: 'Gilroy Medium',
-                  color: notifire.getdarkscolor),
+                  color: notifire.textcolor),
             ),
           ),
         ),
       ),
     );
   }
-  //!--------------- payment --------------------
+
+  // !--------------- payment --------------------
+
+  // Future paymentSheet() {
+  //   return showModalBottomSheet(
+  //     backgroundColor: notifire.getprimerycolor,
+  //     isScrollControlled: true,
+  //     shape: const RoundedRectangleBorder(
+  //         borderRadius: BorderRadius.only(
+  //             topLeft: Radius.circular(20), topRight: Radius.circular(20))),
+  //     context: context,
+  //     builder: (context) {
+  //       return Container(
+  //         height: Get.height * 0.6,
+  //         child: StatefulBuilder(
+  //             builder: (BuildContext context, StateSetter setState) {
+  //           return SingleChildScrollView(
+  //             child: Column(
+  //               children: [
+  //                 SizedBox(height: height / 40),
+  //                 Center(
+  //                   child: Container(
+  //                     height: height / 80,
+  //                     width: width / 5,
+  //                     decoration: const BoxDecoration(
+  //                         color: Colors.grey,
+  //                         borderRadius:
+  //                             BorderRadius.all(Radius.circular(20))),
+  //                   ),
+  //                 ),
+  //                 SizedBox(height: height / 50),
+  //                 Row(
+  //                   children: [
+  //                     SizedBox(width: width / 14),
+  //                     Text("Select Payment Method".tr,
+  //                         style: TextStyle(
+  //                             color: notifire.getdarkscolor,
+  //                             fontSize: height / 40,
+  //                             fontFamily: 'Gilroy_Bold')),
+  //                   ],
+  //                 ),
+  //                 SizedBox(height: height / 50),
+  //                 //! --------- List view payment ----------
+  //                 ListView.builder(
+  //                   shrinkWrap: true,
+  //                   itemCount: pData.paymentList.length,
+  //                   scrollDirection: Axis.vertical,
+  //                   physics: const NeverScrollableScrollPhysics(),
+  //                   itemBuilder: (ctx, i) {
+  //                     return Padding(
+  //                       padding: const EdgeInsets.symmetric(vertical: 8),
+  //                       child: sugestlocationtype(
+  //                         borderColor:
+  //                             selectidpay == pData.paymentList[i]["id"]
+  //                                 ? buttonColor
+  //                                 : const Color(0xffD6D6D6),
+  //                         title: pData.paymentList[i]["title"],
+  //                         titleColor: notifire.getdarkscolor,
+  //                         val: 0,
+  //                         image:
+  //                             Config.base_url + pData.paymentList[i]["img"],
+  //                         adress: pData.paymentList[i]["subtitle"],
+  //                         ontap: () async {
+  //                           setState(() {
+  //                             razorpaykey =
+  //                                 pData.paymentList[i]["attributes"];
+  //                             paymenttital = pData.paymentList[i]["title"];
+  //                             selectidpay = pData.paymentList[i]["id"];
+  //                             _groupValue = i;
+  //                           });
+  //                         },
+  //                         radio: Radio(
+  //                           activeColor: buttonColor,
+  //                           value: i,
+  //                           groupValue: _groupValue,
+  //                           onChanged: (value) {
+  //                             setState(() {});
+  //                             // _groupValue = i;
+  //                           },
+  //                         ),
+  //                       ),
+  //                     );
+  //                   },
+  //                 ),
+  //
+  //                 SizedBox(height: Get.height * 0.02),
+  //                 InkWell(
+  //                     onTap: () {
+  //                       //!---- Stripe Payment ------
+  //
+  //                       if (paymenttital == "Stripe") {
+  //                         Get.back();
+  //                         stripePayment();
+  //                       } else if (paymenttital == "Paypal") {
+  //                         //!---- PayPal Payment ------
+  //                         Get.to(() =>
+  //                                 PayPalPayment(totalAmount: addAmount.text))!
+  //                             .then((otid) {
+  //                           if (otid != null) {
+  //                             walletupdate();
+  //                             // buyNoworder(otid);
+  //                             ApiWrapper.showToastMessage(
+  //                                 "Payment Successfully");
+  //                           } else {
+  //                             Get.back();
+  //                           }
+  //                         });
+  //                       } else if (paymenttital == "Razorpay") {
+  //                         //!---- Razorpay Payment ------
+  //                         Get.back();
+  //                         openCheckout();
+  //                       }
+  //                     },
+  //                     child: paynowbutton()),
+  //                 SizedBox(height: Get.height * 0.04),
+  //               ],
+  //             ),
+  //           );
+  //         }),
+  //       );
+  //     },
+  //   );
+  // }
+
 
   Future paymentSheet() {
     return showModalBottomSheet(
-      backgroundColor: notifire.getprimerycolor,
+      backgroundColor: notifire.backgrounde,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
@@ -360,78 +486,16 @@ class _AddWalletPageState extends State<AddWalletPage> {
       builder: (context) {
         return Container(
           height: Get.height * 0.6,
-          child: Wrap(
-            children: [
-              StatefulBuilder(
-                  builder: (BuildContext context, StateSetter setState) {
-                return Column(
-                  children: [
-                    SizedBox(height: height / 40),
-                    Center(
-                      child: Container(
-                        height: height / 80,
-                        width: width / 5,
-                        decoration: const BoxDecoration(
-                            color: Colors.grey,
-                            borderRadius:
-                                BorderRadius.all(Radius.circular(20))),
-                      ),
-                    ),
-                    SizedBox(height: height / 50),
-                    Row(
-                      children: [
-                        SizedBox(width: width / 14),
-                        Text("Select Payment Method".tr,
-                            style: TextStyle(
-                                color: notifire.getdarkscolor,
-                                fontSize: height / 40,
-                                fontFamily: 'Gilroy_Bold')),
-                      ],
-                    ),
-                    SizedBox(height: height / 50),
-                    //! --------- List view paymente ----------
-                    ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: pData.paymentList.length,
-                      itemBuilder: (ctx, i) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          child: sugestlocationtype(
-                            borderColor:
-                                selectidpay == pData.paymentList[i]["id"]
-                                    ? buttonColor
-                                    : const Color(0xffD6D6D6),
-                            title: pData.paymentList[i]["title"],
-                            titleColor: notifire.getdarkscolor,
-                            val: 0,
-                            image: Config.base_url +
-                                pData.paymentList[i]["img"],
-                            adress: pData.paymentList[i]["subtitle"],
-                            ontap: () async {
-                              setState(() {
-                                razorpaykey =
-                                    pData.paymentList[i]["attributes"];
-                                paymenttital = pData.paymentList[i]["title"];
-                                selectidpay = pData.paymentList[i]["id"];
-                                _groupValue = i;
-                              });
-                            },
-                            radio: Radio(
-                              activeColor: buttonColor,
-                              value: i,
-                              groupValue: _groupValue,
-                              onChanged: (value) {
-                                setState(() {});
-                                // _groupValue = i;
-                              },
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-
-                    SizedBox(height: Get.height * 0.02),
-                    InkWell(
+          child:  StatefulBuilder(
+              builder: (context, setState)  {
+                return ClipRRect(
+                  borderRadius: const BorderRadius.only(topLeft: Radius.circular(15),topRight: Radius.circular(15)),
+                  child: Scaffold(
+                    // backgroundColor: notifier.containercoloreproper,
+                    // backgroundColor: Colors.white,
+                    backgroundColor: Colors.transparent,
+                    floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+                    floatingActionButton: InkWell(
                         onTap: () {
                           //!---- Stripe Payment ------
 
@@ -441,7 +505,7 @@ class _AddWalletPageState extends State<AddWalletPage> {
                           } else if (paymenttital == "Paypal") {
                             //!---- PayPal Payment ------
                             Get.to(() =>
-                                    PayPalPayment(totalAmount: addAmount.text))!
+                                PayPalPayment(totalAmount: addAmount.text))!
                                 .then((otid) {
                               if (otid != null) {
                                 walletupdate();
@@ -456,15 +520,123 @@ class _AddWalletPageState extends State<AddWalletPage> {
                             //!---- Razorpay Payment ------
                             Get.back();
                             openCheckout();
+                          }else if (paymenttital == "Flutterwave") {
+                            //!---- Flutterwave Payment ------!
+                            Get.to(() => Flutterwave(
+                                totalAmount: (double.parse(addAmount.text)).toString(),
+                                email: getData.read("UserLogin")["email"]
+                            ))!
+                                .then((otid) {
+                              if (otid != null) {
+                                // Book_Ticket( uid: widget.uid, bus_id: widget.bus_id,pick_id: widget.pick_id, dropId: widget.dropId, ticketPrice: widget.ticketPrice,trip_date: widget.trip_date,paymentId: "$otid",boardingCity: widget.boardingCity,dropCity: widget.dropCity,busPicktime: widget.busPicktime,busDroptime: widget.busDroptime,Difference_pick_drop: widget.differencePickDrop);
+                                Fluttertoast.showToast(msg: 'Payment Successfully',timeInSecForIosWeb: 4);
+                              } else {
+                                Get.back();
+                              }
+                            });
+                            // Get.back();
+                          }else if (paymenttital == "MercadoPago") {
+                            //!---- Flutterwave Payment ------!
+                            Get.to(() => merpago(
+                                totalAmount: (double.parse(addAmount.text)).toString(),
+                            ))!
+                                .then((otid) {
+                              if (otid != null) {
+                                // Book_Ticket( uid: widget.uid, bus_id: widget.bus_id,pick_id: widget.pick_id, dropId: widget.dropId, ticketPrice: widget.ticketPrice,trip_date: widget.trip_date,paymentId: "$otid",boardingCity: widget.boardingCity,dropCity: widget.dropCity,busPicktime: widget.busPicktime,busDroptime: widget.busDroptime,Difference_pick_drop: widget.differencePickDrop);
+                                Fluttertoast.showToast(msg: 'Payment Successfully',timeInSecForIosWeb: 4);
+                              } else {
+                                Get.back();
+                              }
+                            });
+                            // Get.back();
                           }
                         },
                         child: paynowbutton()),
-                    SizedBox(height: Get.height * 0.04),
-                  ],
+                    body: Container(
+                      height: 410,
+                      decoration:   BoxDecoration(
+                          color: notifire.backgrounde,
+                          // color: Colors.yellowAccent,
+
+                          // border: Border.all(color: notifier.textColor),
+                          borderRadius: const BorderRadius.only(topLeft: Radius.circular(15),topRight: Radius.circular(15))
+                      ),
+                      child:  Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget> [
+
+                          const SizedBox(height: 13,),
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Text("Select Payment Method".tr,
+                                style: TextStyle(
+                                    color: notifire.textcolor,
+                                    fontSize: height / 40,
+                                    fontFamily: 'Gilroy_Bold')),
+                          ),
+                          const SizedBox(height: 4,),
+                          Expanded(
+                            child: ListView.separated(
+                              // shrinkWrap: true,
+                              // itemCount: pData.paymentList.length,
+                              // scrollDirection: Axis.vertical,
+                              // physics: NeverScrollableScrollPhysics(),
+                              separatorBuilder: (context, index) {
+                                return const SizedBox(width: 0,);
+                              },
+                              shrinkWrap: true,
+                              scrollDirection: Axis.vertical,
+                              physics: const BouncingScrollPhysics(),
+                              itemCount: pData.paymentList.length,
+                              itemBuilder: (ctx, i) {
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 8),
+                                  child: sugestlocationtype(
+                                    borderColor:
+                                    selectidpay == pData.paymentList[i]["id"]
+                                        ? buttonColor
+                                        : const Color(0xffD6D6D6),
+                                    title: pData.paymentList[i]["title"],
+                                    titleColor: notifire.textcolor,
+                                    val: 0,
+                                    image:
+                                    Config.base_url + pData.paymentList[i]["img"],
+                                    adress: pData.paymentList[i]["subtitle"],
+                                    ontap: () async {
+                                      setState(() {
+                                        razorpaykey =
+                                        pData.paymentList[i]["attributes"];
+                                        paymenttital = pData.paymentList[i]["title"];
+                                        selectidpay = pData.paymentList[i]["id"];
+                                        _groupValue = i;
+                                      });
+                                    },
+                                    radio: Theme(
+                                      data: ThemeData(unselectedWidgetColor: notifire.textcolor),
+                                      child: Radio(
+                                        activeColor: buttonColor,
+                                        value: i,
+                                        groupValue: _groupValue,
+                                        onChanged: (value) {
+                                          setState(() {});
+                                          // _groupValue = i;
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 );
-              }),
-            ],
-          ),
+              }
+          )
         );
       },
     );

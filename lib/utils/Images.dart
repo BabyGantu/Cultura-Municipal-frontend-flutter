@@ -4,7 +4,7 @@ class Images {
   static const calendar = "image/CalendarB.png";
   static const home = "image/HomeB.png";
   static const rectangle = "image/Love.png";
-  static const search = "image/SearchB.png";
+  static const search = "image/map-pin.png";
   static const user = "image/UserB.png";
   static const referAnd = "image/referandfriend.png";
   static const skeleton = "image/skeleton.gif";

@@ -78,8 +78,8 @@ class _EditState extends State<Edit> {
 //! network base64Image
   networkimageconvert() {
     (() async {
-      http.Response response = await http
-          .get(Uri.parse(Config.base_url + networkimage.toString()));
+      http.Response response =
+          await http.get(Uri.parse(Config.base_url + networkimage.toString()));
       if (mounted) {
         print(response.bodyBytes);
         setState(() {
@@ -110,21 +110,21 @@ class _EditState extends State<Edit> {
   Widget build(BuildContext context) {
     notifire = Provider.of<ColorNotifire>(context, listen: true);
     return Scaffold(
-      backgroundColor: notifire.getprimerycolor,
+      backgroundColor: notifire.backgrounde,
       floatingActionButton: SizedBox(
         height: 45,
         width: 410,
         child: FloatingActionButton(
           onPressed: () {
             if ((RegExp(
-                    r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                    r"^[a-zA-Z0-9.a-zA-Z0-9!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
                 .hasMatch(email.text))) {
               saveProfile();
             } else {
               ApiWrapper.showToastMessage('Please enter valid email address');
             }
           },
-          child: Custombutton.button(notifire.getbuttonscolor, "SAVE".tr,
+          child: Custombutton.button1(notifire.getbuttonscolor, "SAVE".tr,
               SizedBox(width: width / 3.5), SizedBox(width: width / 7)),
         ),
       ),
@@ -139,14 +139,14 @@ class _EditState extends State<Edit> {
                   onTap: () {
                     Navigator.pop(context);
                   },
-                  child: Icon(Icons.arrow_back, color: notifire.getdarkscolor)),
+                  child: Icon(Icons.arrow_back, color: notifire.textcolor)),
               SizedBox(width: width / 80),
               Text("Edit Profile".tr,
                   style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w900,
                       fontFamily: 'Gilroy Medium',
-                      color: notifire.getdarkscolor)),
+                      color: notifire.textcolor)),
             ],
           ),
           SizedBox(height: height / 25),
@@ -213,7 +213,7 @@ class _EditState extends State<Edit> {
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               SizedBox(height: height / 60),
               Customtextfild3.textField(name, notifire.getwhitecolor, "Name".tr,
-                  width, TextInputType.name, 50, TextAlign.start, false),
+                  width, TextInputType.name, 50, TextAlign.start, false, context: context),
               SizedBox(height: height / 60),
               Customtextfild3.textField(
                   email,
@@ -223,7 +223,7 @@ class _EditState extends State<Edit> {
                   TextInputType.name,
                   50,
                   TextAlign.start,
-                  false),
+                  false, context: context),
               SizedBox(height: height / 60),
               Customtextfild3.textField(
                   number,
@@ -233,7 +233,7 @@ class _EditState extends State<Edit> {
                   TextInputType.name,
                   50,
                   TextAlign.start,
-                  true),
+                  true, context: context),
               SizedBox(height: height / 60),
               Customtextfild3.textField(
                   password,
@@ -243,7 +243,7 @@ class _EditState extends State<Edit> {
                   TextInputType.name,
                   50,
                   TextAlign.start,
-                  false),
+                  false, context: context),
             ]),
           ),
         ]),
@@ -252,8 +252,7 @@ class _EditState extends State<Edit> {
   }
 
   void _openGallery(BuildContext context) async {
-    final pickedFile =
-        await ImagePicker().getImage(source: ImageSource.gallery);
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
       path = pickedFile.path;
       setState(() {});

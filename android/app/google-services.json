@@ -1,44 +1,26 @@
 {
   "project_info": {
-    "project_number": "602457680426",
-    "project_id": "goevent-5943a",
-    "storage_bucket": "goevent-5943a.appspot.com"
+    "project_number": "187718829086",
+    "project_id": "coleccion-de-eventos",
+    "storage_bucket": "coleccion-de-eventos.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:602457680426:android:f228cc5c837124b230b153",
+        "mobilesdk_app_id": "1:187718829086:android:6c02b767cfa408da495a0f",
         "android_client_info": {
           "package_name": "com.goevent"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "602457680426-irbkidd9h13squddpad6use113414968.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.goevent",
-            "certificate_hash": "e852f8b73a44712937e45bcd51595fbb3373d718"
-          }
-        },
-        {
-          "client_id": "602457680426-npugchralehs70756qas9lmhd2d19sje.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBY5cL_Yh8nBQsX_Ijo51eE_kPzHMtyYdA"
+          "current_key": "AIzaSyDsfs-tvy5AQId0PDD5VVBNeoEvIyXJ2LA"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "602457680426-npugchralehs70756qas9lmhd2d19sje.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

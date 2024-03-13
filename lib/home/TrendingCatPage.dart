@@ -59,10 +59,10 @@ class _TrndingPageState extends State<TrndingPage> {
       setState(() {});
     });
     notifire = Provider.of<ColorNotifire>(context, listen: true);
-    return SafeArea(
-      child: Scaffold(
-        backgroundColor: notifire.getprimerycolor,
-        body: Column(
+    return Scaffold(
+      backgroundColor: notifire.backgrounde,
+      body: SafeArea(
+        child: Column(
           children: [
             Container(
               height: Get.height * 0.12,
@@ -117,7 +117,7 @@ class _TrndingPageState extends State<TrndingPage> {
                                       fontSize: 18,
                                       fontWeight: FontWeight.w600,
                                       fontFamily: 'Gilroy Medium',
-                                      color: notifire.getdarkscolor)),
+                                      color: notifire.textcolor)),
                             ],
                           )
                   ],

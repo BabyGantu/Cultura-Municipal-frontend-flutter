@@ -14,6 +14,7 @@ import 'package:goevent2/utils/media.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+
 enum SingingCharacter { lafayette, jefferson }
 
 class Cancelledticket extends StatefulWidget {
@@ -71,7 +72,7 @@ class _CancelledticketState extends State<Cancelledticket> {
   Widget build(BuildContext context) {
     notifire = Provider.of<ColorNotifire>(context, listen: true);
     return Scaffold(
-      backgroundColor: notifire.getprimerycolor,
+      backgroundColor: notifire.backgrounde,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: !isLoading
@@ -125,9 +126,9 @@ class _CancelledticketState extends State<Cancelledticket> {
         margin: const EdgeInsets.symmetric(vertical: 4),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
         decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey.shade200),
+            border: Border.all(color: notifire.bordercolore),
             borderRadius: BorderRadius.circular(15),
-            color: notifire.getprimerycolor),
+            color: notifire.containercolore),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -166,7 +167,7 @@ class _CancelledticketState extends State<Cancelledticket> {
                             overflow: TextOverflow.ellipsis,
                             maxLines: 2,
                             style: TextStyle(
-                                color: notifire.getdarkscolor,
+                                color: notifire.textcolor,
                                 fontSize: 16,
                                 fontFamily: 'Gilroy Medium',
                                 fontWeight: FontWeight.w600)),

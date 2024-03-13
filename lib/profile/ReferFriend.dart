@@ -83,7 +83,7 @@ class _ReferFriendPageState extends State<ReferFriendPage> {
       setState(() {});
     });
     return Scaffold(
-      backgroundColor: notifire.getprimerycolor,
+      backgroundColor: notifire.backgrounde,
       floatingActionButton: SizedBox(
         height: 45,
         width: 410,
@@ -91,7 +91,7 @@ class _ReferFriendPageState extends State<ReferFriendPage> {
           onPressed: () {
             share();
           },
-          child: Custombutton.button(
+          child: Custombutton.button1(
               notifire.getbuttonscolor,
               "Refer a friend".tr.toUpperCase(),
               SizedBox(width: width / 6),
@@ -113,7 +113,7 @@ class _ReferFriendPageState extends State<ReferFriendPage> {
                 },
                 child: Row(
                   children: [
-                    Icon(Icons.arrow_back, color: notifire.getdarkscolor),
+                    Icon(Icons.arrow_back, color: notifire.textcolor),
                     SizedBox(width: width / 80),
                     Text(
                       "Refer a Friend".tr,
@@ -121,7 +121,7 @@ class _ReferFriendPageState extends State<ReferFriendPage> {
                           fontSize: 18,
                           fontWeight: FontWeight.w900,
                           fontFamily: 'Gilroy Medium',
-                          color: notifire.getdarkscolor),
+                          color: notifire.textcolor),
                     ),
                   ],
                 ),
@@ -149,7 +149,7 @@ class _ReferFriendPageState extends State<ReferFriendPage> {
                             fontSize: 22,
                             fontWeight: FontWeight.w700,
                             fontFamily: 'Gilroy Bold',
-                            color: notifire.getdarkscolor),
+                            color: notifire.textcolor),
                       ),
                     ),
                     SizedBox(height: Get.height * 0.04),
@@ -179,12 +179,12 @@ class _ReferFriendPageState extends State<ReferFriendPage> {
                                 style: TextStyle(
                                     fontSize: 15,
                                     fontFamily: 'Gilroy Medium',
-                                    color: notifire.getdarkscolor)),
+                                    color: notifire.textcolor)),
                           ),
                           const SizedBox(width: 8),
                           Image(
                             image: const AssetImage("image/Copy.png"),
-                            color: notifire.getdarkscolor,
+                            color: notifire.textcolor,
                             height: Get.height * 0.02,
                           )
                         ],
@@ -214,7 +214,7 @@ class _ReferFriendPageState extends State<ReferFriendPage> {
       padding: const EdgeInsets.symmetric(horizontal: 18),
       child: Row(
         children: [
-          Icon(Icons.circle, color: notifire.getdarkscolor, size: 8),
+          Icon(Icons.circle, color: notifire.textcolor, size: 8),
           SizedBox(width: Get.width * 0.02),
           Ink(
             width: Get.width * 0.77,
@@ -223,7 +223,7 @@ class _ReferFriendPageState extends State<ReferFriendPage> {
               style: TextStyle(
                   fontSize: 14,
                   fontFamily: 'Gilroy Medium',
-                  color: notifire.getdarkscolor),
+                  color: notifire.textcolor),
             ),
           ),
         ],

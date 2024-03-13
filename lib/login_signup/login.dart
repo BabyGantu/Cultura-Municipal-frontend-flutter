@@ -17,6 +17,8 @@ import 'package:goevent2/utils/media.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../Bottombar.dart';
+
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
 
@@ -29,7 +31,7 @@ class _LoginState extends State<Login> {
 
   late ColorNotifire notifire;
   bool status = false;
-  final number = TextEditingController();
+  final email = TextEditingController();
   final password = TextEditingController();
   List<String> _countryCodes = [];
   String? dropdownValue = "";
@@ -53,7 +55,7 @@ class _LoginState extends State<Login> {
   @override
   void initState() {
     super.initState();
-    dropdownValue = login.countryCode.first;
+    //dropdownValue = login.countryCode.first;
 
     getdarkmodepreviousstate();
   }
@@ -62,7 +64,7 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     notifire = Provider.of<ColorNotifire>(context, listen: true);
     return Scaffold(
-      backgroundColor: notifire.getprimerycolor,
+      backgroundColor: notifire.backgrounde,
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -74,10 +76,10 @@ class _LoginState extends State<Login> {
                 SizedBox(height: height / 11),
                 Center(
                     child:
-                        Image.asset("image/getevent.png", height: height / 13)),
+                        Image.asset("image/CajemeCultura.jpg", height: height / 13)),
                 SizedBox(height: height / 100),
                 Text(
-                  "GoEvent".tr,
+                  "Cultura Municipal ".tr,
                   style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.w700,
@@ -88,7 +90,7 @@ class _LoginState extends State<Login> {
                 Row(
                   children: [
                     Text(
-                      "Sign in".tr,
+                      "Iniciae sesion".tr,
                       style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -102,36 +104,19 @@ class _LoginState extends State<Login> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Flexible(
-                        flex: 4,
-                        child: Container(
-                          height: 45,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                  width: 1, color: Colors.grey.shade300)),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const SizedBox(width: 10),
-                              Image.asset("image/Call1.png", scale: 3.5),
-                              cpicker(),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Flexible(
-                        flex: 5,
-                        child: SizedBox(
-                          width: Get.width * 0.60,
-                          child: Customtextfild.textField(
-                            controller: number,
-                            name1: "Mobile number".tr,
-                            keyboardType: TextInputType.number,
-                            labelclr: Colors.grey,
-                            textcolor: notifire.getwhitecolor,
-                          ),
-                        ),
+
+                      const SizedBox(width: 8,),
+                      Expanded(
+
+                        child: Customtextfild.textField(
+                          controller: email,
+                          name1: "Email".tr,
+                          labelclr: Colors.grey,
+                          textcolor: notifire.getwhitecolor,
+                          prefixIcon: Image.asset("image/Message.png",
+                              scale: 3.5,
+                              color: notifire.textcolor),
+                          context: context,),
                       ),
                     ],
                   ),
@@ -149,8 +134,9 @@ class _LoginState extends State<Login> {
                         _toggle();
                       },
                       child: _obscureText
-                          ? Image.asset("image/Hide.png", height: 20)
-                          : Image.asset("image/Show.png", height: 20)),
+                          ? Image.asset("image/Hide.png", height: 20,color: notifire.textcolor,)
+                          : Image.asset("image/Show.png", height: 20,color: notifire.textcolor)),
+                  context: context,
                 ),
                 SizedBox(height: height / 40),
                 Row(
@@ -195,20 +181,24 @@ class _LoginState extends State<Login> {
                 SizedBox(height: height / 20),
                 GestureDetector(
                   onTap: () {
-                    FocusScope.of(context).requestFocus(FocusNode());
+                    //FocusScope.of(context).requestFocus(FocusNode());
 
-                    if (number.text.isNotEmpty && password.text.isNotEmpty) {
-                      login.userLogin(number.text, password.text);
+                    if (email.text.isNotEmpty && password.text.isNotEmpty) {
+                      //Get.to(() => const Bottombar(), duration: Duration.zero);
+                      login.iniciarSesion(email.text, password.text);
                     } else {
                       ApiWrapper.showToastMessage(
                           "Please fill required field!");
                     }
                   },
-                  child: Custombutton.button(
-                    notifire.getbuttonscolor,
-                    "SIGN IN".tr,
-                    SizedBox(width: width / 4),
-                    SizedBox(width: width / 7),
+                  child: SizedBox(
+                    height: 45,
+                    child: Custombutton.button1(
+                      notifire.getbuttonscolor,
+                      "SIGN IN".tr,
+                      SizedBox(width: width / 4),
+                      SizedBox(width: width / 7),
+                    ),
                   ),
                 ),
                 SizedBox(height: Get.height * 0.25),

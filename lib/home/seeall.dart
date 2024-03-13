@@ -53,7 +53,7 @@ class _AllState extends State<All> {
   Widget build(BuildContext context) {
     notifire = Provider.of<ColorNotifire>(context, listen: true);
     return Scaffold(
-      backgroundColor: notifire.getprimerycolor,
+      backgroundColor: notifire.backgrounde,
       body: Column(
         children: [
           SizedBox(height: height / 16),
@@ -65,7 +65,7 @@ class _AllState extends State<All> {
                   onTap: () {
                     Get.back();
                   },
-                  child: Icon(Icons.arrow_back, color: notifire.getdarkscolor)),
+                  child: Icon(Icons.arrow_back, color: notifire.textcolor)),
               SizedBox(width: width / 80),
               Text(
                 widget.title!,
@@ -73,7 +73,7 @@ class _AllState extends State<All> {
                     fontSize: 18,
                     fontWeight: FontWeight.w900,
                     fontFamily: 'Gilroy Medium',
-                    color: notifire.getdarkscolor),
+                    color: notifire.textcolor),
               ),
             ],
           ),
@@ -120,8 +120,9 @@ class _AllState extends State<All> {
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
               child: Container(
                 decoration: BoxDecoration(
+                  color: notifire.containercolore,
                     borderRadius: BorderRadius.circular(17),
-                    border: Border.all(color: Colors.grey.shade200)),
+                    border: Border.all(color: notifire.bordercolore)),
                 child: Stack(
                   children: [
                     Column(
@@ -162,7 +163,7 @@ class _AllState extends State<All> {
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                                color: notifire.getdarkscolor,
+                                color: notifire.textcolor,
                                 fontSize: 15,
                                 fontFamily: 'Gilroy Medium',
                                 fontWeight: FontWeight.w600),

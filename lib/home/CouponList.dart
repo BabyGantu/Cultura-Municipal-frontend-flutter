@@ -132,8 +132,7 @@ class _CouponListPageState extends State<CouponListPage> {
                       BoxDecoration(borderRadius: BorderRadius.circular(2)),
                   child: FadeInImage(
                       placeholder: const AssetImage("image/skeleton.gif"),
-                      image:
-                          NetworkImage(Config.base_url + user[i]["c_img"])),
+                      image: NetworkImage(Config.base_url + user[i]["c_img"])),
                 ),
               ),
               Column(

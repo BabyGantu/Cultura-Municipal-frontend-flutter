@@ -74,7 +74,7 @@ class _CompletedticketState extends State<Completedticket> {
   Widget build(BuildContext context) {
     notifire = Provider.of<ColorNotifire>(context, listen: true);
     return Scaffold(
-      backgroundColor: notifire.getprimerycolor,
+      backgroundColor: notifire.backgrounde,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: !isLoading
@@ -129,9 +129,9 @@ class _CompletedticketState extends State<Completedticket> {
         margin: const EdgeInsets.symmetric(vertical: 4),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
         decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey.shade200),
+            border: Border.all(color: notifire.bordercolore),
             borderRadius: BorderRadius.circular(15),
-            color: notifire.getprimerycolor),
+            color: notifire.containercolore),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -152,6 +152,7 @@ class _CompletedticketState extends State<Completedticket> {
                             placeholder: "image/skeleton.gif",
                             fit: BoxFit.cover,
                             width: width,
+                            height: height,
                             image: Config.base_url + user[i]["event_img"]),
                       ),
                       SizedBox(height: height / 70),
@@ -170,7 +171,7 @@ class _CompletedticketState extends State<Completedticket> {
                             overflow: TextOverflow.ellipsis,
                             maxLines: 2,
                             style: TextStyle(
-                                color: notifire.getdarkscolor,
+                                color: notifire.textcolor,
                                 fontSize: 16,
                                 fontFamily: 'Gilroy Medium',
                                 fontWeight: FontWeight.w600)),
@@ -268,6 +269,7 @@ class _CompletedticketState extends State<Completedticket> {
 
   Future reviewRider(tID, title) {
     return showModalBottomSheet(
+      backgroundColor: notifire.containercolore,
       isDismissible: false,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
@@ -291,9 +293,10 @@ class _CompletedticketState extends State<Completedticket> {
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.center,
                     maxLines: 2,
-                    style: const TextStyle(
+                    style:  TextStyle(
                         fontSize: 18,
                         letterSpacing: 0.5,
+                        color: notifire.textcolor,
                         fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -320,8 +323,9 @@ class _CompletedticketState extends State<Completedticket> {
                     children: [
                       Text(
                         "Comment".tr,
-                        style: const TextStyle(
+                        style:  TextStyle(
                             fontSize: 16,
+                            color: notifire.textcolor,
                             fontWeight: FontWeight.w500,
                             letterSpacing: 0.05),
                       ),
@@ -334,7 +338,7 @@ class _CompletedticketState extends State<Completedticket> {
                   child: TextFormField(
                     controller: commit,
                     style:
-                        TextStyle(fontSize: height / 50, color: Colors.black),
+                        TextStyle(fontSize: height / 50, color: notifire.textcolor),
                     decoration: InputDecoration(
                         hintText: "Enter comment".tr,
                         hintStyle: TextStyle(
@@ -367,7 +371,7 @@ class _CompletedticketState extends State<Completedticket> {
                       onPressed: () {
                         isRating(tID);
                       },
-                      child: Custombutton.button(
+                      child: Custombutton.button1(
                         notifire.getbuttonscolor,
                         "Submit".tr,
                         SizedBox(width: width / 3.5),

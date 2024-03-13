@@ -1,15 +1,16 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, constant_identifier_names
 
 class Config {
-  static const String oneSignel = '7a9d7e3b-e943-4a01-87c1-4b20361e7626';
+  static const String oneSignel = '****************************************';
 
-  static const String base_url = 'https://goevent.zozostudio.tech/';
+  static const String base_url = 'https://colecciondeeventos.000webhostapp.com/';
 
+  static const String api_url = base_url + '/eapi/';
 
-  static const String api_url = base_url+'/eapi/';
+  static const String userImage = base_url + "/images/profile/pic.png";
 
-  static const String userImage = base_url+"/images/profile/pic.png";
-
+  static const String firebaseKey = "**********************************************";
+  static const String notificationUrl = "https://fcm.googleapis.com/fcm/send";
 
   static const String reguser = 'e_reg_user.php';
   static const String mobilecheck = 'e_mobile_check.php';

@@ -48,7 +48,7 @@ class _LoreamState extends State<Loream> {
 
     var sp;
     return Scaffold(
-      backgroundColor: notifire.getprimerycolor,
+      backgroundColor: notifire.backgrounde,
       body: Column(
         children: [
           SizedBox(height: height / 20),
@@ -61,7 +61,7 @@ class _LoreamState extends State<Loream> {
                 },
                 child: Row(
                   children: [
-                    Icon(Icons.arrow_back, color: notifire.getdarkscolor),
+                    Icon(Icons.arrow_back, color: notifire.textcolor),
                     SizedBox(width: width / 80),
                     Text(
                       widget.title!,
@@ -69,7 +69,7 @@ class _LoreamState extends State<Loream> {
                           fontSize: 18,
                           fontWeight: FontWeight.w900,
                           fontFamily: 'Gilroy Medium',
-                          color: notifire.getdarkscolor),
+                          color: notifire.textcolor),
                     ),
                   ],
                 ),

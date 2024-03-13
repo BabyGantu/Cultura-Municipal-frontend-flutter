@@ -1,7 +1,7 @@
 class CustomStrings {
-  static const String goevet = 'GoEvent';
-  static const String onbonding1 = 'Explore Upcoming and';
-  static const String onbonding2 = 'Nearby Events';
+  static const String goevet = 'Cultura Cajeme';
+  static const String onbonding1 = 'Bienvenido a';
+  static const String onbonding2 = 'Cultura Cajeme';
   static const String safe = 'Stay safe, be safe';
   static const String covid = 'Covid - 19 Self Health\nDeclaration';
   static const String details =

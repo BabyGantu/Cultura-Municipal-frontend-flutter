@@ -46,9 +46,10 @@ class _TicketStatusPageState extends State<TicketStatusPage>
     return DefaultTabController(
       length: 3,
       child: Scaffold(
+        backgroundColor: notifire.backgrounde,
         appBar: AppBar(
           elevation: 0,
-          backgroundColor: notifire.getprimerycolor,
+          backgroundColor: notifire.backgrounde,
           centerTitle: true,
           leading: widget.type == "0"
               ? InkWell(
@@ -62,13 +63,12 @@ class _TicketStatusPageState extends State<TicketStatusPage>
                   fontSize: 18,
                   fontWeight: FontWeight.w900,
                   fontFamily: 'Gilroy Medium',
-                  color: notifire.getdarkscolor)),
+                  color: notifire.textcolor)),
           bottom: TabBar(
-            unselectedLabelStyle: const TextStyle(
-                color: Colors.grey, fontFamily: 'Gilroy_Bold', fontSize: 16),
+            unselectedLabelStyle: const TextStyle(color: Colors.grey, fontFamily: 'Gilroy_Bold', fontSize: 16),
             labelStyle: const TextStyle(
                 fontFamily: 'Gilroy Medium',
-                fontSize: 18,
+                fontSize: 16,
                 fontWeight: FontWeight.w700),
             indicatorColor: buttonColor,
             labelColor: buttonColor,

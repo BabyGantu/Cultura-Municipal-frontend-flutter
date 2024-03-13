@@ -82,7 +82,7 @@ class _FinalState extends State<Final> {
     });
     notifire = Provider.of<ColorNotifire>(context, listen: true);
     return Scaffold(
-      backgroundColor: notifire.getticketcolor,
+      backgroundColor: notifire.finalticketcolore,
       //! ----- My Booking button  -----
       floatingActionButton: SizedBox(
         height: 45,
@@ -149,7 +149,7 @@ class _FinalState extends State<Final> {
                     children: [
                       ticketData.isNotEmpty
                           ? TicketWidget(
-                              color: notifire.getcardcolor,
+                              color: notifire.containercolore,
                               width: Get.width * 0.92,
                               height: Get.height * 0.8,
                               isCornerRounded: true,
@@ -187,7 +187,7 @@ class _FinalState extends State<Final> {
                                             fontSize: 24,
                                             fontWeight: FontWeight.w500,
                                             fontFamily: 'Gilroy Medium',
-                                            color: notifire.getdarkscolor)),
+                                            color: notifire.textcolor)),
                                     SizedBox(height: Get.height * 0.02),
                                     SizedBox(width: width / 8),
                                     Column(
@@ -336,11 +336,12 @@ class _FinalState extends State<Final> {
                                     //   ],
                                     // ),
                                     Center(
-                                      child: QrImage(
+                                      child: QrImageView(
                                           data: "$jsonobj",
                                           version: QrVersions.auto,
                                           size: 140.0),
-                                    )
+                                    ),
+
                                   ],
                                 ),
                               ),
@@ -382,7 +383,7 @@ class _FinalState extends State<Final> {
             style: TextStyle(
                 fontSize: 15,
                 fontFamily: 'Gilroy Bold',
-                color: notifire.getdarkscolor)),
+                color: notifire.textcolor)),
       ],
     );
   }

@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_final_fields, body_might_complete_normally_nullable, unnecessary_string_interpolations, unnecessary_brace_in_string_interps, deprecated_member_use
+// ignore_for_file: prefer_final_fields, body_might_complete_normally_nullable, unnecessary_string_interpolations, unnecessary_brace_in_string_interps, deprecated_member_use, avoid_print
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -11,11 +11,10 @@ import 'package:goevent2/login_signup/login.dart';
 import 'package:goevent2/login_signup/verification.dart';
 import 'package:goevent2/profile/loream.dart';
 import 'package:goevent2/utils/AppWidget.dart';
-
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../Controller/AuthController.dart';
+import '../agent_chat_screen/auth_service.dart';
 import '../home/home.dart';
 import '../utils/botton.dart';
 import '../utils/colornotifire.dart';
@@ -32,17 +31,19 @@ class Signup extends StatefulWidget {
 
 class _SignupState extends State<Signup> {
   bool status = false;
-  final auth = FirebaseAuth.instance;
+  //final auth = FirebaseAuth.instance;
   late ColorNotifire notifire;
   final name = TextEditingController();
+  final lastname = TextEditingController();
   final number = TextEditingController();
   final email = TextEditingController();
   final fpassword = TextEditingController();
   final spassword = TextEditingController();
   final referral = TextEditingController();
   bool isLoading = false;
-  String? _selectedCountryCode = '';
+  String? _selectedCountryCode = '+52';
   final login = Get.put(AuthController());
+  final x = Get.put(AuthController());
 
   getdarkmodepreviousstate() async {
     final prefs = await SharedPreferences.getInstance();
@@ -72,7 +73,7 @@ class _SignupState extends State<Signup> {
   @override
   void initState() {
     super.initState();
-    _selectedCountryCode = login.countryCode.first;
+    //_selectedCountryCode = login.countryCode.first;
     getdarkmodepreviousstate();
   }
 
@@ -80,7 +81,7 @@ class _SignupState extends State<Signup> {
   Widget build(BuildContext context) {
     notifire = Provider.of<ColorNotifire>(context, listen: true);
     return Scaffold(
-      backgroundColor: notifire.getprimerycolor,
+      backgroundColor: notifire.backgrounde,
       body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
@@ -92,10 +93,7 @@ class _SignupState extends State<Signup> {
                     onTap: () {
                       Navigator.pop(context);
                     },
-                    child: Container(
-                        color: notifire.getprimerycolor,
-                        child: Icon(Icons.arrow_back,
-                            color: notifire.getwhitecolor)),
+                    child: Icon(Icons.arrow_back, color: notifire.getwhitecolor),
                   ),
                 ],
               ),
@@ -110,72 +108,51 @@ class _SignupState extends State<Signup> {
                             children: [
                               Row(
                                 children: [
-                                  Text(
-                                    "Sign up".tr,
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                        fontFamily: 'Gilroy Medium',
-                                        color: notifire.getwhitecolor),
-                                  ),
+                                  Text("Registrate".tr, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'Gilroy Medium', color: notifire.getwhitecolor),),
                                 ],
                               ),
                               SizedBox(height: height / 40),
-                              Customtextfild.textField(
-                                controller: name,
-                                name1: "Name".tr,
-                                labelclr: Colors.grey,
-                                textcolor: notifire.getwhitecolor,
-                                prefixIcon: Image.asset("image/Profile.png",
-                                    scale: 3.5),
-                              ),
+                              Customtextfild.textField(controller: email, name1: "Email".tr, labelclr: Colors.grey, textcolor: notifire.getwhitecolor, prefixIcon: Image.asset("image/Message.png", scale: 3.5,color: notifire.textcolor), context: context,),
+                              SizedBox(height: height / 40),
+                              Customtextfild.textField(controller: name, name1: "Nombre".tr, labelclr: Colors.grey, textcolor: notifire.getwhitecolor, prefixIcon: Image.asset("image/Profile.png", scale: 3.5,color: notifire.textcolor), context: context,),
                               SizedBox(height: height / 40),
                               Customtextfild.textField(
-                                controller: email,
-                                name1: "Email".tr,
+                                controller: lastname,
+                                name1: "Apellido".tr,
                                 labelclr: Colors.grey,
                                 textcolor: notifire.getwhitecolor,
-                                prefixIcon: Image.asset("image/Message.png",
-                                    scale: 3.5),
+                                keyboardType: TextInputType.text,
+                                prefixIcon: Image.asset("image/Profile.png", scale: 3.5,color: notifire.textcolor), context: context,
                               ),
                               SizedBox(height: height / 40),
                               Ink(
                                 child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Flexible(
-                                      flex: 4,
-                                      child: Container(
-                                        height: 45,
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            border: Border.all(
-                                                width: 1,
-                                                color: Colors.grey.shade200)),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            const SizedBox(width: 12),
-                                            Image.asset("image/Call1.png",
-                                                scale: 3.5),
-                                            cpicker(),
-                                          ],
-                                        ),
+                                    Container(
+                                      height: 45,
+                                      decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(10),
+                                          border: Border.all(
+                                              width: 1,
+                                              color: notifire.bordercolore)),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const SizedBox(width: 12),
+                                          Image.asset("image/Call1.png", scale: 3.5,color: notifire.textcolor),
+                                          cpicker(),
+                                        ],
                                       ),
                                     ),
-                                    Flexible(
-                                      flex: 5,
-                                      child: SizedBox(
-                                        width: Get.width * 0.60,
-                                        child: Customtextfild.textField(
-                                          controller: number,
-                                          name1: "Mobile number".tr,
-                                          keyboardType: TextInputType.number,
-                                          labelclr: Colors.grey,
-                                          textcolor: notifire.getwhitecolor,
-                                        ),
+                                    const SizedBox(width: 8,),
+                                    Expanded(
+                                      child: Customtextfild.textField(
+                                        controller: number,
+                                        name1: "Telefono".tr,
+                                        keyboardType: TextInputType.phone,
+                                        labelclr: Colors.grey,
+                                        textcolor: notifire.getwhitecolor, context: context,
                                       ),
                                     ),
                                   ],
@@ -185,7 +162,7 @@ class _SignupState extends State<Signup> {
                               Customtextfild2.textField(
                                 fpassword,
                                 _obscureText,
-                                "Your password".tr,
+                                "Contraseña".tr,
                                 Colors.grey,
                                 notifire.getwhitecolor,
                                 "image/Lock.png",
@@ -195,15 +172,15 @@ class _SignupState extends State<Signup> {
                                     },
                                     child: _obscureText
                                         ? Image.asset("image/Hide.png",
-                                            scale: 3.5)
+                                            scale: 3.5,color: notifire.textcolor,)
                                         : Image.asset("image/Show.png",
-                                            scale: 3.5)),
+                                            scale: 3.5,color: notifire.textcolor)), context: context,
                               ),
                               SizedBox(height: height / 40),
                               Customtextfild2.textField(
                                 spassword,
                                 obscureText_,
-                                "Confirm password".tr,
+                                "Confirmar contraseña".tr,
                                 Colors.grey,
                                 notifire.getwhitecolor,
                                 "image/Lock.png",
@@ -213,20 +190,11 @@ class _SignupState extends State<Signup> {
                                     },
                                     child: obscureText_
                                         ? Image.asset("image/Hide.png",
-                                            height: 22)
+                                            height: 22,color: notifire.textcolor)
                                         : Image.asset("image/Show.png",
-                                            height: 22)),
+                                            height: 22,color: notifire.textcolor)), context: context,
                               ),
-                              SizedBox(height: height / 40),
-                              Customtextfild.textField(
-                                controller: referral,
-                                name1: "Referral code".tr,
-                                labelclr: Colors.grey,
-                                textcolor: notifire.getwhitecolor,
-                                keyboardType: TextInputType.number,
-                                prefixIcon: Image.asset("image/Discount-1.png",
-                                    scale: 3.5),
-                              ),
+
                               SizedBox(height: Get.height * 0.02),
                               Row(
                                 children: [
@@ -253,10 +221,7 @@ class _SignupState extends State<Signup> {
                                               color: notifire.getwhitecolor,
                                               fontSize: 12),
                                           children: <TextSpan>[
-                                            TextSpan(
-                                                text:
-                                                    "You agree to GoEvent's \n"
-                                                        .tr),
+                                            TextSpan(text: "You agree to GoEvent's \n".tr),
                                             TextSpan(
                                                 text: 'Terms of Use '.tr,
                                                 style: const TextStyle(
@@ -266,9 +231,7 @@ class _SignupState extends State<Signup> {
                                                 recognizer:
                                                     TapGestureRecognizer()
                                                       ..onTap = () {
-                                                        Get.to(() => Loream(
-                                                            "Terms & Conditions"
-                                                                .tr));
+                                                        Get.to(() => Loream("Terms & Conditions".tr));
                                                       }),
                                             const TextSpan(text: "and "),
                                             TextSpan(
@@ -280,9 +243,7 @@ class _SignupState extends State<Signup> {
                                                 recognizer:
                                                     TapGestureRecognizer()
                                                       ..onTap = () {
-                                                        Get.to(() => Loream(
-                                                            "Terms & Conditions"
-                                                                .tr));
+                                                        Get.to(() => Loream("Terms & Conditions".tr));
                                                       }),
                                           ]),
                                     ),
@@ -292,13 +253,18 @@ class _SignupState extends State<Signup> {
                               SizedBox(height: Get.height * 0.10),
                               GestureDetector(
                                 onTap: () {
+
                                   authSignUp();
+                                  // print('hahahaha');
                                 },
-                                child: Custombutton.button(
-                                  notifire.getbuttonscolor,
-                                  "SIGN UP".tr,
-                                  SizedBox(width: width / 4),
-                                  SizedBox(width: width / 5),
+                                child: SizedBox(
+                                  height: 45,
+                                  child: Custombutton.button1(
+                                    notifire.getbuttonscolor,
+                                    "Registrase".tr,
+                                    SizedBox(width: width / 4),
+                                    SizedBox(width: width / 5),
+                                  ),
                                 ),
                               ),
                               SizedBox(height: Get.height / 60),
@@ -376,18 +342,17 @@ class _SignupState extends State<Signup> {
   }
 
   cpicker() {
+    var countryCode = ['+52','+43','+45','+48'];
     var countryDropDown = Ink(
       child: DropdownButtonHideUnderline(
         child: ButtonTheme(
           alignedDropdown: true,
           child: DropdownButton(
               value: _selectedCountryCode,
-              items: login.countryCode.map((value) {
+              items: countryCode.map((value) {
                 return DropdownMenuItem<String>(
                     value: value,
-                    child: Text(value,
-                        style: const TextStyle(
-                            fontSize: 14.0, color: Colors.grey)));
+                    child: Text(value, style: const TextStyle(fontSize: 14.0, color: Colors.grey)));
               }).toList(),
               onChanged: (String? value) {
                 setState(() {
@@ -401,25 +366,41 @@ class _SignupState extends State<Signup> {
     return countryDropDown;
   }
 
-//
+  //
   authSignUp() {
+    print('uhuhuhuhu');
     FocusScope.of(context).requestFocus(FocusNode());
 
-    var mcheck = {"mobile": number.text};
 
     if (name.text.isNotEmpty &&
-            email.text.isNotEmpty &&
-            number.text.isNotEmpty &&
-            fpassword.text.isNotEmpty &&
-            spassword.text.isNotEmpty
-        // &&        referral.text.isNotEmpty
-        ) {
+        lastname.text.isNotEmpty &&
+        email.text.isNotEmpty &&
+        number.text.isNotEmpty &&
+        fpassword.text.isNotEmpty &&
+        spassword.text.isNotEmpty
+    // &&        referral.text.isNotEmpty
+    ) {
       if ((RegExp(
-              r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+\.[a-zA-Z]+")
+          r"^[a-zA-Z0-9.a-zA-Z0-9!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9.a-zA-Z0-9!#$%&'*+-/=?^_`{|}~]+\.[a-zA-Z]+")
           .hasMatch(email.text))) {
         if (fpassword.text == spassword.text) {
           if (status == true) {
-            ApiWrapper.dataPost(Config.mobilecheck, mcheck).then((val) {
+            setState(() {
+              isLoading = true;
+            });
+            var register = {
+              "UserName": name.text.trim(),
+              "Usernumber": number.text.trim(),
+              "UserEmail": email.text.trim(),
+              //"Ccode": _selectedCountryCode,
+              "FPassword": fpassword.text.trim(),
+              "SPassword": spassword.text.trim(),
+              //"ReferralCode": referral.text.trim(),
+            };
+            save("User", register);
+            login.registrarUsuario(email.text, name.text, lastname.text, number.text, spassword.text);
+            //Get.to(() => Verification(verID: '123445', number: '123456678'));
+            /**ApiWrapper.dataPost(Config.mobilecheck, 53).then((val) {
               if ((val != null) && (val.isNotEmpty)) {
                 if (val["Result"] == "true") {
                   setState(() {
@@ -444,7 +425,9 @@ class _SignupState extends State<Signup> {
                   ApiWrapper.showToastMessage(val['ResponseMsg']);
                 }
               }
-            });
+            });**/
+
+            print('Chingon');
           } else {
             ApiWrapper.showToastMessage("Accept terms & Condition is required");
           }
@@ -458,6 +441,11 @@ class _SignupState extends State<Signup> {
       ApiWrapper.showToastMessage("Please fill required field!");
     }
   }
+
+
+
+
+
 
   Future<void> verifyPhone(String number) async {
     await FirebaseAuth.instance.verifyPhoneNumber(
@@ -480,7 +468,7 @@ class _SignupState extends State<Signup> {
         setState(() {
           isLoading = false;
         });
-        Get.to(() => Verification(verID: verificationId, number: number));
+        Get.to(() => Verification(verID: verificationId, email: number,isReset: false));
       },
       codeAutoRetrievalTimeout: (String verificationId) {
         ApiWrapper.showToastMessage("Timeout!");
@@ -491,3 +479,9 @@ class _SignupState extends State<Signup> {
     );
   }
 }
+
+
+
+//15900 + 5700 = 21600
+
+

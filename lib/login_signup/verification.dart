@@ -1,28 +1,29 @@
 // ignore_for_file: avoid_print, unused_catch_clause
 
 import 'dart:async';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
 import 'package:goevent2/Api/ApiWrapper.dart';
 import 'package:goevent2/Controller/AuthController.dart';
 import 'package:goevent2/login_signup/ForgetPass.dart';
-
-import 'package:pinput/pin_put/pin_put.dart';
+import 'package:otp_text_field/otp_field.dart';
+import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../utils/botton.dart';
 import '../utils/colornotifire.dart';
 import '../utils/media.dart';
+import 'Login.dart';
+import '../Controller/AuthController.dart';
+final login = Get.put(AuthController());
+
 
 class Verification extends StatefulWidget {
   final String? type;
-  final String? number;
+  final String? email;
   final String? verID;
-  const Verification({Key? key, this.verID, this.number, this.type})
+  final bool isReset;
+  const Verification({Key? key, this.verID, this.email, this.type, required this.isReset})
       : super(key: key);
 
   @override
@@ -30,8 +31,9 @@ class Verification extends StatefulWidget {
 }
 
 class _VerificationState extends State<Verification> {
-  final auth = FirebaseAuth.instance;
+  //final auth = FirebaseAuth.instance;
   final otpController = TextEditingController();
+  OtpFieldController OtpController = OtpFieldController();
   final x = Get.put(AuthController());
 
   bool resendotp = false;
@@ -93,12 +95,43 @@ class _VerificationState extends State<Verification> {
 
   Future<void> verifyOTP(BuildContext context) async {
     FocusScope.of(context).requestFocus(FocusNode());
-    PhoneAuthCredential phoneAuthCredential = PhoneAuthProvider.credential(
-        verificationId: widget.verID!, smsCode: otpController.text);
-    signInWithPhoneAuthCredential(phoneAuthCredential);
+    String id = widget.verID!;
+    // Llama a verificarCodigo y espera a que se complete
+    print('___________________________________');
+    print(otpController.text);
+    print(id);
+    print(widget.isReset);
+    print('___________________________________');
+    bool? codigoVerificado = await login.verificarCodigo(otpController.text, id,widget.isReset);
+
+    // Verifica el resultado devuelto por verificarCodigo
+    if (codigoVerificado == true) {
+      // Si el código fue verificado con éxito, navega a la pantalla Login
+      //Get.to(() => Login());
+      ApiWrapper.showToastMessage("Verificado");
+    } else {
+      // Si ocurrió un error o el código no fue verificado, puedes manejarlo aquí
+      ApiWrapper.showToastMessage("El código no coincide");
+    }
   }
 
-  void signInWithPhoneAuthCredential(
+  Future<void> reenviarCodigo(BuildContext context) async {
+    FocusScope.of(context).requestFocus(FocusNode());
+    String id = widget.verID!;
+    // Llama a verificarCodigo y espera a que se complete
+    bool? reenvioDeCodigo = await login.reenviarCodigo(id);
+
+    // Verifica el resultado devuelto por verificarCodigo
+    if (reenvioDeCodigo == true) {
+      // Si el código fue verificado con éxito, navega a la pantalla Login
+      ApiWrapper.showToastMessage("Codigo reenviado");
+    } else {
+      // Si ocurrió un error o el código no fue verificado, puedes manejarlo aquí
+      ApiWrapper.showToastMessage("Algo salio mal");
+    }
+  }
+
+  /*void signInWithPhoneAuthCredential(
       PhoneAuthCredential phoneAuthCredential) async {
     try {
       final authCredential =
@@ -118,13 +151,13 @@ class _VerificationState extends State<Verification> {
       ApiWrapper.showToastMessage("Auth Failed! ");
       print(e);
     }
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
     notifire = Provider.of<ColorNotifire>(context, listen: true);
     return Scaffold(
-      backgroundColor: notifire.getprimerycolor,
+      backgroundColor: notifire.backgrounde,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -136,10 +169,7 @@ class _VerificationState extends State<Verification> {
                   onTap: () {
                     Navigator.pop(context);
                   },
-                  child: Container(
-                      color: notifire.getprimerycolor,
-                      child: Icon(Icons.arrow_back,
-                          color: notifire.getwhitecolor)),
+                  child: Icon(Icons.arrow_back,color: notifire.getwhitecolor),
                 ),
               ],
             ),
@@ -148,14 +178,7 @@ class _VerificationState extends State<Verification> {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(left: 20),
-                  child: Text(
-                    "Verification".tr,
-                    style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Gilroy Medium',
-                        color: notifire.getwhitecolor),
-                  ),
+                  child: Text("Verifica tu correo".tr, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'Gilroy Medium', color: notifire.getwhitecolor),),
                 ),
               ],
             ),
@@ -167,21 +190,9 @@ class _VerificationState extends State<Verification> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        "We've send you the verification".tr,
-                        style: TextStyle(
-                            fontSize: 12,
-                            fontFamily: 'Gilroy Medium',
-                            color: notifire.getwhitecolor),
-                      ),
+                      Text("Hemos enviado un código de verificación".tr, style: TextStyle(fontSize: 15, fontFamily: 'Gilroy Medium', color: notifire.getwhitecolor),),
                       SizedBox(height: height / 400),
-                      Text(
-                        "code on ${widget.number ?? ""}",
-                        style: TextStyle(
-                            fontSize: 12,
-                            fontFamily: 'Gilroy Medium',
-                            color: notifire.getwhitecolor),
-                      ),
+                      Text("a ${widget.email ?? ""}", style: TextStyle(fontSize: 15, fontFamily: 'Gilroy Medium', color: notifire.getwhitecolor),),
                     ],
                   ),
                 ),
@@ -195,11 +206,14 @@ class _VerificationState extends State<Verification> {
               onTap: () {
                 verifyOTP(context);
               },
-              child: Custombutton.button(
-                notifire.getbuttonscolor,
-                "CONTINUE".tr,
-                SizedBox(width: width / 5),
-                SizedBox(width: width / 7),
+              child: SizedBox(
+                height: 45,
+                child: Custombutton.button1(
+                  notifire.getbuttonscolor,
+                  "Verificar".tr,
+                  SizedBox(width: width / 5),
+                  SizedBox(width: width / 7),
+                ),
               ),
             ),
             SizedBox(height: height / 30),
@@ -210,14 +224,10 @@ class _VerificationState extends State<Verification> {
                       InkWell(
                         onTap: () {
                           otpController.clear();
-                          verifyPhone(widget.number.toString());
+                          reenviarCodigo(context);
                         },
-                        child: Text(
-                          "Re-send OTP".tr,
-                          style: TextStyle(
-                              color: notifire.getwhitecolor,
-                              fontSize: 12,
-                              fontFamily: 'Gilroy Bold'),
+                        child: Text("Reenviar código".tr,
+                          style: TextStyle(color: notifire.getwhitecolor, fontSize: 12, fontFamily: 'Gilroy Bold'),
                         ),
                       )
                     ],
@@ -226,18 +236,8 @@ class _VerificationState extends State<Verification> {
                     child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        "Re-send code in ",
-                        style: TextStyle(
-                            color: notifire.getwhitecolor,
-                            fontSize: 12,
-                            fontFamily: 'Gilroy Medium'),
-                      ),
-                      Text(
-                        durationToString(_start).toString(),
-                        style: const TextStyle(
-                            fontWeight: FontWeight.w600, fontSize: 16),
-                      ),
+                      Text("Re-send code in ",style: TextStyle(color: notifire.getwhitecolor, fontSize: 12, fontFamily: 'Gilroy Medium'),),
+                      Text(durationToString(_start).toString(), style:  TextStyle(fontWeight: FontWeight.w600, fontSize: 16,color: notifire.textcolor),),
                     ],
                   )),
           ],
@@ -245,45 +245,110 @@ class _VerificationState extends State<Verification> {
       ),
     );
   }
-
+  final defaultPinTheme = PinTheme(
+    width: 56,
+    height: 56,
+    textStyle: TextStyle(fontSize: 20, color: Color.fromRGBO(30, 60, 87, 1), fontWeight: FontWeight.w600),
+    decoration: BoxDecoration(
+      border: Border.all(color: const Color.fromRGBO(234, 239, 243, 1)),
+      borderRadius: BorderRadius.circular(20),
+    ),
+  );
   Widget animatedBorders() {
     return Container(
-      color: notifire.getprimerycolor,
+      color: notifire.backgrounde,
       height: Get.height * 0.06,
       width: Get.width * 0.90,
-      child: PinPut(
+      child: Pinput(
+        length: 6,
           controller: otpController,
-          onSubmit: (val) {},
+          onSubmitted: (val) {},
+          // onSubmit: (val) {},
           onChanged: (val) {},
-          textStyle: TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.w500,
-              fontFamily: 'Gilroy_Bold',
-              fontSize: height / 40),
-          fieldsCount: 6,
-          eachFieldWidth: Get.width * 0.13,
-          withCursor: false,
-          submittedFieldDecoration: BoxDecoration(
+          // textStyle: TextStyle(
+          //     color: Colors.black,
+          //     fontWeight: FontWeight.w500,
+          //     fontFamily: 'Gilroy_Bold',
+          //     fontSize: height / 40),
+          // fieldsCount: 6,
+          // eachFieldWidth: Get.width * 0.13,
+          showCursor: false,
+
+          defaultPinTheme: PinTheme(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10.0),
+                border: Border.all(color: Colors.grey,width: 2)
+            ),
+          ),
+         focusedPinTheme: defaultPinTheme.copyDecorationWith(
+           color: Colors.grey.shade200,
+           borderRadius: BorderRadius.circular(10.0),
+           border: Border.all(color: Colors.grey.shade200)
+         ),
+        submittedPinTheme: defaultPinTheme.copyWith(
+          decoration: defaultPinTheme.decoration?.copyWith(
               color: Colors.white,
               borderRadius: BorderRadius.circular(10.0),
-              border: Border.all(color: Colors.grey)),
-          selectedFieldDecoration: BoxDecoration(
-              color: Colors.grey.shade200,
-              borderRadius: BorderRadius.circular(10.0),
-              border: Border.all(color: Colors.grey.shade200)),
-          disabledDecoration: BoxDecoration(
-              border: Border.all(color: Colors.black, width: 2),
-              color: Colors.grey),
-          followingFieldDecoration: BoxDecoration(
-            backgroundBlendMode: BlendMode.color,
-            border: Border.all(color: Colors.grey.shade300),
-            color: Colors.grey,
-            borderRadius: BorderRadius.circular(10.0),
-          )),
+              border: Border.all(color: Colors.grey)
+          ),
+        ),
+
+          // submittedFieldDecoration: BoxDecoration(
+          //     color: Colors.white,
+          //     borderRadius: BorderRadius.circular(10.0),
+          //     border: Border.all(color: Colors.grey)
+          // ),
+          // selectedFieldDecoration: BoxDecoration(
+          //     color: Colors.grey.shade200,
+          //     borderRadius: BorderRadius.circular(10.0),
+          //     border: Border.all(color: Colors.grey.shade200)),
+          // disabledDecoration: BoxDecoration(border: Border.all(color: Colors.black, width: 2), color: Colors.grey),
+          // followingFieldDecoration: BoxDecoration(
+          //   backgroundBlendMode: BlendMode.color,
+          //   border: Border.all(color: notifire.bordercolore),
+          //   color: Colors.grey,
+          //   borderRadius: BorderRadius.circular(10.0),
+          // ),
+
+      ),
     );
   }
 
-  Future<void> verifyPhone(String number) async {
+
+
+
+  // Widget animatedBorders() {
+  //   return Container(
+  //     color: notifire.backgrounde,
+  //     height: Get.height * 0.06,
+  //     width: Get.width * 0.90,
+  //     child: OTPTextField(
+  //       otpFieldStyle: OtpFieldStyle(
+  //         enabledBorderColor: Colors.grey.withOpacity(0.4),
+  //       ),
+  //       controller: OtpController,
+  //       length: 6,
+  //       width: MediaQuery.of(context).size.width,
+  //       textFieldAlignment: MainAxisAlignment.spaceAround,
+  //       fieldWidth: 45,
+  //       fieldStyle: FieldStyle.box,
+  //       outlineBorderRadius: 5,
+  //       contentPadding: const EdgeInsets.all(15),
+  //       style:  TextStyle(fontSize: 17,color: Colors.black,fontWeight: FontWeight.bold),
+  //       onChanged: (pin) {
+  //       },
+  //       onCompleted: (pin) {
+  //         setState(() {
+  //           smscode = pin;
+  //         });
+  //       },
+  //     ),
+  //   );
+  // }
+
+
+
+  /*Future<void> verifyPhone(String number) async {
     await FirebaseAuth.instance.verifyPhoneNumber(
       phoneNumber: number,
       timeout: const Duration(seconds: 30),
@@ -301,5 +366,8 @@ class _VerificationState extends State<Verification> {
         ApiWrapper.showToastMessage("Timeout!");
       },
     );
-  }
+  }*/
+
 }
+
+

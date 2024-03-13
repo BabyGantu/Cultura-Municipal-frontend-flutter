@@ -3,7 +3,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:goevent2/Api/Config.dart';
-import 'package:goevent2/utils/color.dart';
+import 'package:provider/provider.dart';
+
+import '../utils/colornotifire.dart';
 
 class GalleryView extends StatefulWidget {
   List? list;
@@ -15,6 +17,7 @@ class GalleryView extends StatefulWidget {
 
 class _GalleryViewState extends State<GalleryView> {
   List eventList = [];
+  late ColorNotifire notifire;
 
   @override
   void initState() {
@@ -27,17 +30,18 @@ class _GalleryViewState extends State<GalleryView> {
 
   @override
   Widget build(BuildContext context) {
+    notifire = Provider.of<ColorNotifire>(context, listen: true);
     return Scaffold(
-      backgroundColor: whiteColor,
+      backgroundColor: notifire.backgrounde,
       appBar: AppBar(
           centerTitle: true,
-          leading: BackButton(color: blackColor),
+          leading: BackButton(color: notifire.textcolor),
           elevation: 0,
-          backgroundColor: whiteColor,
+          backgroundColor: notifire.backgrounde,
           title: Text(
             "Gallery",
             style: TextStyle(
-                fontFamily: "Gilroy Bold", fontSize: 16, color: blackColor),
+                fontFamily: "Gilroy Bold", fontSize: 16, color: notifire.textcolor),
           )),
       body: SingleChildScrollView(
         child: Column(
@@ -68,7 +72,7 @@ class _GalleryViewState extends State<GalleryView> {
                           borderRadius: BorderRadius.circular(12),
                           child: Image.network(
                             Config.base_url + eventList[index],
-                            fit: BoxFit.fill,
+                            fit: BoxFit.cover,
                           ),
                         ),
                         tag: "generate_a_unique_tag",

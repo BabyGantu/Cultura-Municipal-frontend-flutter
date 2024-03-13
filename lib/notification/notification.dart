@@ -106,7 +106,7 @@ class _NoteState extends State<Note> {
   Widget build(BuildContext context) {
     notifire = Provider.of<ColorNotifire>(context, listen: true);
     return Scaffold(
-      backgroundColor: notifire.getprimerycolor,
+      backgroundColor: notifire.backgrounde,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -121,7 +121,7 @@ class _NoteState extends State<Note> {
                       Get.back();
                     },
                     child:
-                        Icon(Icons.arrow_back, color: notifire.getdarkscolor)),
+                        Icon(Icons.arrow_back, color: notifire.textcolor)),
               ),
               Padding(
                 padding: const EdgeInsets.only(right: 10),
@@ -131,7 +131,7 @@ class _NoteState extends State<Note> {
                       fontSize: 18,
                       fontWeight: FontWeight.w900,
                       fontFamily: 'Gilroy Medium',
-                      color: notifire.getdarkscolor),
+                      color: notifire.textcolor),
                 ),
               ),
               const SizedBox(),
@@ -218,7 +218,7 @@ class _NoteState extends State<Note> {
                   children: [
                     Text(title!,
                         style: TextStyle(
-                            color: notifire.getdarkscolor,
+                            color: notifire.textcolor,
                             fontFamily: 'Gilroy_Bold',
                             fontSize: height / 55)),
                     SizedBox(height: height / 200),

@@ -127,30 +127,30 @@ class _SpleshscreenState extends State<Spleshscreen> {
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
     return Scaffold(
-      backgroundColor: notifire.getprimerycolor,
+      backgroundColor: notifire.backgrounde,
       body: Center(
         child: Container(
-          color: notifire.getprimerycolor,
+          color: notifire.backgrounde,
           child: Column(
             children: [
               SizedBox(height: height / 2.5),
               Container(
                   color: Colors.transparent,
                   height: height / 7,
-                  child: Image.asset("image/getevent.png")),
+                  child: Image.asset("image/CajemeCultura.jpg")),
               SizedBox(height: height / 30),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Go".tr,
+                    "Cultura".tr,
                     style: TextStyle(
                         fontSize: 35,
                         fontFamily: 'Gilroy ExtraBold',
                         color: notifire.gettextcolor),
                   ),
                   Text(
-                    "Event".tr,
+                    "Cajeme".tr,
                     style: TextStyle(
                         fontSize: 35,
                         fontFamily: 'Gilroy ExtraBold',

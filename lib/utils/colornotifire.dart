@@ -28,4 +28,18 @@ class ColorNotifire with ChangeNotifier {
   get getsettingcolor => isDark ? darktopColor : whiteColor;
   get getticketcolor => isDark ? darktopColor1 : buttonColor;
   get getwhite => isDark ? whiteColor : whiteColor;
+
+
+
+  get textcolor => isDark ? Colors.white : Colors.black;
+  get backgrounde => isDark ? const Color(0xff161616) : Colors.white;
+  get finalticketcolore => isDark ? const Color(0xff161616) : const Color(0xff5669FF);
+  get containercolore => isDark ? const Color(0xff1C1C1C) :  Colors.white;
+  get homecontainercolore => isDark ? const Color(0xff1C1C1C) :  const Color(0xff5669FF);
+  get bottommenucolore => isDark ? Colors.white :  const Color(0xff6978A0).withOpacity(.80);
+
+  get bordercolore => isDark ? const Color(0xff1E293B) :  Colors.grey.shade200;
+
+
+
 }

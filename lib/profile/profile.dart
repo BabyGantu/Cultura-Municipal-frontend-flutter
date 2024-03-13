@@ -1,7 +1,6 @@
 // ignore_for_file: avoid_print, prefer_const_constructors
 
 import 'dart:developer';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -9,7 +8,6 @@ import 'package:goevent2/Api/ApiWrapper.dart';
 import 'package:goevent2/AppModel/Homedata/HomedataController.dart';
 import 'package:goevent2/Controller/AuthController.dart';
 import 'package:goevent2/home/bookmark.dart';
-
 import 'package:goevent2/profile/ReferFriend.dart';
 import 'package:goevent2/profile/Wallet/WalletHistory.dart';
 import 'package:goevent2/profile/faq.dart';
@@ -86,7 +84,7 @@ class _ProfileState extends State<Profile> {
   Widget build(BuildContext context) {
     notifire = Provider.of<ColorNotifire>(context, listen: true);
     return Scaffold(
-      backgroundColor: notifire.getprimerycolor,
+      backgroundColor: notifire.backgrounde,
       body: Column(
         children: [
           SizedBox(height: height / 20),
@@ -95,11 +93,7 @@ class _ProfileState extends State<Profile> {
             children: [
               Text(
                 "Settings".tr,
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w900,
-                    fontFamily: 'Gilroy Medium',
-                    color: notifire.getdarkscolor),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, fontFamily: 'Gilroy Medium', color: notifire.textcolor),
               ),
             ],
           ),
@@ -112,11 +106,7 @@ class _ProfileState extends State<Profile> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Account Settings".tr,
-                        style: TextStyle(
-                            fontSize: 16,
-                            fontFamily: 'Gilroy Bold',
-                            color: Colors.grey)),
+                    Text("Account Settings".tr, style: TextStyle(fontSize: 16, fontFamily: 'Gilroy Bold', color: Colors.grey)),
                     SizedBox(height: Get.height * 0.02),
                     settingWidget(
                       tital: "Profile".tr,
@@ -141,6 +131,14 @@ class _ProfileState extends State<Profile> {
                         Get.to(() => const WalletReportPage());
                       },
                     ),
+                    // SizedBox(height: Get.height * 0.02),
+                    // settingWidget(
+                    //   tital: "Chat".tr,
+                    //   image: "image/chat123.png",
+                    //   onTap: () {
+                    //     Get.to(() => const ChatList());
+                    //   },
+                    // ),
                     SizedBox(height: Get.height * 0.02),
                     settingWidget(
                       tital: "Favorite".tr,
@@ -283,8 +281,8 @@ class _ProfileState extends State<Profile> {
         padding: const EdgeInsets.symmetric(vertical: 5),
         height: Get.height * 0.06,
         decoration: BoxDecoration(
-            color: notifire.getsettingcolor,
-            border: Border.all(color: Colors.grey.shade200, width: 0.5),
+            color: notifire.containercolore,
+            border: Border.all(color: notifire.bordercolore, width: 0.5),
             borderRadius: BorderRadius.circular(18)),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 6),
@@ -308,7 +306,7 @@ class _ProfileState extends State<Profile> {
                     style: TextStyle(
                         fontSize: 16,
                         fontFamily: 'Gilroy Medium',
-                        color: notifire.getdarkscolor),
+                        color: notifire.textcolor),
                   ),
                 ],
               ),
@@ -327,6 +325,7 @@ class _ProfileState extends State<Profile> {
 
   void signoutSheetMenu() {
     showModalBottomSheet(
+      backgroundColor: notifire.containercolore,
         isDismissible: false,
         shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
@@ -423,7 +422,7 @@ class _ProfileState extends State<Profile> {
 
   bottomsheet() {
     return showModalBottomSheet(
-        backgroundColor: Colors.white,
+        backgroundColor: notifire.containercolore,
         isScrollControlled: true,
         context: context,
         shape: const RoundedRectangleBorder(
@@ -453,7 +452,7 @@ class _ProfileState extends State<Profile> {
                                 print(locale[index]['name']);
                                 updateLanguage(locale[index]['locale']);
                               },
-                              child: Text(locale[index]['name'])),
+                              child: Text(locale[index]['name'],style: TextStyle(color: notifire.textcolor),)),
                         ]),
                       );
                     },

@@ -1,6 +1,8 @@
 // ignore_for_file: constant_identifier_names, non_constant_identifier_names, avoid_types_as_parameter_names, avoid_print, unused_local_variable, unused_import, unnecessary_null_comparison, prefer_final_fields, prefer_const_constructors
 
 import 'dart:async';
+import 'dart:ui';
+import '../Search/searchpage2.dart';
 import '../utils/media.dart';
 import 'package:get/get.dart';
 
@@ -67,26 +69,26 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    walletrefar();
+    //walletrefar();
     getdarkmodepreviousstate();
     getUserLocation();
     getPackage();
-    getData.read("UserLogin") != null
+    /*getData.read("UserLogin") != null
         ? hData.homeDataApi(getData.read("UserLogin")["id"], lat, long)
-        : null;
+        : null;*/
     initPlatformState();
   }
 
   Future<void> initPlatformState() async {
-    OneSignal.shared.setAppId(Config.oneSignel);
-    OneSignal.shared
-        .promptUserForPushNotificationPermission()
-        .then((accepted) {});
-    OneSignal.shared.setPermissionObserver((OSPermissionStateChanges changes) {
+    OneSignal.initialize(Config.oneSignel);
+
+    OneSignal.Notifications.addPermissionObserver((changes) {
       print("Accepted OSPermissionStateChanges : $changes");
     });
+
+
     print("--------------__uID : ${getData.read("UserLogin")["id"]}");
-    await OneSignal.shared.sendTag("storeid", getData.read("UserLogin")["id"]);
+    await OneSignal.User.addTagWithKey("storeid", getData.read("UserLogin")["id"]);
   }
 
   void getPackage() async {
@@ -127,7 +129,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         desiredAccuracy: LocationAccuracy.high);
   }
 
-//! ----- LikeButtonTapped -----
+  //! ----- LikeButtonTapped -----
   Future<bool> onLikeButtonTapped(isLiked, eid) async {
     var data = {"eid": eid, "uid": uID};
     ApiWrapper.dataPost(Config.ebookmark, data).then((val) {
@@ -149,7 +151,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     });
     notifire = Provider.of<ColorNotifire>(context, listen: true);
     return Scaffold(
-        backgroundColor: notifire.getprimerycolor,
+        backgroundColor: notifire.backgrounde,
         body: Column(
           children: [
             //! ------ Home AppBar ------
@@ -168,12 +170,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                   child: SizedBox(
                                     height: Get.height * 0.05,
                                     child: ListView.builder(
-                                      itemCount:
-                                          hData.homeDataList["Catlist"].length,
+                                      itemCount: hData.homeDataList["Catlist"].length,
                                       scrollDirection: Axis.horizontal,
                                       itemBuilder: (ctx, i) {
-                                        var catlist =
-                                            hData.homeDataList["Catlist"];
+                                        var catlist = hData.homeDataList["Catlist"];
                                         return treding(catlist, i);
                                       },
                                     ),
@@ -187,21 +187,12 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                       horizontal: 12),
                                   child: Row(
                                     children: [
-                                      Text("Trending Events".tr,
-                                          style: TextStyle(
-                                              fontFamily: 'Gilroy Bold',
-                                              color: notifire.getdarkscolor,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w600)),
+                                      Text("Trending Events".tr,style: TextStyle(fontFamily: 'Gilroy Bold', color: notifire.textcolor, fontSize: 16, fontWeight: FontWeight.w600)),
                                       const Spacer(),
                                       GestureDetector(
                                         onTap: () {
                                           Get.to(
-                                              () => All(
-                                                  title: "Trending Events".tr,
-                                                  eventList:
-                                                      hData.trendingEvent),
-                                              duration: Duration.zero);
+                                              () => All(title: "Trending Events".tr, eventList: hData.trendingEvent), duration: Duration.zero);
                                         },
                                         child: Container(
                                           color: Colors.transparent,
@@ -214,8 +205,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                                       color: const Color(
                                                           0xff747688),
                                                       fontSize: 14,
-                                                      fontWeight:
-                                                          FontWeight.w400)),
+                                                      fontWeight: FontWeight.w400)),
                                               const Icon(
                                                   Icons
                                                       .arrow_forward_ios_rounded,
@@ -257,7 +247,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                       Text("Upcoming Events".tr,
                                           style: TextStyle(
                                               fontFamily: 'Gilroy Bold',
-                                              color: notifire.getdarkscolor,
+                                              color: notifire.textcolor,
                                               fontSize: 16,
                                               fontWeight: FontWeight.w600)),
                                       const Spacer(),
@@ -298,6 +288,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                               : const SizedBox(),
 
                           SizedBox(height: height / 60),
+
                           //! ----------- Upcoming Events List -------------
                           Ink(
                             height: Get.height * 0.37,
@@ -319,7 +310,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                   const EdgeInsets.symmetric(horizontal: 10),
                               child: Container(
                                 decoration: BoxDecoration(
-                                    color: notifire.getorangecolor,
+                                    color: notifire.isDark ? notifire.containercolore : Color(0xffd6feff),
                                     borderRadius: const BorderRadius.all(
                                         Radius.circular(10))),
                                 height: height / 6,
@@ -339,7 +330,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                             // .trPluralParams(),
                                             style: TextStyle(
                                                 fontFamily: 'Gilroy Medium',
-                                                color: notifire.getdarkscolor,
+                                                color: notifire.textcolor,
                                                 fontSize: 14,
                                                 fontWeight: FontWeight.w700),
                                           ),
@@ -397,7 +388,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                         "Nearby You".tr,
                                         style: TextStyle(
                                             fontFamily: 'Gilroy Bold',
-                                            color: notifire.getdarkscolor,
+                                            color: notifire.textcolor,
                                             fontSize: 16,
                                             fontWeight: FontWeight.w600),
                                       ),
@@ -522,21 +513,21 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         child: Container(
           decoration: BoxDecoration(
               color: notifire.getprimerycolor,
-              border: Border.all(color: Colors.grey.shade200, width: 0.5),
+              border: Border.all(color: notifire.bordercolore, width: 0.5),
               borderRadius: BorderRadius.circular(25)),
           child: Padding(
             padding: const EdgeInsets.only(left: 4, right: 8),
             child: Row(
               children: [
                 Image(
-                    image: NetworkImage(
-                        Config.base_url + catList[i]["cat_img"]),
+                    image:
+                        NetworkImage(Config.base_url + catList[i]["cat_img"]),
                     height: 30),
                 SizedBox(width: Get.width * 0.02),
                 Text(catList[i]["title"],
                     style: TextStyle(
                         fontFamily: 'Gilroy Medium',
-                        color: notifire.getdarkscolor,
+                        color: notifire.textcolor,
                         fontSize: 14,
                         fontWeight: FontWeight.w600)),
               ],
@@ -585,22 +576,32 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               Positioned(
                 top: 8,
                 right: Get.width * 0.02,
-                child: CircleAvatar(
-                  radius: 18,
-                  backgroundColor: Colors.white.withOpacity(0.5),
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 3),
-                    child: LikeButton(
-                      onTap: (val) {
-                        return onLikeButtonTapped(val, tEvent[i]["event_id"]);
-                      },
-                      likeBuilder: (bool isLiked) {
-                        return tEvent[i]["IS_BOOKMARK"] != 0
-                            ? const Icon(Icons.favorite,
-                                color: Color(0xffF0635A), size: 22)
-                            : const Icon(Icons.favorite_border,
-                                color: Color(0xffF0635A), size: 22);
-                      },
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(100/2),
+                  child: BackdropFilter(
+                    blendMode: BlendMode.srcIn,
+                    filter: ImageFilter.blur(
+                      sigmaX: 10, // mess with this to update blur
+                      sigmaY: 10,
+                    ),
+                    child: CircleAvatar(
+                      radius: 18,
+                      backgroundColor: Colors.transparent,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 3),
+                        child: LikeButton(
+                          onTap: (val) {
+                            return onLikeButtonTapped(val, tEvent[i]["event_id"]);
+                          },
+                          likeBuilder: (bool isLiked) {
+                            return tEvent[i]["IS_BOOKMARK"] != 0
+                                ? const Icon(Icons.favorite,
+                                    color: Color(0xffF0635A), size: 22)
+                                : const Icon(Icons.favorite_border,
+                                    color: Color(0xffF0635A), size: 22);
+                          },
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -616,7 +617,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8),
                       decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.shade200),
+                          border: Border.all(color: notifire.bordercolore),
                           borderRadius: BorderRadius.circular(15)),
                       child: Column(
                         mainAxisSize: MainAxisSize.max,
@@ -631,7 +632,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                     fontFamily: 'Gilroy Medium',
-                                    color: notifire.getdarkscolor,
+                                    color: notifire.textcolor,
                                     fontSize: 15,
                                     fontWeight: FontWeight.w600)),
                           ),
@@ -711,7 +712,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   homeAppbar() {
     return Container(
       decoration: BoxDecoration(
-          color: notifire.gettopcolor,
+          color: notifire.homecontainercolore,
           borderRadius: const BorderRadius.only(
               bottomRight: Radius.circular(30),
               bottomLeft: Radius.circular(30))),
@@ -730,28 +731,28 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                       padding: const EdgeInsets.all(7),
                       child: Image.asset("image/logo.png")),
                 ),
-                SizedBox(width: width / 4.8),
-                Column(
-                  children: [
-                    Text(
-                      "Current Location".tr,
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontFamily: 'Gilroy Medium',
-                          fontWeight: FontWeight.w400),
-                    ),
-                    Text(
-                      getData.read("CurentAdd") ?? "",
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontFamily: 'Gilroy Medium',
-                          fontWeight: FontWeight.w600),
-                    ),
-                  ],
+                Expanded(
+                  child: Column(
+                    children: [
+                      Text(
+                        "Current Location".tr,
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontFamily: 'Gilroy Medium',
+                            fontWeight: FontWeight.w400),
+                      ),
+                      Text(
+                        getData.read("CurentAdd") ?? "",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontFamily: 'Gilroy Medium',
+                            fontWeight: FontWeight.w600),
+                      ),
+                    ],
+                  ),
                 ),
-                const Spacer(),
                 GestureDetector(
                   onTap: () {
                     //! ------ Notification Page -----
@@ -767,7 +768,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             padding: const EdgeInsets.symmetric(horizontal: 22),
             child: InkWell(
               onTap: () {
-                Get.to(() => const SearchPage(type: "0"));
+                Get.to(() => const SearchPage2());
               },
               child: Row(
                 children: [
@@ -825,13 +826,11 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 Column(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(
-                          left: 8, right: 8, bottom: 5, top: 5),
+                      padding: const EdgeInsets.only(left: 8, right: 8, bottom: 5, top: 5),
                       child: Row(
                         children: [
                           ClipRRect(
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(16)),
+                            borderRadius: const BorderRadius.all(Radius.circular(16)),
                             child: SizedBox(
                               width: width / 5,
                               height: height / 8,
@@ -839,8 +838,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                   fadeInCurve: Curves.easeInCirc,
                                   placeholder: "image/skeleton.gif",
                                   fit: BoxFit.cover,
-                                  image: Config.base_url +
-                                      mEvent[i]["event_img"]),
+                                  image:
+                                      Config.base_url + mEvent[i]["event_img"]),
                             ),
                           ),
                           const SizedBox(width: 6),
@@ -911,7 +910,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                     ),
                   ],
                 ),
-                const Spacer(),
+                // const Spacer(),
                 Column(
                   children: [
                     SizedBox(height: height / 80),
@@ -921,7 +920,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                           borderRadius:
                               const BorderRadius.all(Radius.circular(10))),
                       height: height / 12,
-                      width: width / 9,
+                      width: width / 10,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -997,14 +996,13 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         child: Container(
           margin: const EdgeInsets.symmetric(vertical: 6),
           decoration: BoxDecoration(
-              color: notifire.getprimerycolor,
+              color: notifire.containercolore,
               borderRadius: const BorderRadius.all(Radius.circular(10)),
-              border: Border.all(color: Colors.grey.shade200)),
+              border: Border.all(color: notifire.bordercolore)),
           height: height / 7,
           width: width,
           child: Padding(
-            padding:
-                const EdgeInsets.only(left: 8, right: 6, bottom: 5, top: 5),
+            padding: const EdgeInsets.only(left: 8, right: 6, bottom: 5, top: 5),
             child: Row(children: [
               ClipRRect(
                 borderRadius: const BorderRadius.all(Radius.circular(16)),
@@ -1040,25 +1038,35 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                 ),
                               ),
                               SizedBox(width: width * 0.21),
-                              CircleAvatar(
-                                radius: 18,
-                                backgroundColor: Colors.grey.shade200,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left: 3),
-                                  child: LikeButton(
-                                    onTap: (val) {
-                                      return onLikeButtonTapped(
-                                          val, nearby[i]["event_id"]);
-                                    },
-                                    likeBuilder: (bool isLiked) {
-                                      return nearby[i]["IS_BOOKMARK"] != 0
-                                          ? const Icon(Icons.favorite,
-                                              color: Color(0xffF0635A),
-                                              size: 22)
-                                          : const Icon(Icons.favorite_border,
-                                              color: Color(0xffF0635A),
-                                              size: 22);
-                                    },
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(100/2),
+                                child: BackdropFilter(
+                                  blendMode: BlendMode.srcIn,
+                                  filter: ImageFilter.blur(
+                                    sigmaX: 10, // mess with this to update blur
+                                    sigmaY: 10,
+                                  ),
+                                  child: CircleAvatar(
+                                    radius: 18,
+                                    backgroundColor: Colors.grey.withOpacity(0.2 ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(left: 3),
+                                      child: LikeButton(
+                                        onTap: (val) {
+                                          return onLikeButtonTapped(
+                                              val, nearby[i]["event_id"]);
+                                        },
+                                        likeBuilder: (bool isLiked) {
+                                          return nearby[i]["IS_BOOKMARK"] != 0
+                                              ? const Icon(Icons.favorite,
+                                                  color: Color(0xffF0635A),
+                                                  size: 22)
+                                              : const Icon(Icons.favorite_border,
+                                                  color: Color(0xffF0635A),
+                                                  size: 22);
+                                        },
+                                      ),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -1071,7 +1079,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                     fontFamily: 'Gilroy Medium',
-                                    color: notifire.getdarkscolor,
+                                    color: notifire.textcolor,
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600)),
                           ),
@@ -1134,7 +1142,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             child: Container(
               decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey.shade200),
+                  border: Border.all(color: notifire.bordercolore),
                   borderRadius: BorderRadius.circular(17)),
               child: Stack(children: [
                 Column(
@@ -1159,8 +1167,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                   fadeInCurve: Curves.easeInCirc,
                                   placeholder: "image/skeleton.gif",
                                   fit: BoxFit.cover,
-                                  image: Config.base_url +
-                                      upEvent["event_img"]),
+                                  image:
+                                      Config.base_url + upEvent["event_img"]),
                             ),
                           ),
 
@@ -1171,27 +1179,37 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                 children: [
                                   SizedBox(width: width / 70),
                                   const Spacer(),
-                                  CircleAvatar(
-                                    radius: 18,
-                                    backgroundColor:
-                                        Colors.white.withOpacity(0.5),
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(left: 3),
-                                      child: LikeButton(
-                                        onTap: (val) {
-                                          return onLikeButtonTapped(
-                                              val, upEvent["event_id"]);
-                                        },
-                                        likeBuilder: (bool isLiked) {
-                                          return upEvent["IS_BOOKMARK"] != 0
-                                              ? const Icon(Icons.favorite,
-                                                  color: Color(0xffF0635A),
-                                                  size: 22)
-                                              : const Icon(
-                                                  Icons.favorite_border,
-                                                  color: Color(0xffF0635A),
-                                                  size: 22);
-                                        },
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(100/2),
+                                    child: BackdropFilter(
+                                      blendMode: BlendMode.srcIn,
+                                      filter: ImageFilter.blur(
+                                        sigmaX: 10, // mess with this to update blur
+                                        sigmaY: 10,
+                                      ),
+                                      child: CircleAvatar(
+                                        radius: 18,
+                                        backgroundColor:
+                                            Colors.transparent,
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(left: 3),
+                                          child: LikeButton(
+                                            onTap: (val) {
+                                              return onLikeButtonTapped(
+                                                  val, upEvent["event_id"]);
+                                            },
+                                            likeBuilder: (bool isLiked) {
+                                              return upEvent["IS_BOOKMARK"] != 0
+                                                  ? const Icon(Icons.favorite,
+                                                      color: Color(0xffF0635A),
+                                                      size: 22)
+                                                  : const Icon(
+                                                      Icons.favorite_border,
+                                                      color: Color(0xffF0635A),
+                                                      size: 22);
+                                            },
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -1213,7 +1231,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
                             fontFamily: 'Gilroy Medium',
-                            color: notifire.getdarkscolor,
+                            color: notifire.textcolor,
                             fontSize: 16,
                             fontWeight: FontWeight.w600),
                       ),
@@ -1321,6 +1339,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         chooserTitle: '$appName');
   }
 
+  /*
   walletrefar() async {
     var data = {"uid": uID};
 
@@ -1335,4 +1354,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       }
     });
   }
+  */
+
 }

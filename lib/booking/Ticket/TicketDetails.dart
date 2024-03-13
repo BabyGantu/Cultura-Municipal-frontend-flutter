@@ -4,7 +4,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -97,7 +96,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
     });
     notifire = Provider.of<ColorNotifire>(context, listen: true);
     return Scaffold(
-      backgroundColor: notifire.getprimerycolor,
+      backgroundColor: notifire.backgrounde,
       floatingActionButton: SizedBox(
         height: 45,
         width: 410,
@@ -111,7 +110,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
               saveandShare(capturedImage!);
             }).catchError((onError) {});
           },
-          child: Custombutton.button(
+          child: Custombutton.button1(
               notifire.getbuttonscolor,
               "Download Ticket".tr,
               SizedBox(width: width / 6.5),
@@ -133,7 +132,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                 },
                 child: Row(
                   children: [
-                    Icon(Icons.arrow_back, color: notifire.getdarkscolor),
+                    Icon(Icons.arrow_back, color: notifire.textcolor),
                     SizedBox(width: width / 80),
                     Text(
                       "E-Ticket".tr,
@@ -141,7 +140,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                           fontSize: 18,
                           fontWeight: FontWeight.w900,
                           fontFamily: 'Gilroy Medium',
-                          color: notifire.getdarkscolor),
+                          color: notifire.textcolor),
                     ),
                   ],
                 ),
@@ -152,8 +151,8 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                   Get.to(() => Booking(tID: ticketData["ticket_id"]));
                 },
                 child: Image(
-                    image: const AssetImage(Images.more),
-                    color: notifire.getdarkscolor,
+                    image:  AssetImage(Images.more),
+                    color: notifire.textcolor,
                     height: Get.height * 0.025),
               ),
               SizedBox(width: width / 20),
@@ -166,7 +165,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
               child: SingleChildScrollView(
                 child: !isLoading
                     ? Container(
-                        color: notifire.getprimerycolor,
+                        color: notifire.containercolore,
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 18),
                           child: Column(
@@ -275,11 +274,11 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
 
                               InkWell(
                                 onTap: () {
-                                  print(
-                                      "+++++++++++++++++++++++++++++++++++$ticketData");
+                                  print("+++++++++++++++++++++++++++++++++++$ticketData");
                                 },
                                 child: Center(
-                                  child: QrImage(
+                                  child: QrImageView(
+                                    // backgroundColor: notifire.textcolor,
                                       data: "$jsonobj",
                                       version: QrVersions.auto,
                                       size: 170.0),
@@ -316,7 +315,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                   fontSize: 15,
                   fontWeight: FontWeight.w700,
                   fontFamily: 'Gilroy Medium',
-                  color: notifire.getdarkscolor)),
+                  color: notifire.textcolor)),
         ),
       ],
     );
@@ -375,7 +374,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
                 fontFamily: 'Gilroy Medium',
-                color: notifire.getdarkscolor)),
+                color: notifire.textcolor)),
       ],
     );
   }

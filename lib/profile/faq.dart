@@ -73,7 +73,7 @@ class _FaqState extends State<Faq> {
   Widget build(BuildContext context) {
     notifire = Provider.of<ColorNotifire>(context, listen: true);
     return Scaffold(
-      backgroundColor: notifire.getprimerycolor,
+      backgroundColor: notifire.backgrounde,
       body: Column(
         children: [
           SizedBox(height: height / 20),
@@ -85,14 +85,14 @@ class _FaqState extends State<Faq> {
                   onTap: () {
                     Get.back();
                   },
-                  child: Icon(Icons.arrow_back, color: notifire.getdarkscolor)),
+                  child: Icon(Icons.arrow_back, color: notifire.textcolor)),
               SizedBox(width: width / 80),
               Text("Helps & FAQs".tr,
                   style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w900,
                       fontFamily: 'Gilroy Medium',
-                      color: notifire.getdarkscolor)),
+                      color: notifire.textcolor)),
             ],
           ),
           SizedBox(height: height / 25),
@@ -131,16 +131,17 @@ class _FaqState extends State<Faq> {
                                 for (var j = 0; j < faqList2.length; j++)
                                   AccordionSection(
                                       rightIcon: Icon(Icons.add,
-                                          color: notifire.getdarkscolor),
+                                          color: notifire.textcolor),
                                       headerPadding: const EdgeInsets.all(15),
-                                      flipRightIconIfOpen: true,
+                                      // flipRightIconIfOpen: true,
+
                                       headerBackgroundColor:
                                           notifire.getcardcolor,
                                       contentBackgroundColor:
                                           notifire.getcardcolor,
                                       header: Text(faqList2[j]["faq_que"],
                                           style: TextStyle(
-                                              color: notifire.getdarkscolor,
+                                              color: notifire.textcolor,
                                               fontSize: 15,
                                               fontWeight: FontWeight.bold)),
                                       content: Text(faqList2[j]["faq_ans"],

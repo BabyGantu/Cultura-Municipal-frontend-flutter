@@ -1,15 +1,14 @@
-// ignore_for_file: file_names, avoid_print, dead_code
+// ignore_for_file: file_names, avoid_print, dead_code, unnecessary_brace_in_string_interps
 
 import 'dart:convert';
 import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:goevent2/Api/Config.dart';
-import 'package:goevent2/AppModel/Homedata/HomedataController.dart';
 import 'package:goevent2/utils/color.dart';
 import 'package:http/http.dart' as http;
 
-Map map = {"uid": uID};
+// Map map = {"uid": uID};
 
 //! Api Call
 class ApiWrapper {
@@ -45,12 +44,12 @@ class ApiWrapper {
   }
 
   static dataPost(appUrl, method) async {
+    print('fbghsjyhgfvjshgfbjshf:------------${method}');
     try {
       var url = Uri.parse(Config.api_url + appUrl);
       print(url);
 
-      var request =
-          await http.post(url, headers: headers, body: jsonEncode(method));
+      var request = await http.post(url, headers: headers, body: jsonEncode(method));
       var response = jsonDecode(request.body);
       print("response----- ${request.body}");
 

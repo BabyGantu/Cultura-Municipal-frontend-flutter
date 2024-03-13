@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_print, prefer_const_constructors
 
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:goevent2/Api/ApiWrapper.dart';
@@ -89,7 +91,7 @@ class _BookmarkState extends State<Bookmark> {
     });
     notifire = Provider.of<ColorNotifire>(context, listen: true);
     return Scaffold(
-      backgroundColor: notifire.getprimerycolor,
+      backgroundColor: notifire.backgrounde,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12),
         child: Column(
@@ -112,7 +114,7 @@ class _BookmarkState extends State<Bookmark> {
                         fontSize: 18,
                         fontWeight: FontWeight.w900,
                         fontFamily: 'Gilroy Medium',
-                        color: notifire.getdarkscolor)),
+                        color: notifire.textcolor)),
                 Container(),
               ],
             ),
@@ -178,9 +180,9 @@ class _BookmarkState extends State<Bookmark> {
             margin: const EdgeInsets.symmetric(vertical: 6),
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
             decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey.shade200),
+                border: Border.all(color: notifire.bordercolore),
                 borderRadius: BorderRadius.circular(15),
-                color: notifire.getprimerycolor),
+                color: notifire.containercolore),
             child: Stack(
               children: [
                 Column(
@@ -215,7 +217,7 @@ class _BookmarkState extends State<Bookmark> {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                          color: notifire.getdarkscolor,
+                          color: notifire.textcolor,
                           fontSize: 15,
                           fontFamily: 'Gilroy Medium',
                           fontWeight: FontWeight.w600),
@@ -245,25 +247,35 @@ class _BookmarkState extends State<Bookmark> {
                 Positioned(
                     right: 4,
                     top: 4,
-                    child: CircleAvatar(
-                      radius: 18,
-                      backgroundColor: Colors.white.withOpacity(0.5),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 3),
-                        child: LikeButton(
-                          onTap: (val) {
-                            return onLikeButtonTapped(val, user[i]["event_id"]);
-                          },
-                          likeBuilder: (bool isLiked) {
-                            return !isLiked
-                                ? const Icon(Icons.favorite,
-                                    color: Color(0xffF0635A), size: 24)
-                                : const Icon(Icons.favorite_border,
-                                    color: Colors.grey, size: 24);
-                          },
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(100/2),
+                      child: BackdropFilter(
+                        blendMode: BlendMode.srcIn,
+                        filter: ImageFilter.blur(
+                          sigmaX: 10, // mess with this to update blur
+                          sigmaY: 10,
+                        ),
+                        child: CircleAvatar(
+                          radius: 18,
+                          backgroundColor: Colors.transparent,
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 3),
+                            child: LikeButton(
+                              onTap: (val) {
+                                return onLikeButtonTapped(val, user[i]["event_id"]);
+                              },
+                              likeBuilder: (bool isLiked) {
+                                return !isLiked
+                                    ? const Icon(Icons.favorite,
+                                        color: Color(0xffF0635A), size: 24)
+                                    : const Icon(Icons.favorite_border,
+                                        color: Colors.grey, size: 24);
+                              },
+                            ),
+                          ),
                         ),
                       ),
-                    ))
+                    )),
               ],
             ),
           ),
