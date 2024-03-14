@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:goevent2/Api/ApiWrapper.dart';
 import 'package:goevent2/Api/Config.dart';
 import 'package:goevent2/login_signup/login.dart';
+import 'package:goevent2/login_signup/verification.dart';
 import 'package:goevent2/utils/botton.dart';
 import 'package:goevent2/utils/colornotifire.dart';
 import 'package:goevent2/utils/itextfield.dart';
@@ -13,8 +14,8 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PasswordsetPage extends StatefulWidget {
-  final String? email;
-  const PasswordsetPage({Key? key, this.email}) : super(key: key);
+  final String? verID;
+  const PasswordsetPage({Key? key, this.verID}) : super(key: key);
 
   @override
   _PasswordsetPageState createState() => _PasswordsetPageState();
@@ -85,7 +86,7 @@ class _PasswordsetPageState extends State<PasswordsetPage> {
                 Padding(
                   padding: const EdgeInsets.only(left: 20),
                   child: Text(
-                    "Resset Password".tr,
+                    "Cambiar Contraseña".tr,
                     style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -104,17 +105,17 @@ class _PasswordsetPageState extends State<PasswordsetPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Please enter your email address to".tr,
+                        "Por favor, ingrese su nueva contraseña".tr,
                         style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 15,
                             fontFamily: 'Gilroy Medium',
                             color: notifire.getwhitecolor),
                       ),
                       SizedBox(height: height / 400),
                       Text(
-                        "request a password reset".tr,
+                        "con la que ahora iniciará sesión.".tr,
                         style: TextStyle(
-                            fontSize: 14,
+                            fontSize: 15,
                             fontFamily: 'Gilroy Medium',
                             color: notifire.getwhitecolor),
                       ),
@@ -129,7 +130,7 @@ class _PasswordsetPageState extends State<PasswordsetPage> {
               child: Customtextfild2.textField(
                 fpassword,
                 _obscureText,
-                "New Password".tr,
+                "Nueva contraseña".tr,
                 Colors.grey,
                 notifire.getwhitecolor,
                 "image/Lock.png",
@@ -149,7 +150,7 @@ class _PasswordsetPageState extends State<PasswordsetPage> {
               child: Customtextfild2.textField(
                 spassword,
                 _obscureText1,
-                "confirm Password".tr,
+                "Confirmar contraseña".tr,
                 Colors.grey,
                 notifire.getwhitecolor,
                 "image/Lock.png",
@@ -169,19 +170,19 @@ class _PasswordsetPageState extends State<PasswordsetPage> {
                 if (fpassword.text.isNotEmpty && spassword.text.isNotEmpty) {
                   print((fpassword.text == spassword.text));
                   if (fpassword.text == spassword.text) {
-                    forgetpass();
+                    forgetpass(context);
                   } else {
-                    ApiWrapper.showToastMessage("password not match");
+                    ApiWrapper.showToastMessage("Contraseña no coincide");
                   }
                 } else {
-                  ApiWrapper.showToastMessage("Please fill required field!");
+                  ApiWrapper.showToastMessage("¡Por favor, complete los campos requeridos!");
                 }
               },
               child: SizedBox(
                 height: 45,
                 child: Custombutton.button1(
                   notifire.getbuttonscolor,
-                  "SEND".tr,
+                  "Enviar".tr,
                   SizedBox(width: width / 3.5),
                   SizedBox(width: width / 7),
                 ),
@@ -194,22 +195,25 @@ class _PasswordsetPageState extends State<PasswordsetPage> {
   }
 
   //! user Login Api
-  forgetpass() {
-    var data = {"mobile": widget.email, "password": fpassword.text};
-    print(data);
+  Future<void> forgetpass(BuildContext context) async {
+    FocusScope.of(context).requestFocus(FocusNode());
+    String id = widget.verID!;
+    // Llama a verificarCodigo y espera a que se complete
+    print('___________________________________');
+    print(id);
+    print(fpassword.text);
+    print(spassword.text);
+    print('___________________________________');
+    bool? codigoVerificado = await login.updatePassword(id, fpassword.text);
 
-    ApiWrapper.dataPost(Config.forgetpassword, data).then((val) {
-      print(val);
-      if ((val != null) && (val.isNotEmpty)) {
-        if ((val['ResponseCode'] == "200") && (val['Result'] == "true")) {
-          FocusScope.of(context).requestFocus(FocusNode());
-
-          Get.to(() => const Login(), duration: Duration.zero);
-          ApiWrapper.showToastMessage(val["ResponseMsg"]);
-        } else {
-          ApiWrapper.showToastMessage(val["ResponseMsg"]);
-        }
-      }
-    });
+    // Verifica el resultado devuelto por verificarCodigo
+    if (codigoVerificado == true) {
+      // Si el código fue verificado con éxito, navega a la pantalla Login
+      //Get.to(() => Login());
+      ApiWrapper.showToastMessage("Contraseña actualizada exitosamente.");
+    } else {
+      // Si ocurrió un error o el código no fue verificado, puedes manejarlo aquí
+      ApiWrapper.showToastMessage("Algo salio mal");
+    }
   }
 }

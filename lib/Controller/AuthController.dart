@@ -148,10 +148,12 @@ class AuthController extends GetxController {
       print('el email es: ${email}');
       print('Verificado: ${verificado}');
       print('--------------------------------------------------------------------------------------------------');
+      String idStrin = id.toString();
       if(!isReseet)
         Get.to(() => Login());
       else
-        Get.to(() => PasswordsetPage(email: email));
+
+        Get.to(() => PasswordsetPage(verID: idStrin));
       return true;
     } else {
       // Si la solicitud falla, imprime el mensaje de error
@@ -215,6 +217,32 @@ class AuthController extends GetxController {
     } else {
       // Si la solicitud falla, imprime el mensaje de error
       print('Errorrrr: ${response.reasonPhrase}');
+      return false;
+    }
+  }
+
+  Future<bool> updatePassword(String id, String new_password) async {
+    final Uri url = Uri.parse('$endpoin/api/update_password/');
+    final response = await http.post(
+      url,
+      body: {
+        "id": id,
+        "new_password":new_password
+      },
+    );
+    final Map<String, dynamic> responseData = json.decode(response.body);
+
+    if (response.statusCode == 200) {
+      // Extracción del token del cuerpo de la respuesta
+
+      final message = responseData['message'];
+      Get.to(() => Login());
+      return true;
+    } else {
+      // Si la solicitud falla, imprime el mensaje de error
+      final error = responseData['error'];
+      print('Error: ${response.reasonPhrase}');
+      print('Error Backend: $error');
       return false;
     }
   }
