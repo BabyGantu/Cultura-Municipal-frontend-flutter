@@ -103,6 +103,11 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
     lat = position.longitude.toString();
     long = position.latitude.toString();
+
+    latD = position.latitude;
+    longD = position.longitude;
+    print('la latitud es:${latD}');
+    print('la longitud es:${longD}');
     setState(() {});
   }
 

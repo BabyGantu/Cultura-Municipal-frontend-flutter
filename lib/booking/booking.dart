@@ -15,7 +15,8 @@ import 'package:goevent2/Bottombar.dart';
 import 'package:goevent2/home/MapPage.dart';
 import 'package:goevent2/payment/finalticket.dart';
 import 'package:goevent2/utils/AppWidget.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:latlong2/latlong.dart';
+//import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

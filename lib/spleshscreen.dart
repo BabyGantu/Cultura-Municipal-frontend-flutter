@@ -10,7 +10,8 @@ import 'package:goevent2/Bottombar.dart';
 import 'package:goevent2/home/home.dart';
 import 'package:goevent2/utils/AppWidget.dart';
 import 'package:goevent2/utils/media.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:latlong2/latlong.dart';
+//import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,6 +21,7 @@ import 'onbonding.dart';
 import 'utils/colornotifire.dart';
 
 String long = "", lat = "";
+double longD = 0, latD = 0;
 
 class Spleshscreen extends StatefulWidget {
   const Spleshscreen({Key? key}) : super(key: key);

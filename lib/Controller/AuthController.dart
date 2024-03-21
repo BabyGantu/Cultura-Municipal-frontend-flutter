@@ -43,6 +43,7 @@ class AuthController extends GetxController {
 
   //! user Login Api
   userLogin(String? email, password) {
+    /*
     var data = {"mobile": email, "password": password};
     log(data.toString(), name: "Login Api : ");
     ApiWrapper.dataPost(Config.loginuser, data).then((val) {
@@ -61,6 +62,8 @@ class AuthController extends GetxController {
         }
       }
     });
+
+     */
   }
 
 
@@ -250,6 +253,7 @@ class AuthController extends GetxController {
 
   //! user Register Api
   userRegister() {
+    /*
     var name = getData.read("User")["UserName"];
     var email = getData.read("User")["UserEmail"];
     var mobile = getData.read("User")["Usernumber"];
@@ -281,5 +285,9 @@ class AuthController extends GetxController {
         }
       }
     });
+    */
+
   }
+
+
 }

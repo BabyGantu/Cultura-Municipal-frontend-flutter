@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_final_fields, body_might_complete_normally_nullable, unnecessary_string_interpolations, unnecessary_brace_in_string_interps, deprecated_member_use, avoid_print
 
-import 'package:firebase_auth/firebase_auth.dart';
+//import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -446,7 +446,7 @@ class _SignupState extends State<Signup> {
 
 
 
-
+/*
   Future<void> verifyPhone(String number) async {
     await FirebaseAuth.instance.verifyPhoneNumber(
       phoneNumber: number,
@@ -478,6 +478,8 @@ class _SignupState extends State<Signup> {
       },
     );
   }
+
+ */
 }
 
 

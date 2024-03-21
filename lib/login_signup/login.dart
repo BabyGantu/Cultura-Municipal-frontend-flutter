@@ -79,7 +79,7 @@ class _LoginState extends State<Login> {
                         Image.asset("image/CajemeCultura.jpg", height: height / 13)),
                 SizedBox(height: height / 100),
                 Text(
-                  "Cultura Municipal ".tr,
+                  "Cultura Municipal".tr,
                   style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.w700,

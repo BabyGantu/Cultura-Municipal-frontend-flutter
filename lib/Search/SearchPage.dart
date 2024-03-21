@@ -11,11 +11,15 @@ import 'package:goevent2/Api/ApiWrapper.dart';
 import 'package:goevent2/Api/Config.dart';
 import 'package:goevent2/AppModel/Homedata/HomedataController.dart';
 import 'package:goevent2/home/EventDetails.dart';
+import 'package:goevent2/spleshscreen.dart';
 import 'package:goevent2/utils/colornotifire.dart';
 import 'package:goevent2/utils/media.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:latlong2/latlong.dart';
+//import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
+import 'package:flutter_map/flutter_map.dart';
 
 //! Done
 class SearchPage extends StatefulWidget {
@@ -31,18 +35,52 @@ class _SearchPageState extends State<SearchPage> {
 
   List eventAllList = [];
   bool isLoading = false;
-  late GoogleMapController mapController;
 
+
+/*
+  final MapController controller = MapController.customLayer(
+    initPosition: GeoPoint(
+      latitude: 47.4358055,
+      longitude: 8.4737324,
+    ),
+    customTile: CustomTile(
+      sourceName: "opentopomap",
+      tileExtension: ".png",
+      minZoomLevel: 2,
+      maxZoomLevel: 19,
+      urlsServers: [
+        TileURLs(
+          url: "https://tile.opentopomap.org/",
+          subdomains: [],
+        )
+      ],
+      tileSize: 256,
+
+    ),
+  );
+
+  final MapController _mapController = MapController(
+    initPosition: GeoPoint(latitude: 47.4358055, longitude: 8.4737324),
+  );
+
+ */
+
+  //late GoogleMapController mapController;
+
+  /*
   CameraPosition kGoogle = CameraPosition(
     target: LatLng(21.2381962, 72.8879607),
     zoom: 5,
   );
 
+   */
+
   @override
   void initState() {
     super.initState();
+    //controller.dispose();
+    //_mapController.dispose();
     eventSearchApi("a");
-
     getdarkmodepreviousstate();
   }
 
@@ -55,7 +93,7 @@ class _SearchPageState extends State<SearchPage> {
       if ((val != null) && (val.isNotEmpty)) {
         if ((val['ResponseCode'] == "200") && (val['Result'] == "true")) {
           eventAllList = val["SearchData"];
-          getmarkers();
+          //getmarkers();
           isLoading = false;
           setState(() {});
           log(val.toString(), name: " Event Search Api :: ");
@@ -93,165 +131,160 @@ class _SearchPageState extends State<SearchPage> {
     Future.delayed(const Duration(seconds: 0), () => setState(() {}));
     notifire = Provider.of<ColorNotifire>(context, listen: true);
     return Scaffold(
-      backgroundColor: notifire.backgrounde,
-      body: Stack(
-        alignment: Alignment.bottomCenter,
-        children: [
-          SingleChildScrollView(
-            child: Column(
-              children: [
-                // Container(
-                //   height: Get.height * 0.15,
-                //   width: double.infinity,
-                //   decoration: BoxDecoration(
-                //       color: notifire.gettopcolor,
-                //       borderRadius: const BorderRadius.only(
-                //           bottomRight: Radius.circular(20),
-                //           bottomLeft: Radius.circular(20))),
-                //   child: Padding(
-                //     padding: const EdgeInsets.symmetric(horizontal: 08),
-                //     child: Column(
-                //       children: [
-                //         SizedBox(height: Get.height * 0.05),
-                //         Padding(
-                //           padding: EdgeInsets.only(left: Get.width * 0.04),
-                //           child: Row(
-                //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                //             children: [
-                //               widget.type == "0"
-                //                   ? InkWell(
-                //                 onTap: () {
-                //                   Get.back();
-                //                 },
-                //                 child: const Icon(Icons.arrow_back,
-                //                     color: Colors.white, size: 26),
-                //               )
-                //                   : const SizedBox(),
-                //               Text(
-                //                 "Search".tr,
-                //                 style: TextStyle(
-                //                   color: Colors.white,
-                //                   fontSize: 18,
-                //                   fontWeight: FontWeight.w900,
-                //                   fontFamily: 'Gilroy Medium',
-                //                 ),
-                //               ),
-                //               const SizedBox()
-                //             ],
-                //           ),
-                //         ),
-                //         SizedBox(height: Get.height * 0.008),
-                //         Padding(
-                //           padding: const EdgeInsets.symmetric(horizontal: 20),
-                //           child: Row(
-                //             children: [
-                //               Image.asset("image/search.png", height: height / 30),
-                //               SizedBox(width: width / 90),
-                //               Container(width: 1, height: height / 40, color: Colors.grey),
-                //               SizedBox(width: width / 90),
-                //               //! ------ Search TextField -------
-                //               Container(
-                //                 color: Colors.transparent,
-                //                 height: height / 20,
-                //                 width: width / 1.7,
-                //                 child: TextField(
-                //                   onChanged: (val) {
-                //                     val.length != 0
-                //                         ? eventSearchApi(val)
-                //                         : eventSearchApi("a");
-                //                   },
-                //                   style: TextStyle(
-                //                       fontFamily: 'Gilroy Medium',
-                //                       color: Colors.white,
-                //                       fontSize: 15),
-                //                   decoration: InputDecoration(
-                //                     border: InputBorder.none,
-                //                     focusedBorder: InputBorder.none,
-                //                     enabledBorder: InputBorder.none,
-                //                     errorBorder: InputBorder.none,
-                //                     disabledBorder: InputBorder.none,
-                //                     hintText: "Search...".tr,
-                //                     hintStyle: TextStyle(
-                //                         fontFamily: 'Gilroy Medium',
-                //                         color: const Color(0xffd2d2db),
-                //                         fontSize: 15),
-                //                   ),
-                //                 ),
-                //               ),
-                //             ],
-                //           ),
-                //         ),
-                //       ],
-                //     ),
-                //   ),
-                // ),
-                // SizedBox(height: Get.height * 0.01),
-
-                SizedBox(
-                  height: Get.size.height,
-                  child: GoogleMap(
-                    initialCameraPosition: kGoogle,
-                    gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>[
-                      Factory<OneSequenceGestureRecognizer>(
-                            () => EagerGestureRecognizer(),
+        backgroundColor: notifire.backgrounde,
+        body: Column(
+          children: [
+            Container(
+              height: Get.height * 0.15,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                  color: notifire.gettopcolor,
+                  borderRadius: const BorderRadius.only(
+                      bottomRight: Radius.circular(20),
+                      bottomLeft: Radius.circular(20))),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 08),
+                child: Column(
+                  children: [
+                    SizedBox(height: Get.height * 0.05),
+                    Padding(
+                      padding: EdgeInsets.only(left: Get.width * 0.04),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          widget.type == "0"
+                              ? InkWell(
+                                  onTap: () {
+                                    Get.back();
+                                  },
+                                  child: const Icon(Icons.arrow_back,
+                                      color: Colors.white, size: 26),
+                                )
+                              : const SizedBox(),
+                          Text(
+                            "Buscar evento".tr,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w900,
+                              fontFamily: 'Gilroy Medium',
+                            ),
+                          ),
+                          const SizedBox()
+                        ],
                       ),
-                    ].toSet(),
-                    // markers: Set<Marker>.of(homePageController.markers),
-                    // markers: Set<Marker>.of(markers),
-                    mapType: MapType.normal,
-                    markers: Set<Marker>.of(markers),
-                    myLocationEnabled: false,
-                    compassEnabled: true,
-                    zoomGesturesEnabled: true,
-                    tiltGesturesEnabled: true,
-                    zoomControlsEnabled: true,
-                    onMapCreated: (controller) {
-                      setState(() {
-                        mapController = controller;
-                      });
-                    },
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            height: 140,
-            width: MediaQuery.of(context).size.width,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10)
-            ),
-            child: PageView.builder(
-              controller: pageController,
-              onPageChanged: (value) {
-                print(value);
-                mapController
-                    .animateCamera(
-                  CameraUpdate.newCameraPosition(
-                    CameraPosition(
-                      target: LatLng(
-                        double.parse(eventAllList[value]["latitude"] ??
-                            "0"),
-                        double.parse(eventAllList[value]["longtitude"] ??
-                            ""),
-                      ),
-                      zoom: 12,
                     ),
-                  ),
-                )
-                    .then((val) {
-                  setState(() {});
-                });
-              },
-              scrollDirection: Axis.horizontal,
-              itemCount: eventAllList.length,
-              itemBuilder: (context, index) {
-              return conference(eventAllList, index);
-            },),
-          ),
+                    SizedBox(height: Get.height * 0.008),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Row(
+                        children: [
+                          Image.asset("image/search.png", height: height / 30),
+                          SizedBox(width: width / 90),
+                          Container(
+                              width: 1,
+                              height: height / 40,
+                              color: Colors.grey),
+                          SizedBox(width: width / 90),
+                          //! ------ Search TextField -------
+                          Container(
+                            color: Colors.transparent,
+                            height: height / 20,
+                            width: width / 1.7,
+                            child: TextField(
+                              onChanged: (val) {
+                                val.length != 0
+                                    ? eventSearchApi(val)
+                                    : eventSearchApi("a");
+                              },
+                              style: TextStyle(
+                                  fontFamily: 'Gilroy Medium',
+                                  color: Colors.white,
+                                  fontSize: 15),
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                focusedBorder: InputBorder.none,
+                                enabledBorder: InputBorder.none,
+                                errorBorder: InputBorder.none,
+                                disabledBorder: InputBorder.none,
+                                hintText: "Buscar...".tr,
+                                hintStyle: TextStyle(
+                                    fontFamily: 'Gilroy Medium',
+                                    color: const Color(0xffd2d2db),
+                                    fontSize: 15),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            //SizedBox(height: Get.height * 0.0001),
+            Expanded(
+              child:
+              Stack(
+                alignment: Alignment.bottomCenter,
+                children: [
+                  content(),
+                ],
+              )
+            ),
 
-        ],
+
+          ],
+        )
+        //content(),
+        );
+  }
+
+  Widget content() {
+    return FlutterMap(
+      options: MapOptions(
+        initialCenter: LatLng(latD, longD),
+        initialZoom: 13,
+        interactionOptions:
+            const InteractionOptions(flags: ~InteractiveFlag.doubleTapZoom),
       ),
+      children: [
+        openStreetMapTileLater,
+        MarkerLayer(
+            markers: [
+              Marker(
+                  point: LatLng(27.495248234833745, -109.9470934931631),
+                  width: 80,
+                  height: 80,
+                  child: Image.asset('image/Pin.png',),
+              ),
+              Marker(
+                point: LatLng(27.46570349052606, -109.95413160961871),
+                width: 80,
+                height: 80,
+                child: Image.asset('image/Pin.png',),
+              ),
+              Marker(
+                point: LatLng(27.470120476648038, -109.91310454052592),
+                width: 80,
+                height: 80,
+                child: Image.asset('image/Pin.png',),
+              ),
+              Marker(
+                point: LatLng(27.472100447435245, -109.93353224438388),
+                width: 80,
+                height: 80,
+                child: Image.asset('image/Pin.png',),
+              ),
+              Marker(
+                point: LatLng(27.496513339729418, -109.96466535485848),
+                width: 80,
+                height: 80,
+                child: Image.asset('image/Pin.png',),
+              ),
+            ]
+        ),
+      ],
     );
   }
 
@@ -353,7 +386,7 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   final Set<Marker> markers = Set();
-
+/*
   getmarkers() async {
     final Uint8List markIcon = await getImages("image/Pin.png", 80);
     print("+ + + + +${eventAllList.length}");
@@ -378,12 +411,23 @@ class _SearchPageState extends State<SearchPage> {
       ));
     }
   }
+
+ */
+
+
+
   PageController pageController = PageController();
   updateMapPosition({int? index}) {
     pageController.animateToPage(index ?? 0,
         duration: Duration(seconds: 1), curve: Curves.decelerate);
-    setState(() {
-
-    });
+    setState(() {});
   }
 }
+
+TileLayer get openStreetMapTileLater => TileLayer(
+      urlTemplate: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', //mapa blanco
+      //urlTemplate: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',  //mapa negro
+      //urlTemplate: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', //mapa feo
+      //urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',  //mapa estandar
+      userAgentPackageName: 'com.goevent'
+    );
