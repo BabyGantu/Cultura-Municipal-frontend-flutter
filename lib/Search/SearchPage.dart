@@ -332,6 +332,7 @@ class _SearchPageState extends State<SearchPage> {
       ),
       children: [
         openStreetMapTileLater,
+
         MarkerLayer(
           markers: List.generate(eventosList.length, (index) {
             return Marker(
