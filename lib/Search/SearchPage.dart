@@ -1,5 +1,6 @@
 // ignore_for_file: file_names, avoid_print, prefer_const_constructors, prefer_is_empty, prefer_collection_literals
 
+import 'dart:convert';
 import 'dart:ui' as ui;
 import 'dart:developer';
 import 'package:flutter/foundation.dart';
@@ -21,6 +22,53 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:flutter_map/flutter_map.dart';
 
+
+const String eventosJson = '''
+{
+  "eventos": [
+    {
+      "id": "1",
+      "latitud": 27.495248234833745,
+      "longitud": -109.9470934931631,
+      "imagen": "image/event.png",
+      "fecha": "2024-03-20",
+      "titulo": "Concierto en el Parque",
+      "direccion": "Calle Principal #123, Ciudad, País"
+    },
+    {
+      "id": "2",
+      "latitud": 27.483391313852678,
+      "longitud": -109.92820066731134,
+      "imagen": "image/p10.png",
+      "fecha": "2024-04-10",
+      "titulo": "Festival de Arte",
+      "direccion": "Avenida Central #456, Ciudad, País"
+    },
+    {
+      "id": "3",
+      "latitud": 27.47062003073426,
+      "longitud": -109.92950991433156,
+      "imagen": "image/logo.png",
+      "fecha": "2024-05-15",
+      "titulo": "Carrera 5k Solidaria",
+      "direccion": "Plaza de la Constitución, Ciudad, País"
+    },
+    {
+      "id": "4",
+      "latitud": 27.496513339729418,
+      "longitud": -109.96466535485848,
+      "imagen": "image/protection.png",
+      "fecha": "2024-05-15",
+      "titulo": "Trote 10k Marrano",
+      "direccion": "Plaza de la Constitución, Ciudad, País"
+    }
+  ]
+}
+''';
+
+
+
+
 //! Done
 class SearchPage extends StatefulWidget {
   final String? type;
@@ -35,6 +83,14 @@ class _SearchPageState extends State<SearchPage> {
 
   List eventAllList = [];
   bool isLoading = false;
+  bool isTapped = false;
+  List<dynamic> eventosList = []; // Lista para almacenar los eventos
+  List<bool> isMarkerTappedList = []; // Lista para mantener el estado de cada marcador
+  dynamic selectedConference;
+
+
+
+
 
 
 /*
@@ -65,15 +121,8 @@ class _SearchPageState extends State<SearchPage> {
 
  */
 
-  //late GoogleMapController mapController;
 
-  /*
-  CameraPosition kGoogle = CameraPosition(
-    target: LatLng(21.2381962, 72.8879607),
-    zoom: 5,
-  );
 
-   */
 
   @override
   void initState() {
@@ -81,7 +130,39 @@ class _SearchPageState extends State<SearchPage> {
     //controller.dispose();
     //_mapController.dispose();
     eventSearchApi("a");
+    cargarEventos();
     getdarkmodepreviousstate();
+  }
+
+  void cargarEventos() {
+    // Decodifica la cadena JSON y guarda los eventos en la lista eventosList
+    Map<String, dynamic> eventosData = json.decode(eventosJson);
+    setState(() {
+      eventosList = eventosData['eventos'];
+      // Inicializa la lista de estados de los marcadores con `false` para indicar que ningún marcador está seleccionado inicialmente
+      isMarkerTappedList = List.generate(eventosList.length, (index) => false);
+    });
+  }
+
+  // Método para cambiar el estado de selección de un marcador
+  void toggleMarkerSelection(int index) {
+    setState(() {
+      // Cambia el estado de selección del marcador en el índice dado
+      isMarkerTappedList[index] = !isMarkerTappedList[index];
+      // Si se selecciona este marcador, deselecciona todos los demás
+      if (isMarkerTappedList[index]) {
+        isMarkerTappedList = List.generate(isMarkerTappedList.length, (idx) => idx == index);
+      }
+    });
+  }
+
+  // Función para mostrar la conferencia seleccionada
+  Widget showSelectedConference() {
+    if (selectedConference != null) {
+      return conference(selectedConference);
+    } else {
+      return Container(); // En caso de que no haya conferencia seleccionada
+    }
   }
 
   eventSearchApi(String? val) {
@@ -229,6 +310,7 @@ class _SearchPageState extends State<SearchPage> {
                 alignment: Alignment.bottomCenter,
                 children: [
                   content(),
+                  showSelectedConference(),
                 ],
               )
             ),
@@ -244,175 +326,143 @@ class _SearchPageState extends State<SearchPage> {
     return FlutterMap(
       options: MapOptions(
         initialCenter: LatLng(latD, longD),
-        initialZoom: 13,
+        initialZoom: 12,
         interactionOptions:
             const InteractionOptions(flags: ~InteractiveFlag.doubleTapZoom),
       ),
       children: [
         openStreetMapTileLater,
         MarkerLayer(
-            markers: [
-              Marker(
-                  point: LatLng(27.495248234833745, -109.9470934931631),
-                  width: 80,
-                  height: 80,
-                  child: Image.asset('image/Pin.png',),
+          markers: List.generate(eventosList.length, (index) {
+            return Marker(
+              point: LatLng(eventosList[index]['latitud'], eventosList[index]['longitud']),
+              width: isMarkerTappedList[index] ? 70 : 50, // Ancho según si se ha tocado o no
+              height: isMarkerTappedList[index] ? 70 : 50, // Altura según si se ha tocado o no
+              child: GestureDetector(
+                onTap: () {
+                  toggleMarkerSelection(index); // Cambia el estado de selección del marcador en el índice dado
+                  setState(() {
+                    selectedConference = eventosList[index];
+                  });
+                },
+                child: AnimatedContainer(
+                  duration: Duration(milliseconds: 900), // Duración de la animación
+                  width: isMarkerTappedList[index] ? 70 : 50, // Ancho final después de la animación
+                  height: isMarkerTappedList[index] ? 70 : 50, // Altura final después de la animación
+                  child: Image.asset('image/Pin.png'),
+                ),
               ),
-              Marker(
-                point: LatLng(27.46570349052606, -109.95413160961871),
-                width: 80,
-                height: 80,
-                child: Image.asset('image/Pin.png',),
-              ),
-              Marker(
-                point: LatLng(27.470120476648038, -109.91310454052592),
-                width: 80,
-                height: 80,
-                child: Image.asset('image/Pin.png',),
-              ),
-              Marker(
-                point: LatLng(27.472100447435245, -109.93353224438388),
-                width: 80,
-                height: 80,
-                child: Image.asset('image/Pin.png',),
-              ),
-              Marker(
-                point: LatLng(27.496513339729418, -109.96466535485848),
-                width: 80,
-                height: 80,
-                child: Image.asset('image/Pin.png',),
-              ),
-            ]
+            );
+          }),
         ),
+
       ],
+
     );
   }
 
-  Widget conference(event, i) {
+
+  Widget conference(dynamic selectedEvent) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
       child: GestureDetector(
         onTap: () {
           FocusScope.of(context).requestFocus(FocusNode());
           Future.delayed(Duration(seconds: 1), () {
-            Get.to(() => EventsDetails(eid: event[i]["event_id"]),
-                duration: Duration.zero);
+            // Aquí puedes navegar a una nueva pantalla pasando los datos del evento seleccionado
+            // En este ejemplo, simplemente imprimo los datos del evento seleccionado en la consola
+            print("Evento seleccionado: ${selectedEvent['id']}, ${selectedEvent['titulo']}, ${selectedEvent['direccion']}");
           });
         },
         child: Container(
-          // width: width,
+          width: width, // Ancho del contenedor
+          height: height / 5, // Altura del contenedor (puedes ajustarlo según tus necesidades)
           margin: EdgeInsets.symmetric(vertical: 6),
           decoration: BoxDecoration(
-              color: notifire.containercolore,
-              borderRadius: const BorderRadius.all(Radius.circular(10)),
-              border: Border.all(color: notifire.bordercolore)),
+            color: notifire.containercolore,
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+            border: Border.all(color: notifire.bordercolore),
+
+          ),
           child: Padding(
-            padding:
-                const EdgeInsets.only(left: 8, right: 6, bottom: 5, top: 5),
-            child: Row(children: [
-              Container(
+            padding: const EdgeInsets.only(left: 8, right: 6, bottom: 5, top: 10),
+            child: Row(
+              children: [
+                Container(
                   width: width / 5,
                   height: height / 8,
-                  decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(10))),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                  ),
                   child: ClipRRect(
-                    borderRadius: const BorderRadius.all(Radius.circular(10)),
-                    child: FadeInImage.assetNetwork(
-                        fadeInCurve: Curves.easeInCirc,
-                        placeholder: "image/skeleton.gif",
-                        fit: BoxFit.cover,
-                        image: Config.base_url + event[i]["event_img"]),
-                  )),
-              Column(children: [
-                SizedBox(height: height / 200),
-                Row(
-                  children: [
-                    SizedBox(width: width / 50),
-                    Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                    child: Image.asset(
+                      selectedEvent["imagen"], // Ruta de la imagen en tus activos
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        selectedEvent["fecha"],
+                        style: TextStyle(
+                          fontFamily: 'Gilroy Medium',
+                          color: const Color(0xff4A43EC),
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      SizedBox(height: 5),
+                      Text(
+                        selectedEvent["titulo"],
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontFamily: 'Gilroy Medium',
+                          color: notifire.textcolor,
+                          fontSize: 15,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      SizedBox(height: 5),
+                      Row(
                         children: [
-                          Text(
-                            event[i]["event_sdate"],
-                            style: TextStyle(
-                                fontFamily: 'Gilroy Medium',
-                                color: const Color(0xff4A43EC),
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600),
-                          ),
-                          SizedBox(height: Get.height * 0.01),
-                          SizedBox(
-                            width: Get.width * 0.60,
+                          Image.asset("image/location.png", height: 20),
+                          SizedBox(width: 5),
+                          Expanded(
                             child: Text(
-                              event[i]["event_title"],
+                              selectedEvent["direccion"],
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
-                                  fontFamily: 'Gilroy Medium',
-                                  color: notifire.textcolor,
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600),
+                                fontFamily: 'Gilroy Medium',
+                                color: Colors.grey,
+                                fontSize: 13,
+                              ),
                             ),
                           ),
-                          SizedBox(height: Get.height * 0.01),
-                          Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Image.asset("image/location.png",
-                                    height: height / 50),
-                                SizedBox(width: Get.width * 0.01),
-                                SizedBox(
-                                  width: Get.width * 0.55,
-                                  child: Text(
-                                    event[i]["event_address"],
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                        fontFamily: 'Gilroy Medium',
-                                        color: Colors.grey,
-                                        fontSize: 13),
-                                  ),
-                                ),
-                              ]),
-                        ]),
-                  ],
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-                SizedBox(height: height / 80),
-              ])
-            ]),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  final Set<Marker> markers = Set();
-/*
-  getmarkers() async {
-    final Uint8List markIcon = await getImages("image/Pin.png", 80);
-    print("+ + + + +${eventAllList.length}");
-    for (var i = 0;
-    i < eventAllList.length;
-    i++) {
-      markers.add(Marker(
-        //add first marker
-        markerId: MarkerId(i.toString()),
-        position: LatLng(
-          double.parse(eventAllList[i]["latitude"] ??
-              "0"),
-          double.parse(eventAllList[i]["longtitude"] ??
-              "0"),
-        ),
-        icon: BitmapDescriptor.fromBytes(markIcon), //position of marker
 
-        onTap: () {
-          print(i.toString());
-          // homePageController.updateMapPosition(index: i);
-        },
-      ));
-    }
-  }
 
- */
+
+
+
 
 
 

@@ -152,7 +152,7 @@ class _SpleshscreenState extends State<Spleshscreen> {
                         color: notifire.gettextcolor),
                   ),
                   Text(
-                    "Cajeme".tr,
+                    "Municipal".tr,
                     style: TextStyle(
                         fontSize: 35,
                         fontFamily: 'Gilroy ExtraBold',
