@@ -78,6 +78,7 @@ class _AllState extends State<All> {
             ],
           ),
           SizedBox(height: height / 50),
+
           Expanded(
             child: ListView.builder(
               padding: EdgeInsets.zero,
@@ -96,6 +97,7 @@ class _AllState extends State<All> {
   }
 
   Widget events(user, i) {
+    /*
     _images.clear();
     user[i]["member_list"].forEach((e) {
       _images.add(Config.base_url + e);
@@ -106,6 +108,8 @@ class _AllState extends State<All> {
     for (var i = 0; i < mEventcount; i++) {
       _images.add(Config.userImage);
     }
+
+     */
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -121,8 +125,9 @@ class _AllState extends State<All> {
               child: Container(
                 decoration: BoxDecoration(
                   color: notifire.containercolore,
-                    borderRadius: BorderRadius.circular(17),
-                    border: Border.all(color: notifire.bordercolore)),
+                  borderRadius: BorderRadius.circular(17),
+                  border: Border.all(color: notifire.bordercolore),
+                ),
                 child: Stack(
                   children: [
                     Column(
@@ -131,27 +136,24 @@ class _AllState extends State<All> {
                         Container(
                           height: height / 5.5,
                           width: width,
-                          decoration: const BoxDecoration(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(15)),
-                              color: Colors.transparent),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(15)),
+                            color: Colors.transparent,
+                          ),
                           child: Stack(
                             children: [
                               ClipRRect(
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(16)),
+                                borderRadius: BorderRadius.all(Radius.circular(16)),
                                 child: SizedBox(
                                   height: height / 3.5,
                                   width: width,
-                                  child: FadeInImage.assetNetwork(
-                                      fadeInCurve: Curves.easeInCirc,
-                                      placeholder: "image/skeleton.gif",
-                                      fit: BoxFit.cover,
-                                      image: Config.base_url +
-                                          user[i]["event_img"]),
+                                  child: Image.asset(
+                                    user[i]["event_img"], // Ruta de la imagen en assets
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
                               ),
-                              SizedBox(height: height / 70)
+                              SizedBox(height: height / 70),
                             ],
                           ),
                         ),
@@ -163,10 +165,11 @@ class _AllState extends State<All> {
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
-                                color: notifire.textcolor,
-                                fontSize: 15,
-                                fontFamily: 'Gilroy Medium',
-                                fontWeight: FontWeight.w600),
+                              color: notifire.textcolor,
+                              fontSize: 15,
+                              fontFamily: 'Gilroy Medium',
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                         SizedBox(height: height / 60),
@@ -175,8 +178,7 @@ class _AllState extends State<All> {
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Image.asset("image/location.png",
-                                  height: height / 40),
+                              Image.asset("image/location.png", height: height / 40),
                               const SizedBox(width: 2),
                               Ink(
                                 width: Get.width * 0.77,
@@ -185,9 +187,10 @@ class _AllState extends State<All> {
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
-                                      color: Colors.grey,
-                                      fontFamily: 'Gilroy Medium',
-                                      fontSize: 12),
+                                    color: Colors.grey,
+                                    fontFamily: 'Gilroy Medium',
+                                    fontSize: 12,
+                                  ),
                                 ),
                               ),
                             ],
@@ -195,53 +198,52 @@ class _AllState extends State<All> {
                         ),
                         SizedBox(height: height / 70),
                         Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 6, vertical: 6),
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
                           child: Row(
                             children: [
                               user[i]["total_member_list"] != "0"
                                   ? Row(
-                                      children: [
-                                        FlutterImageStack(
-                                            totalCount: 0,
-                                            itemRadius: 30,
-                                            itemCount: 3,
-                                            itemBorderWidth: 1.5,
-                                            imageList: _images),
-                                        SizedBox(width: Get.width * 0.01),
-                                        Text(
-                                          "${user[i]["total_member_list"]} + Going",
-                                          style: TextStyle(
-                                              color: const Color(0xff5d56f3),
-                                              fontSize: 11,
-                                              fontFamily: 'Gilroy Bold'),
-                                        ),
-                                      ],
-                                    )
+                                children: [
+                                  Row(
+                                    children: user[i]["member_list"].map<Widget>((imagePath) {
+                                      return CircleAvatar(
+                                        radius: 15,
+                                        backgroundImage: AssetImage(imagePath),
+                                      );
+                                    }).toList(),
+                                  ),
+                                  SizedBox(width: Get.width * 0.01),
+                                  Text(
+                                    "${user[i]["total_member_list"]} + Going",
+                                    style: TextStyle(
+                                      color: const Color(0xff5d56f3),
+                                      fontSize: 11,
+                                      fontFamily: 'Gilroy Bold',
+                                    ),
+                                  ),
+                                ],
+                              )
+
+
                                   : const SizedBox(),
-                              const Spacer(),
+                              Spacer(),
                               CircleAvatar(
                                 radius: 18,
-                                backgroundColor: Colors.grey.shade200,
+                                backgroundColor: Colors.transparent,
                                 child: Padding(
                                   padding: const EdgeInsets.only(left: 3),
                                   child: LikeButton(
                                     onTap: (val) {
-                                      return onLikeButtonTapped(
-                                          val, user[i]["event_id"]);
+                                      return onLikeButtonTapped(val, user[i]["event_id"]);
                                     },
                                     likeBuilder: (bool isLiked) {
-                                      return !isLiked
-                                          ? const Icon(Icons.favorite,
-                                              color: Color(0xffF0635A),
-                                              size: 24)
-                                          : const Icon(Icons.favorite_border,
-                                              color: Color(0xffF0635A),
-                                              size: 24);
+                                      return user[i]["IS_BOOKMARK"] != 0
+                                          ? const Icon(Icons.favorite, color: Color(0xffF0635A), size: 22)
+                                          : const Icon(Icons.favorite_border, color: Color(0xffF0635A), size: 22);
                                     },
                                   ),
                                 ),
-                              )
+                              ),
                             ],
                           ),
                         ),
@@ -256,6 +258,7 @@ class _AllState extends State<All> {
       ),
     );
   }
+
 
   Future<bool> onLikeButtonTapped(isLiked, eid) async {
     var data = {"eid": eid, "uid": uID};

@@ -1,6 +1,7 @@
 // ignore_for_file: constant_identifier_names, non_constant_identifier_names, avoid_types_as_parameter_names, avoid_print, unused_local_variable, unused_import, unnecessary_null_comparison, prefer_final_fields, prefer_const_constructors
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:ui';
 import '../Search/searchpage2.dart';
 import '../utils/media.dart';
@@ -36,6 +37,99 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_image_stack/flutter_image_stack.dart';
 import 'package:goevent2/AppModel/Homedata/HomedataController.dart';
 
+const String categoriasJson = '''
+{
+  "categorias": [
+    {
+      "id": "1",
+      "categoria": "Arte",
+      "image": "image/fire.png"
+    },
+    {
+      "id": "2",
+      "categoria": "Musica",
+      "image": "image/sport1.png"
+    },
+    {
+      "id": "3",
+      "categoria": "Cinematografía",
+      "image": "image/method.png"
+    },
+    {
+      "id": "4",
+      "categoria": "Teatro",
+      "image": "image/american_express.png"
+    }
+  ]
+}
+''';
+
+const String trendingEventsJson = '''
+{
+  "events": [
+    {
+      "event_id": "1",
+      "event_title": "Evento de arte",
+      "event_img": "image/protection.png",
+      "event_address": "Dirección del evento de arte",
+      "IS_BOOKMARK": 1,
+      "member_list": ["image/p2.png", "image/p1.png", "image/p3.png"],
+      "total_member_list": 20,
+      "sponsore_list": {
+        "sponsore_img": "image/p1.png",
+        "sponsore_img": "image/p2.png"
+      }
+    },
+    {
+      "event_id": "2",
+      "event_title": "Concierto de música",
+      "event_img": "image/event.png",
+      "event_address": "Dirección del concierto de música",
+      "IS_BOOKMARK": 0,
+      "member_list": ["image/p1.png", "image/p4.png", "image/p2.png"],
+      "total_member_list": 15,
+      "sponsore_list": {
+        "sponsore_img": "image/p2.png",
+        "sponsore_img": "image/p1.png",
+        "sponsore_img": "image/p3.png",
+        "sponsore_img": "image/p4.png"
+      }
+    },
+    {
+      "event_id": "3",
+      "event_title": "Festival de cine",
+      "event_img": "image/p10.png",
+      "event_address": "Dirección del festival de cine",
+      "IS_BOOKMARK": 1,
+      "member_list": ["image/p1.png", "image/p4.png", "image/p2.png"],
+      "total_member_list": 30,
+      "sponsore_list": {
+        "sponsore_img": "image/p3.png",
+        "sponsore_img": "image/p4.png",
+        "sponsore_img": "image/p1.png"
+      }
+    },
+    {
+      "event_id": "4",
+      "event_title": "Obra de teatro",
+      "event_img": "image/pay.png",
+      "event_address": "Dirección de la obra de teatro",
+      "IS_BOOKMARK": 0,
+      "member_list": ["image/p4.png", "image/p3.png", "image/p1.png"],
+      "total_member_list": 10,
+      "sponsore_list": {
+        "sponsore_img": "image/p4.png",
+        "sponsore_img": "image/p2.png",
+        "sponsore_img": "image/p1.png",
+        "sponsore_img": "image/p3.png",
+        "sponsore_img": "image/p1.png"
+      }
+    }
+  ]
+}
+''';
+
+
 final getData = GetStorage();
 
 class Home extends StatefulWidget {
@@ -47,13 +141,22 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   final x = Get.put(AuthController());
-  final hData = Get.put(HomeController());
+  //final hData = Get.put(HomeController());
   late ColorNotifire notifire;
   PackageInfo? packageInfo;
   String? appName;
   String? packageName;
   bool isChecked = false;
   String code = "0";
+  List<dynamic> categoriasList = [];
+  List<dynamic> trendingEvent = [];
+  List<dynamic> upcomingEvent = [];
+  List<dynamic> nearbyEvent = [];
+  List<dynamic> thisMonthEvent = [];
+
+
+
+
 
   getdarkmodepreviousstate() async {
     final prefs = await SharedPreferences.getInstance();
@@ -66,6 +169,23 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     }
   }
 
+  void cargarCategorias() {
+    // Decodifica la cadena JSON y guarda los eventos en la lista eventosList
+    Map<String, dynamic> categoriasData = json.decode(categoriasJson);
+    setState(() {
+      categoriasList = categoriasData['categorias'];
+      // Inicializa la lista de estados de los marcadores con `false` para indicar que ningún marcador está seleccionado inicialmente
+    });
+  }
+
+  void cargartrendingEvent() {
+    // Decodifica la cadena JSON y guarda los eventos en la lista eventosList
+    Map<String, dynamic> trendingEventData = json.decode(trendingEventsJson);
+    setState(() {
+      trendingEvent = trendingEventData['events'];
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -76,7 +196,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     /*getData.read("UserLogin") != null
         ? hData.homeDataApi(getData.read("UserLogin")["id"], lat, long)
         : null;*/
+    cargarCategorias();
+    cargartrendingEvent();
     initPlatformState();
+
   }
 
   Future<void> initPlatformState() async {
@@ -140,7 +263,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     ApiWrapper.dataPost(Config.ebookmark, data).then((val) {
       if ((val != null) && (val.isNotEmpty)) {
         if ((val['ResponseCode'] == "200") && (val['Result'] == "true")) {
-          hData.homeDataReffressApi(getData.read("UserLogin")["id"], lat, long);
+          //hData.homeDataReffressApi(getData.read("UserLogin")["id"], lat, long);
         } else {
           ApiWrapper.showToastMessage(val["ResponseMsg"]);
         }
@@ -158,10 +281,354 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     return Scaffold(
         backgroundColor: notifire.backgrounde,
         body: Column(
+
           children: [
             //! ------ Home AppBar ------
             homeAppbar(),
+            SizedBox(height: height / 60),
+            //Text('data'),
             Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    //! --------- categoriesList ---------
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8),
+                      child: SizedBox(
+                        height: Get.height * 0.05,
+                        child: ListView.builder(
+                          itemCount: categoriasList.length,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (ctx, i) {
+                            return treding(categoriasList, i); // Llama a la función treding con categoriasList
+                          },
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: Get.height * 0.03),
+
+                    //! --------- trndingList ---------
+                    //trendingEvent.isNotEmpty?
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12),
+                      child: Row(
+                        children: [
+                          Text("Trending Events".tr,style: TextStyle(fontFamily: 'Gilroy Bold', color: notifire.textcolor, fontSize: 16, fontWeight: FontWeight.w600)),
+                          const Spacer(),
+                          GestureDetector(
+                            onTap: () {
+                              Get.to(() => All(title: "Trending Events".tr, eventList: trendingEvent), duration: Duration.zero);
+                            },
+                            child: Container(
+                              color: Colors.transparent,
+                              child: Row(
+                                children: [
+                                  Text("See All".tr,
+                                      style: TextStyle(
+                                          fontFamily:
+                                          'Gilroy Medium',
+                                          color: const Color(
+                                              0xff747688),
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w400)),
+                                  const Icon(
+                                      Icons
+                                          .arrow_forward_ios_rounded,
+                                      size: 14,
+                                      color: Color(0xff747688)),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                        //: const SizedBox(),
+                    SizedBox(height: Get.height * 0.03),
+                    //! --------- trndingList ---------
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
+                      child: SizedBox(
+                        height: Get.height * 0.28,
+                        child: ListView.builder(
+                          itemCount: trendingEvent.length,
+                          scrollDirection: Axis.horizontal,
+                          itemBuilder: (ctx, i) {
+                            return tredingEvents(trendingEvent, i);
+                          },
+                        ),
+                      ),
+                    ),
+
+                    SizedBox(height: height / 60),
+                    //! ---------- upcoming Events --------
+
+                    //upcomingEvent.isNotEmpty?
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12),
+                      child: Row(
+                        children: [
+                          Text("Upcoming Events".tr,
+                              style: TextStyle(
+                                  fontFamily: 'Gilroy Bold',
+                                  color: notifire.textcolor,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600)),
+                          const Spacer(),
+                          GestureDetector(
+                            onTap: () {
+                              Get.to(
+                                      () => All(
+                                      title: "Upcoming Events".tr,
+                                      eventList:
+                                      upcomingEvent),
+                                  duration: Duration.zero);
+                            },
+                            child: Container(
+                              color: Colors.transparent,
+                              child: Row(
+                                children: [
+                                  Text("See All".tr,
+                                      style: TextStyle(
+                                          fontFamily:
+                                          'Gilroy Medium',
+                                          color: const Color(
+                                              0xff747688),
+                                          fontSize: 14,
+                                          fontWeight:
+                                          FontWeight.w400)),
+                                  const Icon(
+                                      Icons
+                                          .arrow_forward_ios_rounded,
+                                      size: 14,
+                                      color: Color(0xff747688)),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                        //: const SizedBox(),
+
+                    SizedBox(height: height / 60),
+
+                    //! ----------- Upcoming Events List -------------
+                    Ink(
+                      //height: Get.height * 0.01,
+                      height: Get.height * 0.37,
+                      child: ListView.builder(
+                        itemCount: upcomingEvent.length,
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (ctx, i) {
+                          return events(upcomingEvent[i], i);
+                        },
+                      ),
+                    ),
+                    SizedBox(height: height / 60),
+
+                    //! --------- invite share -----------
+                    InkWell(
+                      onTap: share,
+                      child: Padding(
+                        padding:
+                        const EdgeInsets.symmetric(horizontal: 10),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: notifire.isDark ? notifire.containercolore : Color(0xffd6feff),
+                              borderRadius: const BorderRadius.all(
+                                  Radius.circular(10))),
+                          height: height / 6,
+                          width: double.infinity,
+                          child: Row(
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(left: 8),
+                                child: Column(
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "Invite your friends".tr,
+                                      // .trPluralParams(),
+                                      style: TextStyle(
+                                          fontFamily: 'Gilroy Medium',
+                                          color: notifire.textcolor,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w700),
+                                    ),
+                                    SizedBox(height: Get.height * 0.01),
+                                    Text(
+                                      "Get \$20 for ticket".tr,
+                                      style: TextStyle(
+                                          fontFamily: 'Gilroy Medium',
+                                          color: Colors.grey,
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w500),
+                                    ),
+                                    SizedBox(height: Get.height * 0.01),
+                                    GestureDetector(
+                                      child: Container(
+                                        height: height / 30,
+                                        width: width / 6,
+                                        decoration: BoxDecoration(
+                                            color: notifire.getbluecolor,
+                                            borderRadius:
+                                            BorderRadius.circular(4)),
+                                        child: Center(
+                                          child: Text(
+                                            "INVITE".tr,
+                                            style: TextStyle(
+                                                fontFamily:
+                                                'Gilroy Medium',
+                                                color: Colors.white,
+                                                fontSize: 10,
+                                                fontWeight:
+                                                FontWeight.w700),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Image.asset("image/invite.png",
+                                  height: height / 6),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: height / 60),
+
+                    //! -------- Nearby You Listview  --------
+                    //nearbyEvent.isNotEmpty?
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12),
+                      child: Row(
+                        children: [
+                          Text(
+                            "Nearby You".tr,
+                            style: TextStyle(
+                                fontFamily: 'Gilroy Bold',
+                                color: notifire.textcolor,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600),
+                          ),
+                          const Spacer(),
+                          GestureDetector(
+                            onTap: () {
+                              Get.to(
+                                      () => All(
+                                      title: "Nearby You".tr,
+                                      eventList: nearbyEvent),
+                                  duration: Duration.zero);
+                            },
+                            child: Container(
+                              color: Colors.transparent,
+                              child: Row(
+                                children: [
+                                  Text("See All".tr,
+                                      style: TextStyle(
+                                          fontFamily:
+                                          'Gilroy Medium',
+                                          color: const Color(
+                                              0xff747688),
+                                          fontSize: 14,
+                                          fontWeight:
+                                          FontWeight.w400)),
+                                  const Icon(
+                                      Icons
+                                          .arrow_forward_ios_rounded,
+                                      size: 14,
+                                      color: Color(0xff747688)),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                        //: const SizedBox(),
+                    ListView.builder(
+                      padding: EdgeInsets.zero,
+                      itemCount: nearbyEvent.length,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (ctx, i) {
+                        return conference(nearbyEvent, i);
+                      },
+                    ),
+                    SizedBox(height: Get.height * 0.03),
+
+                    SizedBox(height: height / 60),
+                    //thisMonthEvent.isNotEmpty?
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12),
+                      child: Row(
+                        children: [
+                          Text("Event This Month".tr,
+                              style: TextStyle(
+                                  fontFamily: 'Gilroy Bold',
+                                  color: notifire.getdarkscolor,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600)),
+                          const Spacer(),
+                          GestureDetector(
+                            onTap: () {
+                              Get.to(
+                                      () => All(
+                                      title: "Event This Month".tr,
+                                      eventList:
+                                      thisMonthEvent),
+                                  duration: Duration.zero);
+                            },
+                            child: Container(
+                              color: Colors.transparent,
+                              child: Row(
+                                children: [
+                                  Text("See All".tr,
+                                      style: TextStyle(
+                                          fontFamily:
+                                          'Gilroy Medium',
+                                          color: const Color(
+                                              0xff747688),
+                                          fontSize: 14,
+                                          fontWeight:
+                                          FontWeight.w400)),
+                                  const Icon(
+                                      Icons
+                                          .arrow_forward_ios_rounded,
+                                      size: 14,
+                                      color: Color(0xff747688)),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                        //: const SizedBox(),
+                    //! monthly event
+                    ListView.builder(
+                      itemCount: thisMonthEvent.length,
+                      padding: const EdgeInsets.only(top: 8),
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (ctx, i) {
+                        return monthly(thisMonthEvent, i);
+                      },
+                    ),
+                  ],
+                ),
+              ),
+/*
               child: SingleChildScrollView(
                 child: !hData.isLoading
                     ? Column(
@@ -503,11 +970,63 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                       )
                     : isLoadingCircular(),
               ),
+
+ */
+
+
+
+
+
+
+
+
+
+
             )
           ],
         ));
   }
 
+  Widget treding(List<dynamic> catList, int i) {
+    return InkWell(
+      onTap: () {
+        Get.to(() => TrndingPage(catdata: catList[i]));
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6),
+        child: Container(
+          decoration: BoxDecoration(
+            color: notifire.getprimerycolor,
+            border: Border.all(color: notifire.bordercolore, width: 0.5),
+            borderRadius: BorderRadius.circular(25),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.only(left: 4, right: 8),
+            child: Row(
+              children: [
+                Image(
+                  image: AssetImage(catList[i]["image"]), // Cambiado de NetworkImage a AssetImage
+                  height: 30,
+                ),
+                SizedBox(width: Get.width * 0.02),
+                Text(
+                  catList[i]["categoria"], // Usar el nombre correcto del campo
+                  style: TextStyle(
+                    fontFamily: 'Gilroy Medium',
+                    color: notifire.textcolor,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+/*
   treding(catList, i) {
     return InkWell(
       onTap: () {
@@ -543,6 +1062,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     );
   }
 
+ */
+
   imgloading() {
     return Container(
       height: Get.height * 0.20,
@@ -557,8 +1078,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   tredingEvents(tEvent, i) {
     return InkWell(
       onTap: () {
-        Get.to(() => EventsDetails(eid: tEvent[i]["event_id"]),
-            duration: Duration.zero);
+        //Get.to(() => EventsDetails(eid: tEvent[i]["event_id"]), duration: Duration.zero);
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -571,11 +1091,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 child: SizedBox(
                   height: Get.height * 0.20,
                   width: Get.width * 0.62,
-                  child: FadeInImage.assetNetwork(
-                      fadeInCurve: Curves.easeInCirc,
-                      placeholder: "image/skeleton.gif",
-                      fit: BoxFit.cover,
-                      image: Config.base_url + tEvent[i]["event_img"]),
+                  child: Image.asset(
+                    tEvent[i]["event_img"], // Ruta de la imagen en assets
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
               Positioned(
@@ -600,10 +1119,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                           },
                           likeBuilder: (bool isLiked) {
                             return tEvent[i]["IS_BOOKMARK"] != 0
-                                ? const Icon(Icons.favorite,
-                                    color: Color(0xffF0635A), size: 22)
-                                : const Icon(Icons.favorite_border,
-                                    color: Color(0xffF0635A), size: 22);
+                                ? const Icon(Icons.favorite, color: Color(0xffF0635A), size: 22)
+                                : const Icon(Icons.favorite_border, color: Color(0xffF0635A), size: 22);
                           },
                         ),
                       ),
@@ -612,107 +1129,116 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 ),
               ),
               Align(
-                  alignment: Alignment.bottomCenter,
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  height: Get.height * 0.12,
+                  width: Get.width * 0.56,
+                  decoration: BoxDecoration(
+                    color: notifire.getprimerycolor,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
                   child: Container(
-                    height: Get.height * 0.12,
-                    width: Get.width * 0.56,
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
                     decoration: BoxDecoration(
-                        color: notifire.getprimerycolor,
-                        borderRadius: BorderRadius.circular(16)),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      decoration: BoxDecoration(
-                          border: Border.all(color: notifire.bordercolore),
-                          borderRadius: BorderRadius.circular(15)),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(height: Get.height * 0.01),
-                          Ink(
-                            width: Get.width * 0.50,
-                            child: Text(tEvent[i]["event_title"],
+                      border: Border.all(color: notifire.bordercolore),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: Get.height * 0.01),
+                        Ink(
+                          width: Get.width * 0.50,
+                          child: Text(
+                            tEvent[i]["event_title"],
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontFamily: 'Gilroy Medium',
+                              color: notifire.textcolor,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: Get.height * 0.006),
+                        Row(
+                          children: [
+                            Image.asset("image/location.png", height: height / 50),
+                            SizedBox(width: Get.width * 0.01),
+                            Ink(
+                              width: Get.width * 0.45,
+                              child: Text(
+                                tEvent[i]["event_address"],
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
-                                    fontFamily: 'Gilroy Medium',
-                                    color: notifire.textcolor,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w600)),
-                          ),
-                          SizedBox(height: Get.height * 0.006),
-                          Row(
-                            children: [
-                              Image.asset("image/location.png",
-                                  height: height / 50),
-                              SizedBox(width: Get.width * 0.01),
-                              Ink(
-                                width: Get.width * 0.45,
-                                child: Text(tEvent[i]["event_address"],
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                        fontFamily: 'Gilroy Medium',
-                                        color: Colors.grey,
-                                        fontSize: 14)),
+                                  fontFamily: 'Gilroy Medium',
+                                  color: Colors.grey,
+                                  fontSize: 14,
+                                ),
                               ),
-                            ],
-                          ),
-                          SizedBox(height: Get.height * 0.008),
-                          Row(
-                            children: [
-                              tEvent[i]["sponsore_list"] != null
-                                  ? CircleAvatar(
-                                      radius: 16.0,
-                                      backgroundImage: NetworkImage(
-                                          Config.base_url +
-                                              tEvent[i]["sponsore_list"]
-                                                  ["sponsore_img"]),
-                                      backgroundColor: Colors.transparent,
-                                    )
-                                  : const SizedBox(),
-                              SizedBox(width: Get.width * 0.01),
-                              Text(
-                                "Sponser".tr,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                    fontFamily: 'Gilroy Medium',
-                                    color: Colors.grey,
-                                    fontSize: 14),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: Get.height * 0.008),
+                        Row(
+                          children: [
+                            tEvent[i]["sponsore_list"] != null
+                                ? CircleAvatar(
+                              radius: 16.0,
+                              backgroundImage: AssetImage(tEvent[i]["sponsore_list"]["sponsore_img"]),
+                              backgroundColor: Colors.transparent,
+                            )
+                                : const SizedBox(),
+                            SizedBox(width: Get.width * 0.01),
+                            Text(
+                              "Sponsor".tr,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontFamily: 'Gilroy Medium',
+                                color: Colors.grey,
+                                fontSize: 14,
                               ),
-                              const Spacer(),
-                              Container(
-                                height: Get.height * 0.04,
-                                width: Get.width * 0.20,
-                                decoration: BoxDecoration(
-                                    color: buttonColor.withOpacity(0.6),
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Center(
-                                  child: Text(
-                                    "Join".tr,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                        fontFamily: 'Gilroy Bold',
-                                        color: Colors.white,
-                                        fontSize: 14),
+                            ),
+                            Spacer(),
+                            Container(
+                              height: Get.height * 0.04,
+                              width: Get.width * 0.20,
+                              decoration: BoxDecoration(
+                                color: buttonColor.withOpacity(0.6),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  "Join".tr,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontFamily: 'Gilroy Bold',
+                                    color: Colors.white,
+                                    fontSize: 14,
                                   ),
                                 ),
-                              )
-                            ],
-                          )
-                        ],
-                      ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                  ))
+                  ),
+                ),
+              ),
             ],
           ),
         ),
       ),
     );
   }
+
 
   homeAppbar() {
     return Container(
@@ -1360,5 +1886,167 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     });
   }
   */
+
+/*
+  tredingEvents(tEvent, i) {
+    return InkWell(
+      onTap: () {
+        //Get.to(() => EventsDetails(eid: tEvent[i]["event_id"]), duration: Duration.zero);
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: SizedBox(
+          width: Get.width * 0.60,
+          child: Stack(
+            children: [
+              ClipRRect(
+                borderRadius: const BorderRadius.all(Radius.circular(15)),
+                child: SizedBox(
+                  height: Get.height * 0.20,
+                  width: Get.width * 0.62,
+                  child: FadeInImage.assetNetwork(
+                      fadeInCurve: Curves.easeInCirc,
+                      placeholder: "image/skeleton.gif",
+                      fit: BoxFit.cover,
+                      image: Config.base_url + tEvent[i]["event_img"]),
+                ),
+              ),
+              Positioned(
+                top: 8,
+                right: Get.width * 0.02,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(100/2),
+                  child: BackdropFilter(
+                    blendMode: BlendMode.srcIn,
+                    filter: ImageFilter.blur(
+                      sigmaX: 10, // mess with this to update blur
+                      sigmaY: 10,
+                    ),
+                    child: CircleAvatar(
+                      radius: 18,
+                      backgroundColor: Colors.transparent,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 3),
+                        child: LikeButton(
+                          onTap: (val) {
+                            return onLikeButtonTapped(val, tEvent[i]["event_id"]);
+                          },
+                          likeBuilder: (bool isLiked) {
+                            return tEvent[i]["IS_BOOKMARK"] != 0
+                                ? const Icon(Icons.favorite,
+                                color: Color(0xffF0635A), size: 22)
+                                : const Icon(Icons.favorite_border,
+                                color: Color(0xffF0635A), size: 22);
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    height: Get.height * 0.12,
+                    width: Get.width * 0.56,
+                    decoration: BoxDecoration(
+                        color: notifire.getprimerycolor,
+                        borderRadius: BorderRadius.circular(16)),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      decoration: BoxDecoration(
+                          border: Border.all(color: notifire.bordercolore),
+                          borderRadius: BorderRadius.circular(15)),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: Get.height * 0.01),
+                          Ink(
+                            width: Get.width * 0.50,
+                            child: Text(tEvent[i]["event_title"],
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    fontFamily: 'Gilroy Medium',
+                                    color: notifire.textcolor,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600)),
+                          ),
+                          SizedBox(height: Get.height * 0.006),
+                          Row(
+                            children: [
+                              Image.asset("image/location.png",
+                                  height: height / 50),
+                              SizedBox(width: Get.width * 0.01),
+                              Ink(
+                                width: Get.width * 0.45,
+                                child: Text(tEvent[i]["event_address"],
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        fontFamily: 'Gilroy Medium',
+                                        color: Colors.grey,
+                                        fontSize: 14)),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: Get.height * 0.008),
+                          Row(
+                            children: [
+                              tEvent[i]["sponsore_list"] != null
+                                  ? CircleAvatar(
+                                radius: 16.0,
+                                backgroundImage: NetworkImage(
+                                    Config.base_url +
+                                        tEvent[i]["sponsore_list"]
+                                        ["sponsore_img"]),
+                                backgroundColor: Colors.transparent,
+                              )
+                                  : const SizedBox(),
+                              SizedBox(width: Get.width * 0.01),
+                              Text(
+                                "Sponser".tr,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    fontFamily: 'Gilroy Medium',
+                                    color: Colors.grey,
+                                    fontSize: 14),
+                              ),
+                              const Spacer(),
+                              Container(
+                                height: Get.height * 0.04,
+                                width: Get.width * 0.20,
+                                decoration: BoxDecoration(
+                                    color: buttonColor.withOpacity(0.6),
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: Center(
+                                  child: Text(
+                                    "Join".tr,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        fontFamily: 'Gilroy Bold',
+                                        color: Colors.white,
+                                        fontSize: 14),
+                                  ),
+                                ),
+                              )
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                  ))
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+ */
 
 }
