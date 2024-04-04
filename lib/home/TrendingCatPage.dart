@@ -1,5 +1,7 @@
 // ignore_for_file: file_names, prefer_const_constructors
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:goevent2/Api/ApiWrapper.dart';
@@ -10,6 +12,215 @@ import 'package:goevent2/utils/colornotifire.dart';
 import 'package:like_button/like_button.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+
+const String eventsJson = '''
+{
+  "events": [
+    {
+      "event_id": "1",
+      "cid": "1",
+      "event_title": "Evento de arte 1",
+      "event_img": "image/protection.png",
+      "event_address": "Dirección del evento de arte",
+      "IS_BOOKMARK": 1,
+      "member_list": ["image/p2.png", "image/p1.png", "image/p3.png"],
+      "total_member_list": 20,
+      "cover_img": "image/verve.png", 
+      "sponsore_list": {
+        "sponsore_img": "image/p1.png",
+        "sponsore_img": "image/p2.png"
+      }
+    },
+    {
+      "event_id": "2",
+      "cid": "1",
+      "event_title": "Evento de arte 2",
+      "event_img": "image/event.png",
+      "event_address": "Dirección del concierto de música",
+      "IS_BOOKMARK": 0,
+      "member_list": ["image/p1.png", "image/p4.png", "image/p2.png"],
+      "total_member_list": 15,
+      "cover_img": "image/verve.png", 
+      "sponsore_list": {
+        "sponsore_img": "image/p2.png",
+        "sponsore_img": "image/p1.png",
+        "sponsore_img": "image/p3.png",
+        "sponsore_img": "image/p4.png"
+      }
+    },
+    {
+      "event_id": "3",
+      "cid": "1",
+      "event_title": "Evento de arte 3",
+      "event_img": "image/p10.png",
+      "event_address": "Dirección del festival de cine",
+      "IS_BOOKMARK": 1,
+      "member_list": ["image/p1.png", "image/p4.png", "image/p2.png"],
+      "total_member_list": 30,
+      "cover_img": "image/verve.png", 
+      "sponsore_list": {
+        "sponsore_img": "image/p3.png",
+        "sponsore_img": "image/p4.png",
+        "sponsore_img": "image/p1.png"
+      }
+    },
+    {
+      "event_id": "4",
+      "cid": "2",
+      "event_title": "Concierto de música 1",
+      "event_img": "image/pay.png",
+      "event_address": "Dirección de la obra de teatro",
+      "IS_BOOKMARK": 0,
+      "member_list": ["image/p4.png", "image/p3.png", "image/p1.png"],
+      "total_member_list": 10,
+      "cover_img": "image/verve.png", 
+      "sponsore_list": {
+        "sponsore_img": "image/p4.png",
+        "sponsore_img": "image/p2.png",
+        "sponsore_img": "image/p1.png",
+        "sponsore_img": "image/p3.png",
+        "sponsore_img": "image/p1.png"
+      }
+    },
+    {
+      "event_id": "5",
+      "cid": "2",
+      "event_title": "Concierto de música 2",
+      "event_img": "image/event.png",
+      "event_address": "Dirección del concierto de música",
+      "IS_BOOKMARK": 0,
+      "member_list": ["image/p1.png", "image/p4.png", "image/p2.png"],
+      "total_member_list": 15,
+      "cover_img": "image/verve.png", 
+      "sponsore_list": {
+        "sponsore_img": "image/p2.png",
+        "sponsore_img": "image/p1.png",
+        "sponsore_img": "image/p3.png",
+        "sponsore_img": "image/p4.png"
+      }
+    },
+    {
+      "event_id": "6",
+      "cid": "2",
+      "event_title": "Concierto de música 3",
+      "event_img": "image/protection.png",
+      "event_address": "Dirección del concierto de música",
+      "IS_BOOKMARK": 0,
+      "member_list": ["image/p1.png", "image/p2.png", "image/p3.png"],
+      "total_member_list": 12,
+      "cover_img": "image/verve.png", 
+      "sponsore_list": {
+        "sponsore_img": "image/p2.png",
+        "sponsore_img": "image/p1.png",
+        "sponsore_img": "image/p3.png",
+        "sponsore_img": "image/p4.png"
+      }
+    },
+    {
+      "event_id": "7",
+      "cid": "3",
+      "event_title": "Festival de cine 1",
+      "event_img": "image/pay.png",
+      "event_address": "Dirección de la obra de teatro",
+      "IS_BOOKMARK": 0,
+      "member_list": ["image/p4.png", "image/p3.png", "image/p1.png"],
+      "total_member_list": 10,
+      "cover_img": "image/verve.png", 
+      "sponsore_list": {
+        "sponsore_img": "image/p4.png",
+        "sponsore_img": "image/p2.png",
+        "sponsore_img": "image/p1.png",
+        "sponsore_img": "image/p3.png",
+        "sponsore_img": "image/p1.png"
+      }
+    },
+    {
+      "event_id": "8",
+      "cid": "3",
+      "event_title": "Festival de cine 2",
+      "event_img": "image/event.png",
+      "event_address": "Dirección del concierto de música",
+      "IS_BOOKMARK": 0,
+      "member_list": ["image/p1.png", "image/p4.png", "image/p2.png"],
+      "total_member_list": 15,
+      "cover_img": "image/verve.png", 
+      "sponsore_list": {
+        "sponsore_img": "image/p2.png",
+        "sponsore_img": "image/p1.png",
+        "sponsore_img": "image/p3.png",
+        "sponsore_img": "image/p4.png"
+      }
+    },
+    {
+      "event_id": "9",
+      "cid": "3",
+      "event_title": "Festival de cine 3",
+      "event_img": "image/protection.png",
+      "event_address": "Dirección del concierto de música",
+      "IS_BOOKMARK": 0,
+      "member_list": ["image/p1.png", "image/p2.png", "image/p3.png"],
+      "total_member_list": 12,
+      "cover_img": "image/verve.png", 
+      "sponsore_list": {
+        "sponsore_img": "image/p2.png",
+        "sponsore_img": "image/p1.png",
+        "sponsore_img": "image/p3.png",
+        "sponsore_img": "image/p4.png"
+      }
+    },
+    {
+      "event_id": "10",
+      "cid": "4",
+      "event_title": "Obra de teatro 1",
+      "event_img": "image/protection.png",
+      "event_address": "Dirección de la obra de teatro",
+      "IS_BOOKMARK": 0,
+      "member_list": ["image/p2.png", "image/p1.png", "image/p3.png"],
+      "total_member_list": 20,
+      "cover_img": "image/verve.png", 
+      "sponsore_list": {
+        "sponsore_img": "image/p1.png",
+        "sponsore_img": "image/p2.png"
+      }
+    },
+    {
+      "event_id": "11",
+      "cid": "4",
+      "event_title": "Obra de teatro 2",
+      "event_img": "image/event.png",
+      "event_address": "Dirección del concierto de música",
+      "IS_BOOKMARK": 0,
+      "member_list": ["image/p1.png", "image/p4.png", "image/p2.png"],
+      "total_member_list": 15,
+      "cover_img": "image/verve.png", 
+      "sponsore_list": {
+        "sponsore_img": "image/p2.png",
+        "sponsore_img": "image/p1.png",
+        "sponsore_img": "image/p3.png",
+        "sponsore_img": "image/p4.png"
+      }
+    },
+    {
+      "event_id": "12",
+      "cid": "4",
+      "event_title": "Obra de teatro 3",
+      "event_img": "image/p10.png",
+      "event_address": "Dirección del festival de cine",
+      "IS_BOOKMARK": 0,
+      "member_list": ["image/p1.png", "image/p4.png", "image/p2.png"],
+      "total_member_list": 30,
+      "cover_img": "image/verve.png", 
+      "sponsore_list": {
+        "sponsore_img": "image/p3.png",
+        "sponsore_img": "image/p4.png",
+        "sponsore_img": "image/p1.png"
+      }
+    }
+  ]
+}
+''';
+
 
 class TrndingPage extends StatefulWidget {
   final Map? catdata;
@@ -40,7 +251,7 @@ class _TrndingPageState extends State<TrndingPage> {
       notifire.setIsDark = previusstate;
     }
   }
-
+/*
   catEventListApi() {
     var data = {"uid": uID, "cid": widget.catdata!["id"]};
     ApiWrapper.dataPost(Config.catEvent, data).then((val) {
@@ -52,6 +263,26 @@ class _TrndingPageState extends State<TrndingPage> {
       }
     });
   }
+
+ */
+
+  void catEventListApi() {
+    // Decodificar el JSON eventsJson como un objeto JSON
+    Map<String, dynamic> decodedJson = json.decode(eventsJson);
+
+    // Acceder a la lista de eventos dentro del objeto JSON
+    List<dynamic> events = decodedJson['events'];
+
+    // Filtrar los eventos basados en la categoría
+    String categoryId = widget.catdata!['id'].toString();
+    List filteredEvents = events.where((event) => event['cid'] == categoryId).toList();
+
+    // Actualizar la lista de eventos de la categoría
+    setState(() {
+      categoryEvent = filteredEvents;
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -65,13 +296,18 @@ class _TrndingPageState extends State<TrndingPage> {
         child: Column(
           children: [
             Container(
-              height: Get.height * 0.12,
+              height: Get.height * 0.06,
               width: Get.width,
+              /*
               decoration: BoxDecoration(
-                  image: DecorationImage(
-                      image: NetworkImage(
-                          Config.base_url + widget.catdata!["cover_img"]),
-                      fit: BoxFit.fill)),
+                image: DecorationImage(
+                  image: AssetImage(widget.catdata!["cover_img"]),
+                  fit: BoxFit.fill,
+                ),
+              ),
+
+               */
+
               child: Row(
                 children: [
                   SizedBox(width: Get.width / 20),
@@ -158,12 +394,15 @@ class _TrndingPageState extends State<TrndingPage> {
                         child: Stack(
                           children: [
                             ClipRRect(
-                                borderRadius: BorderRadius.circular(15),
-                                child: Image.network(
-                                    Config.base_url + user[i]["event_img"],
-                                    fit: BoxFit.cover,
-                                    height: Get.height / 3.5,
-                                    width: Get.width)),
+                              borderRadius: BorderRadius.circular(15),
+                              child: Image.asset(
+                                user[i]["event_img"],
+                                fit: BoxFit.cover,
+                                height: Get.height / 3.5,
+                                width: Get.width,
+                              ),
+                            ),
+
                             Column(
                               children: [
                                 SizedBox(height: Get.height / 70),

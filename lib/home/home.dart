@@ -42,39 +42,46 @@ const String categoriasJson = '''
   "categorias": [
     {
       "id": "1",
-      "categoria": "Arte",
-      "image": "image/fire.png"
+      "title": "Arte",
+      "image": "image/fire.png",
+      "cover_img": "image/fire.png"
     },
     {
       "id": "2",
-      "categoria": "Musica",
-      "image": "image/sport1.png"
+      "title": "Musica",
+      "image": "image/sport1.png",
+      "cover_img": "image/discover.png"
     },
     {
       "id": "3",
-      "categoria": "Cinematografía",
-      "image": "image/method.png"
+      "title": "Cinematografía",
+      "image": "image/method.png",
+      "cover_img": "image/discover.png"
     },
     {
       "id": "4",
-      "categoria": "Teatro",
-      "image": "image/american_express.png"
+      "title": "Teatro",
+      "image": "image/american_express.png",
+      "cover_img": "image/discover.png"
     }
   ]
 }
 ''';
+
 
 const String trendingEventsJson = '''
 {
   "events": [
     {
       "event_id": "1",
-      "event_title": "Evento de arte",
+      "cid": "1",
+      "event_title": "Evento de arte 1",
       "event_img": "image/protection.png",
       "event_address": "Dirección del evento de arte",
       "IS_BOOKMARK": 1,
       "member_list": ["image/p2.png", "image/p1.png", "image/p3.png"],
       "total_member_list": 20,
+      "cover_img": "image/verve.png", 
       "sponsore_list": {
         "sponsore_img": "image/p1.png",
         "sponsore_img": "image/p2.png"
@@ -82,12 +89,14 @@ const String trendingEventsJson = '''
     },
     {
       "event_id": "2",
-      "event_title": "Concierto de música",
+      "cid": "1",
+      "event_title": "Evento de arte 2",
       "event_img": "image/event.png",
       "event_address": "Dirección del concierto de música",
       "IS_BOOKMARK": 0,
       "member_list": ["image/p1.png", "image/p4.png", "image/p2.png"],
       "total_member_list": 15,
+      "cover_img": "image/verve.png", 
       "sponsore_list": {
         "sponsore_img": "image/p2.png",
         "sponsore_img": "image/p1.png",
@@ -97,12 +106,14 @@ const String trendingEventsJson = '''
     },
     {
       "event_id": "3",
-      "event_title": "Festival de cine",
+      "cid": "1",
+      "event_title": "Evento de arte 3",
       "event_img": "image/p10.png",
       "event_address": "Dirección del festival de cine",
       "IS_BOOKMARK": 1,
       "member_list": ["image/p1.png", "image/p4.png", "image/p2.png"],
       "total_member_list": 30,
+      "cover_img": "image/verve.png", 
       "sponsore_list": {
         "sponsore_img": "image/p3.png",
         "sponsore_img": "image/p4.png",
@@ -111,12 +122,14 @@ const String trendingEventsJson = '''
     },
     {
       "event_id": "4",
-      "event_title": "Obra de teatro",
+      "cid": "2",
+      "event_title": "Concierto de música 1",
       "event_img": "image/pay.png",
       "event_address": "Dirección de la obra de teatro",
       "IS_BOOKMARK": 0,
       "member_list": ["image/p4.png", "image/p3.png", "image/p1.png"],
       "total_member_list": 10,
+      "cover_img": "image/verve.png", 
       "sponsore_list": {
         "sponsore_img": "image/p4.png",
         "sponsore_img": "image/p2.png",
@@ -124,10 +137,145 @@ const String trendingEventsJson = '''
         "sponsore_img": "image/p3.png",
         "sponsore_img": "image/p1.png"
       }
+    },
+    {
+      "event_id": "5",
+      "cid": "2",
+      "event_title": "Concierto de música 2",
+      "event_img": "image/event.png",
+      "event_address": "Dirección del concierto de música",
+      "IS_BOOKMARK": 0,
+      "member_list": ["image/p1.png", "image/p4.png", "image/p2.png"],
+      "total_member_list": 15,
+      "cover_img": "image/verve.png", 
+      "sponsore_list": {
+        "sponsore_img": "image/p2.png",
+        "sponsore_img": "image/p1.png",
+        "sponsore_img": "image/p3.png",
+        "sponsore_img": "image/p4.png"
+      }
+    },
+    {
+      "event_id": "6",
+      "cid": "2",
+      "event_title": "Concierto de música 3",
+      "event_img": "image/protection.png",
+      "event_address": "Dirección del concierto de música",
+      "IS_BOOKMARK": 0,
+      "member_list": ["image/p1.png", "image/p2.png", "image/p3.png"],
+      "total_member_list": 12,
+      "cover_img": "image/verve.png", 
+      "sponsore_list": {
+        "sponsore_img": "image/p2.png",
+        "sponsore_img": "image/p1.png",
+        "sponsore_img": "image/p3.png",
+        "sponsore_img": "image/p4.png"
+      }
+    },
+    {
+      "event_id": "7",
+      "cid": "3",
+      "event_title": "Festival de cine 1",
+      "event_img": "image/pay.png",
+      "event_address": "Dirección de la obra de teatro",
+      "IS_BOOKMARK": 0,
+      "member_list": ["image/p4.png", "image/p3.png", "image/p1.png"],
+      "total_member_list": 10,
+      "cover_img": "image/verve.png", 
+      "sponsore_list": {
+        "sponsore_img": "image/p4.png",
+        "sponsore_img": "image/p2.png",
+        "sponsore_img": "image/p1.png",
+        "sponsore_img": "image/p3.png",
+        "sponsore_img": "image/p1.png"
+      }
+    },
+    {
+      "event_id": "8",
+      "cid": "3",
+      "event_title": "Festival de cine 2",
+      "event_img": "image/event.png",
+      "event_address": "Dirección del concierto de música",
+      "IS_BOOKMARK": 0,
+      "member_list": ["image/p1.png", "image/p4.png", "image/p2.png"],
+      "total_member_list": 15,
+      "cover_img": "image/verve.png", 
+      "sponsore_list": {
+        "sponsore_img": "image/p2.png",
+        "sponsore_img": "image/p1.png",
+        "sponsore_img": "image/p3.png",
+        "sponsore_img": "image/p4.png"
+      }
+    },
+    {
+      "event_id": "9",
+      "cid": "3",
+      "event_title": "Festival de cine 3",
+      "event_img": "image/protection.png",
+      "event_address": "Dirección del concierto de música",
+      "IS_BOOKMARK": 0,
+      "member_list": ["image/p1.png", "image/p2.png", "image/p3.png"],
+      "total_member_list": 12,
+      "cover_img": "image/verve.png", 
+      "sponsore_list": {
+        "sponsore_img": "image/p2.png",
+        "sponsore_img": "image/p1.png",
+        "sponsore_img": "image/p3.png",
+        "sponsore_img": "image/p4.png"
+      }
+    },
+    {
+      "event_id": "10",
+      "cid": "4",
+      "event_title": "Obra de teatro 1",
+      "event_img": "image/protection.png",
+      "event_address": "Dirección de la obra de teatro",
+      "IS_BOOKMARK": 0,
+      "member_list": ["image/p2.png", "image/p1.png", "image/p3.png"],
+      "total_member_list": 20,
+      "cover_img": "image/verve.png", 
+      "sponsore_list": {
+        "sponsore_img": "image/p1.png",
+        "sponsore_img": "image/p2.png"
+      }
+    },
+    {
+      "event_id": "11",
+      "cid": "4",
+      "event_title": "Obra de teatro 2",
+      "event_img": "image/event.png",
+      "event_address": "Dirección del concierto de música",
+      "IS_BOOKMARK": 0,
+      "member_list": ["image/p1.png", "image/p4.png", "image/p2.png"],
+      "total_member_list": 15,
+      "cover_img": "image/verve.png", 
+      "sponsore_list": {
+        "sponsore_img": "image/p2.png",
+        "sponsore_img": "image/p1.png",
+        "sponsore_img": "image/p3.png",
+        "sponsore_img": "image/p4.png"
+      }
+    },
+    {
+      "event_id": "12",
+      "cid": "4",
+      "event_title": "Obra de teatro 3",
+      "event_img": "image/p10.png",
+      "event_address": "Dirección del festival de cine",
+      "IS_BOOKMARK": 0,
+      "member_list": ["image/p1.png", "image/p4.png", "image/p2.png"],
+      "total_member_list": 30,
+      "cover_img": "image/verve.png", 
+      "sponsore_list": {
+        "sponsore_img": "image/p3.png",
+        "sponsore_img": "image/p4.png",
+        "sponsore_img": "image/p1.png"
+      }
     }
   ]
 }
 ''';
+
 
 
 final getData = GetStorage();
@@ -286,7 +434,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             //! ------ Home AppBar ------
             homeAppbar(),
             SizedBox(height: height / 60),
-            //Text('data'),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
@@ -1010,7 +1157,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 ),
                 SizedBox(width: Get.width * 0.02),
                 Text(
-                  catList[i]["categoria"], // Usar el nombre correcto del campo
+                  catList[i]["title"], // Usar el nombre correcto del campo
                   style: TextStyle(
                     fontFamily: 'Gilroy Medium',
                     color: notifire.textcolor,
