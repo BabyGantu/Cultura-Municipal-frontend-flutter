@@ -68,7 +68,6 @@ const String categoriasJson = '''
 }
 ''';
 
-
 const String trendingEventsJson = '''
 {
   "events": [
@@ -78,6 +77,7 @@ const String trendingEventsJson = '''
       "event_title": "Evento de arte 1",
       "event_img": "image/protection.png",
       "event_address": "Dirección del evento de arte",
+      "event_sdate": "20-04-2024",
       "IS_BOOKMARK": 1,
       "member_list": ["image/p2.png", "image/p1.png", "image/p3.png"],
       "total_member_list": 20,
@@ -93,6 +93,7 @@ const String trendingEventsJson = '''
       "event_title": "Evento de arte 2",
       "event_img": "image/event.png",
       "event_address": "Dirección del concierto de música",
+      "event_sdate": "25-04-2024",
       "IS_BOOKMARK": 0,
       "member_list": ["image/p1.png", "image/p4.png", "image/p2.png"],
       "total_member_list": 15,
@@ -110,6 +111,7 @@ const String trendingEventsJson = '''
       "event_title": "Evento de arte 3",
       "event_img": "image/p10.png",
       "event_address": "Dirección del festival de cine",
+      "event_sdate": "30-04-2024",
       "IS_BOOKMARK": 1,
       "member_list": ["image/p1.png", "image/p4.png", "image/p2.png"],
       "total_member_list": 30,
@@ -126,6 +128,7 @@ const String trendingEventsJson = '''
       "event_title": "Concierto de música 1",
       "event_img": "image/pay.png",
       "event_address": "Dirección de la obra de teatro",
+      "event_sdate": "22-04-2024",
       "IS_BOOKMARK": 0,
       "member_list": ["image/p4.png", "image/p3.png", "image/p1.png"],
       "total_member_list": 10,
@@ -144,6 +147,7 @@ const String trendingEventsJson = '''
       "event_title": "Concierto de música 2",
       "event_img": "image/event.png",
       "event_address": "Dirección del concierto de música",
+      "event_sdate": "28-04-2024",
       "IS_BOOKMARK": 0,
       "member_list": ["image/p1.png", "image/p4.png", "image/p2.png"],
       "total_member_list": 15,
@@ -161,6 +165,7 @@ const String trendingEventsJson = '''
       "event_title": "Concierto de música 3",
       "event_img": "image/protection.png",
       "event_address": "Dirección del concierto de música",
+      "event_sdate": "02-05-2024",
       "IS_BOOKMARK": 0,
       "member_list": ["image/p1.png", "image/p2.png", "image/p3.png"],
       "total_member_list": 12,
@@ -178,6 +183,7 @@ const String trendingEventsJson = '''
       "event_title": "Festival de cine 1",
       "event_img": "image/pay.png",
       "event_address": "Dirección de la obra de teatro",
+      "event_sdate": "18-04-2024",
       "IS_BOOKMARK": 0,
       "member_list": ["image/p4.png", "image/p3.png", "image/p1.png"],
       "total_member_list": 10,
@@ -196,6 +202,7 @@ const String trendingEventsJson = '''
       "event_title": "Festival de cine 2",
       "event_img": "image/event.png",
       "event_address": "Dirección del concierto de música",
+      "event_sdate": "16-04-2024",
       "IS_BOOKMARK": 0,
       "member_list": ["image/p1.png", "image/p4.png", "image/p2.png"],
       "total_member_list": 15,
@@ -213,6 +220,7 @@ const String trendingEventsJson = '''
       "event_title": "Festival de cine 3",
       "event_img": "image/protection.png",
       "event_address": "Dirección del concierto de música",
+      "event_sdate": "24-04-2024",
       "IS_BOOKMARK": 0,
       "member_list": ["image/p1.png", "image/p2.png", "image/p3.png"],
       "total_member_list": 12,
@@ -230,6 +238,7 @@ const String trendingEventsJson = '''
       "event_title": "Obra de teatro 1",
       "event_img": "image/protection.png",
       "event_address": "Dirección de la obra de teatro",
+      "event_sdate": "27-04-2024",
       "IS_BOOKMARK": 0,
       "member_list": ["image/p2.png", "image/p1.png", "image/p3.png"],
       "total_member_list": 20,
@@ -245,6 +254,7 @@ const String trendingEventsJson = '''
       "event_title": "Obra de teatro 2",
       "event_img": "image/event.png",
       "event_address": "Dirección del concierto de música",
+      "event_sdate": "29-04-2024",
       "IS_BOOKMARK": 0,
       "member_list": ["image/p1.png", "image/p4.png", "image/p2.png"],
       "total_member_list": 15,
@@ -262,6 +272,7 @@ const String trendingEventsJson = '''
       "event_title": "Obra de teatro 3",
       "event_img": "image/p10.png",
       "event_address": "Dirección del festival de cine",
+      "event_sdate": "01-05-2024",
       "IS_BOOKMARK": 0,
       "member_list": ["image/p1.png", "image/p4.png", "image/p2.png"],
       "total_member_list": 30,
@@ -275,8 +286,6 @@ const String trendingEventsJson = '''
   ]
 }
 ''';
-
-
 
 final getData = GetStorage();
 
@@ -301,10 +310,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   List<dynamic> upcomingEvent = [];
   List<dynamic> nearbyEvent = [];
   List<dynamic> thisMonthEvent = [];
-
-
-
-
 
   getdarkmodepreviousstate() async {
     final prefs = await SharedPreferences.getInstance();
@@ -334,6 +339,14 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     });
   }
 
+  void cargarUpcomingEvent() {
+    // Decodifica la cadena JSON y guarda los eventos en la lista eventosList
+    Map<String, dynamic> upcomingEventData = json.decode(trendingEventsJson);
+    setState(() {
+      upcomingEvent = upcomingEventData['events'];
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -346,8 +359,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         : null;*/
     cargarCategorias();
     cargartrendingEvent();
+    cargarUpcomingEvent();
     initPlatformState();
-
   }
 
   Future<void> initPlatformState() async {
@@ -357,9 +370,9 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       print("Accepted OSPermissionStateChanges : $changes");
     });
 
-
     print("--------------__uID : ${getData.read("UserLogin")["id"]}");
-    await OneSignal.User.addTagWithKey("storeid", getData.read("UserLogin")["id"]);
+    await OneSignal.User.addTagWithKey(
+        "storeid", getData.read("UserLogin")["id"]);
   }
 
   void getPackage() async {
@@ -429,7 +442,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     return Scaffold(
         backgroundColor: notifire.backgrounde,
         body: Column(
-
           children: [
             //! ------ Home AppBar ------
             homeAppbar(),
@@ -447,25 +459,35 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                           itemCount: categoriasList.length,
                           scrollDirection: Axis.horizontal,
                           itemBuilder: (ctx, i) {
-                            return treding(categoriasList, i); // Llama a la función treding con categoriasList
+                            return treding(categoriasList,
+                                i); // Llama a la función treding con categoriasList
                           },
                         ),
                       ),
                     ),
                     SizedBox(height: Get.height * 0.03),
 
-                    //! --------- trndingList ---------
-                    //trendingEvent.isNotEmpty?
+                    //! ---------- upcoming Events --------
+
+                    //upcomingEvent.isNotEmpty?
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12),
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
                       child: Row(
                         children: [
-                          Text("Trending Events".tr,style: TextStyle(fontFamily: 'Gilroy Bold', color: notifire.textcolor, fontSize: 16, fontWeight: FontWeight.w600)),
+                          Text("Upcoming Events".tr,
+                              style: TextStyle(
+                                  fontFamily: 'Gilroy Bold',
+                                  color: notifire.textcolor,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600)),
                           const Spacer(),
                           GestureDetector(
                             onTap: () {
-                              Get.to(() => All(title: "Trending Events".tr, eventList: trendingEvent), duration: Duration.zero);
+                              Get.to(
+                                  () => All(
+                                      title: "Upcoming Events".tr,
+                                      eventList: upcomingEvent),
+                                  duration: Duration.zero);
                             },
                             child: Container(
                               color: Colors.transparent,
@@ -473,17 +495,12 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                 children: [
                                   Text("See All".tr,
                                       style: TextStyle(
-                                          fontFamily:
-                                          'Gilroy Medium',
-                                          color: const Color(
-                                              0xff747688),
+                                          fontFamily: 'Gilroy Medium',
+                                          color: const Color(0xff747688),
                                           fontSize: 14,
                                           fontWeight: FontWeight.w400)),
-                                  const Icon(
-                                      Icons
-                                          .arrow_forward_ios_rounded,
-                                      size: 14,
-                                      color: Color(0xff747688)),
+                                  const Icon(Icons.arrow_forward_ios_rounded,
+                                      size: 14, color: Color(0xff747688)),
                                 ],
                               ),
                             ),
@@ -491,7 +508,171 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                         ],
                       ),
                     ),
-                        //: const SizedBox(),
+                    //: const SizedBox(),
+
+                    SizedBox(height: height / 60),
+
+                    //! ----------- Upcoming Events List -------------
+                    Ink(
+                      //height: Get.height * 0.01,
+                      height: Get.height * 0.37,
+                      child: ListView.builder(
+                        itemCount: upcomingEvent.length,
+                        scrollDirection: Axis.horizontal,
+                        itemBuilder: (ctx, i) {
+                          return events(upcomingEvent[i], i);
+                        },
+                      ),
+                    ),
+                    SizedBox(height: height / 60),
+                    //! -------- This Month Event  --------
+                    //thisMonthEvent.isNotEmpty?
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Row(
+                        children: [
+                          Text("Event This Month".tr,
+                              style: TextStyle(
+                                  fontFamily: 'Gilroy Bold',
+                                  color: notifire.getdarkscolor,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600)),
+                          const Spacer(),
+                          GestureDetector(
+                            onTap: () {
+                              Get.to(
+                                  () => All(
+                                      title: "Event This Month".tr,
+                                      eventList: thisMonthEvent),
+                                  duration: Duration.zero);
+                            },
+                            child: Container(
+                              color: Colors.transparent,
+                              child: Row(
+                                children: [
+                                  Text("See All".tr,
+                                      style: TextStyle(
+                                          fontFamily: 'Gilroy Medium',
+                                          color: const Color(0xff747688),
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w400)),
+                                  const Icon(Icons.arrow_forward_ios_rounded,
+                                      size: 14, color: Color(0xff747688)),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    //: const SizedBox(),
+                    //! monthly event
+                    ListView.builder(
+                      itemCount: thisMonthEvent.length,
+                      padding: const EdgeInsets.only(top: 8),
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (ctx, i) {
+                        return monthly(thisMonthEvent, i);
+                      },
+                    ),
+
+                    SizedBox(height: height / 60),
+                    //! -------- Nearby You Listview  --------
+                    //nearbyEvent.isNotEmpty?
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Row(
+                        children: [
+                          Text(
+                            "Nearby You".tr,
+                            style: TextStyle(
+                                fontFamily: 'Gilroy Bold',
+                                color: notifire.textcolor,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600),
+                          ),
+                          const Spacer(),
+                          GestureDetector(
+                            onTap: () {
+                              Get.to(
+                                  () => All(
+                                      title: "Nearby You".tr,
+                                      eventList: nearbyEvent),
+                                  duration: Duration.zero);
+                            },
+                            child: Container(
+                              color: Colors.transparent,
+                              child: Row(
+                                children: [
+                                  Text("See All".tr,
+                                      style: TextStyle(
+                                          fontFamily: 'Gilroy Medium',
+                                          color: const Color(0xff747688),
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w400)),
+                                  const Icon(Icons.arrow_forward_ios_rounded,
+                                      size: 14, color: Color(0xff747688)),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    //: const SizedBox(),
+                    ListView.builder(
+                      padding: EdgeInsets.zero,
+                      itemCount: nearbyEvent.length,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (ctx, i) {
+                        return conference(nearbyEvent, i);
+                      },
+                    ),
+                    SizedBox(height: Get.height * 0.03),
+
+                    //! --------- trndingList ---------
+                    //trendingEvent.isNotEmpty?
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Row(
+                        children: [
+                          Text("Trending Events".tr,
+                              style: TextStyle(
+                                  fontFamily: 'Gilroy Bold',
+                                  color: notifire.textcolor,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600)),
+                          const Spacer(),
+                          GestureDetector(
+                            onTap: () {
+                              Get.to(
+                                  () => All(
+                                      title: "Trending Events".tr,
+                                      eventList: trendingEvent),
+                                  duration: Duration.zero);
+                            },
+                            child: Container(
+                              color: Colors.transparent,
+                              child: Row(
+                                children: [
+                                  Text("See All".tr,
+                                      style: TextStyle(
+                                          fontFamily: 'Gilroy Medium',
+                                          color: const Color(0xff747688),
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.w400)),
+                                  const Icon(Icons.arrow_forward_ios_rounded,
+                                      size: 14, color: Color(0xff747688)),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    //: const SizedBox(),
                     SizedBox(height: Get.height * 0.03),
                     //! --------- trndingList ---------
                     Padding(
@@ -509,84 +690,19 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                     ),
 
                     SizedBox(height: height / 60),
-                    //! ---------- upcoming Events --------
-
-                    //upcomingEvent.isNotEmpty?
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12),
-                      child: Row(
-                        children: [
-                          Text("Upcoming Events".tr,
-                              style: TextStyle(
-                                  fontFamily: 'Gilroy Bold',
-                                  color: notifire.textcolor,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600)),
-                          const Spacer(),
-                          GestureDetector(
-                            onTap: () {
-                              Get.to(
-                                      () => All(
-                                      title: "Upcoming Events".tr,
-                                      eventList:
-                                      upcomingEvent),
-                                  duration: Duration.zero);
-                            },
-                            child: Container(
-                              color: Colors.transparent,
-                              child: Row(
-                                children: [
-                                  Text("See All".tr,
-                                      style: TextStyle(
-                                          fontFamily:
-                                          'Gilroy Medium',
-                                          color: const Color(
-                                              0xff747688),
-                                          fontSize: 14,
-                                          fontWeight:
-                                          FontWeight.w400)),
-                                  const Icon(
-                                      Icons
-                                          .arrow_forward_ios_rounded,
-                                      size: 14,
-                                      color: Color(0xff747688)),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                        //: const SizedBox(),
-
-                    SizedBox(height: height / 60),
-
-                    //! ----------- Upcoming Events List -------------
-                    Ink(
-                      //height: Get.height * 0.01,
-                      height: Get.height * 0.37,
-                      child: ListView.builder(
-                        itemCount: upcomingEvent.length,
-                        scrollDirection: Axis.horizontal,
-                        itemBuilder: (ctx, i) {
-                          return events(upcomingEvent[i], i);
-                        },
-                      ),
-                    ),
-                    SizedBox(height: height / 60),
 
                     //! --------- invite share -----------
                     InkWell(
                       onTap: share,
                       child: Padding(
-                        padding:
-                        const EdgeInsets.symmetric(horizontal: 10),
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
                         child: Container(
                           decoration: BoxDecoration(
-                              color: notifire.isDark ? notifire.containercolore : Color(0xffd6feff),
-                              borderRadius: const BorderRadius.all(
-                                  Radius.circular(10))),
+                              color: notifire.isDark
+                                  ? notifire.containercolore
+                                  : Color(0xffd6feff),
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(10))),
                           height: height / 6,
                           width: double.infinity,
                           child: Row(
@@ -594,10 +710,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                               Padding(
                                 padding: const EdgeInsets.only(left: 8),
                                 child: Column(
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.start,
-                                  mainAxisAlignment:
-                                  MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
                                       "Invite your friends".tr,
@@ -609,6 +723,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                           fontWeight: FontWeight.w700),
                                     ),
                                     SizedBox(height: Get.height * 0.01),
+                                    /*
                                     Text(
                                       "Get \$20 for ticket".tr,
                                       style: TextStyle(
@@ -617,6 +732,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                           fontSize: 12,
                                           fontWeight: FontWeight.w500),
                                     ),
+                                     */
                                     SizedBox(height: Get.height * 0.01),
                                     GestureDetector(
                                       child: Container(
@@ -625,17 +741,15 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                         decoration: BoxDecoration(
                                             color: notifire.getbluecolor,
                                             borderRadius:
-                                            BorderRadius.circular(4)),
+                                                BorderRadius.circular(4)),
                                         child: Center(
                                           child: Text(
                                             "INVITE".tr,
                                             style: TextStyle(
-                                                fontFamily:
-                                                'Gilroy Medium',
+                                                fontFamily: 'Gilroy Medium',
                                                 color: Colors.white,
                                                 fontSize: 10,
-                                                fontWeight:
-                                                FontWeight.w700),
+                                                fontWeight: FontWeight.w700),
                                           ),
                                         ),
                                       ),
@@ -651,130 +765,1109 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                       ),
                     ),
                     SizedBox(height: height / 60),
-
-                    //! -------- Nearby You Listview  --------
-                    //nearbyEvent.isNotEmpty?
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12),
-                      child: Row(
-                        children: [
-                          Text(
-                            "Nearby You".tr,
-                            style: TextStyle(
-                                fontFamily: 'Gilroy Bold',
-                                color: notifire.textcolor,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600),
-                          ),
-                          const Spacer(),
-                          GestureDetector(
-                            onTap: () {
-                              Get.to(
-                                      () => All(
-                                      title: "Nearby You".tr,
-                                      eventList: nearbyEvent),
-                                  duration: Duration.zero);
-                            },
-                            child: Container(
-                              color: Colors.transparent,
-                              child: Row(
-                                children: [
-                                  Text("See All".tr,
-                                      style: TextStyle(
-                                          fontFamily:
-                                          'Gilroy Medium',
-                                          color: const Color(
-                                              0xff747688),
-                                          fontSize: 14,
-                                          fontWeight:
-                                          FontWeight.w400)),
-                                  const Icon(
-                                      Icons
-                                          .arrow_forward_ios_rounded,
-                                      size: 14,
-                                      color: Color(0xff747688)),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                        //: const SizedBox(),
-                    ListView.builder(
-                      padding: EdgeInsets.zero,
-                      itemCount: nearbyEvent.length,
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (ctx, i) {
-                        return conference(nearbyEvent, i);
-                      },
-                    ),
-                    SizedBox(height: Get.height * 0.03),
-
-                    SizedBox(height: height / 60),
-                    //thisMonthEvent.isNotEmpty?
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12),
-                      child: Row(
-                        children: [
-                          Text("Event This Month".tr,
-                              style: TextStyle(
-                                  fontFamily: 'Gilroy Bold',
-                                  color: notifire.getdarkscolor,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600)),
-                          const Spacer(),
-                          GestureDetector(
-                            onTap: () {
-                              Get.to(
-                                      () => All(
-                                      title: "Event This Month".tr,
-                                      eventList:
-                                      thisMonthEvent),
-                                  duration: Duration.zero);
-                            },
-                            child: Container(
-                              color: Colors.transparent,
-                              child: Row(
-                                children: [
-                                  Text("See All".tr,
-                                      style: TextStyle(
-                                          fontFamily:
-                                          'Gilroy Medium',
-                                          color: const Color(
-                                              0xff747688),
-                                          fontSize: 14,
-                                          fontWeight:
-                                          FontWeight.w400)),
-                                  const Icon(
-                                      Icons
-                                          .arrow_forward_ios_rounded,
-                                      size: 14,
-                                      color: Color(0xff747688)),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                        //: const SizedBox(),
-                    //! monthly event
-                    ListView.builder(
-                      itemCount: thisMonthEvent.length,
-                      padding: const EdgeInsets.only(top: 8),
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (ctx, i) {
-                        return monthly(thisMonthEvent, i);
-                      },
-                    ),
                   ],
                 ),
               ),
+
+            )
+          ],
+        ));
+  }
+
+  Widget treding(List<dynamic> catList, int i) {
+    return InkWell(
+      onTap: () {
+        Get.to(() => TrndingPage(catdata: catList[i]));
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6),
+        child: Container(
+          decoration: BoxDecoration(
+            color: notifire.getprimerycolor,
+            border: Border.all(color: notifire.bordercolore, width: 0.5),
+            borderRadius: BorderRadius.circular(25),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.only(left: 4, right: 8),
+            child: Row(
+              children: [
+                Image(
+                  image: AssetImage(catList[i]
+                      ["image"]), // Cambiado de NetworkImage a AssetImage
+                  height: 30,
+                ),
+                SizedBox(width: Get.width * 0.02),
+                Text(
+                  catList[i]["title"], // Usar el nombre correcto del campo
+                  style: TextStyle(
+                    fontFamily: 'Gilroy Medium',
+                    color: notifire.textcolor,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+/*
+  treding(catList, i) {
+    return InkWell(
+      onTap: () {
+        Get.to(() => TrndingPage(catdata: catList[i]));
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 6),
+        child: Container(
+          decoration: BoxDecoration(
+              color: notifire.getprimerycolor,
+              border: Border.all(color: notifire.bordercolore, width: 0.5),
+              borderRadius: BorderRadius.circular(25)),
+          child: Padding(
+            padding: const EdgeInsets.only(left: 4, right: 8),
+            child: Row(
+              children: [
+                Image(
+                    image:
+                        NetworkImage(Config.base_url + catList[i]["cat_img"]),
+                    height: 30),
+                SizedBox(width: Get.width * 0.02),
+                Text(catList[i]["title"],
+                    style: TextStyle(
+                        fontFamily: 'Gilroy Medium',
+                        color: notifire.textcolor,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600)),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+ */
+
+  imgloading() {
+    return Container(
+      height: Get.height * 0.20,
+      width: Get.width * 0.62,
+      decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          image: const DecorationImage(
+              image: AssetImage("image/skeleton.gif"), fit: BoxFit.fill)),
+    );
+  }
+
+  tredingEvents(tEvent, i) {
+    return InkWell(
+      onTap: () {
+        //Get.to(() => EventsDetails(eid: tEvent[i]["event_id"]), duration: Duration.zero);
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: SizedBox(
+          width: Get.width * 0.60,
+          child: Stack(
+            children: [
+              ClipRRect(
+                borderRadius: const BorderRadius.all(Radius.circular(15)),
+                child: SizedBox(
+                  height: Get.height * 0.20,
+                  width: Get.width * 0.62,
+                  child: Image.asset(
+                    tEvent[i]["event_img"], // Ruta de la imagen en assets
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 8,
+                right: Get.width * 0.02,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(100 / 2),
+                  child: BackdropFilter(
+                    blendMode: BlendMode.srcIn,
+                    filter: ImageFilter.blur(
+                      sigmaX: 10, // mess with this to update blur
+                      sigmaY: 10,
+                    ),
+                    child: CircleAvatar(
+                      radius: 18,
+                      backgroundColor: Colors.transparent,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 3),
+                        child: LikeButton(
+                          onTap: (val) {
+                            return onLikeButtonTapped(
+                                val, tEvent[i]["event_id"]);
+                          },
+                          likeBuilder: (bool isLiked) {
+                            return tEvent[i]["IS_BOOKMARK"] != 0
+                                ? const Icon(Icons.favorite,
+                                    color: Color(0xffF0635A), size: 22)
+                                : const Icon(Icons.favorite_border,
+                                    color: Color(0xffF0635A), size: 22);
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  height: Get.height * 0.12,
+                  width: Get.width * 0.56,
+                  decoration: BoxDecoration(
+                    color: notifire.getprimerycolor,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: notifire.bordercolore),
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(height: Get.height * 0.01),
+                        Ink(
+                          width: Get.width * 0.50,
+                          child: Text(
+                            tEvent[i]["event_title"],
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontFamily: 'Gilroy Medium',
+                              color: notifire.textcolor,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: Get.height * 0.006),
+                        Row(
+                          children: [
+                            Image.asset("image/location.png",
+                                height: height / 50),
+                            SizedBox(width: Get.width * 0.01),
+                            Ink(
+                              width: Get.width * 0.45,
+                              child: Text(
+                                tEvent[i]["event_address"],
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontFamily: 'Gilroy Medium',
+                                  color: Colors.grey,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: Get.height * 0.008),
+                        Row(
+                          children: [
+                            tEvent[i]["sponsore_list"] != null
+                                ? CircleAvatar(
+                                    radius: 16.0,
+                                    backgroundImage: AssetImage(tEvent[i]
+                                        ["sponsore_list"]["sponsore_img"]),
+                                    backgroundColor: Colors.transparent,
+                                  )
+                                : const SizedBox(),
+                            SizedBox(width: Get.width * 0.01),
+                            Text(
+                              "Sponsor".tr,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontFamily: 'Gilroy Medium',
+                                color: Colors.grey,
+                                fontSize: 14,
+                              ),
+                            ),
+                            Spacer(),
+                            Container(
+                              height: Get.height * 0.04,
+                              width: Get.width * 0.20,
+                              decoration: BoxDecoration(
+                                color: buttonColor.withOpacity(0.6),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  "Join".tr,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontFamily: 'Gilroy Bold',
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  homeAppbar() {
+    return Container(
+      decoration: BoxDecoration(
+          color: notifire.homecontainercolore,
+          borderRadius: const BorderRadius.only(
+              bottomRight: Radius.circular(30),
+              bottomLeft: Radius.circular(30))),
+      height: Get.height * 0.18,
+      child: Column(
+        children: [
+          SizedBox(height: Get.height * 0.055),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Row(
+              children: [
+                Container(
+                  height: Get.height * 0.06,
+                  color: Colors.transparent,
+                  child: Padding(
+                      padding: const EdgeInsets.all(7),
+                      child: Image.asset("image/logo.png")),
+                ),
+                Expanded(
+                  child: Column(
+                    children: [
+                      Text(
+                        "Current Location".tr,
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontFamily: 'Gilroy Medium',
+                            fontWeight: FontWeight.w400),
+                      ),
+                      Text(
+                        getData.read("CurentAdd") ?? "",
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontFamily: 'Gilroy Medium',
+                            fontWeight: FontWeight.w600),
+                      ),
+                    ],
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    //! ------ Notification Page -----
+                    Get.to(() => const Note(), duration: Duration.zero);
+                  },
+                  child: Image.asset("image/bell.png", height: height / 20),
+                ),
+              ],
+            ),
+          ),
+          SizedBox(height: Get.height * 0.015),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 22),
+            child: InkWell(
+              onTap: () {
+                Get.to(() => const SearchPage2());
+              },
+              child: Row(
+                children: [
+                  Image.asset("image/search.png", height: height / 30),
+                  SizedBox(width: width / 90),
+                  Container(width: 1, height: height / 40, color: Colors.grey),
+                  SizedBox(width: width / 90),
+                  //! ------ Search TextField -------
+                  Text(
+                    "Search...".tr,
+                    style: TextStyle(
+                        fontFamily: 'Gilroy Medium',
+                        color: const Color(0xffd2d2db),
+                        fontSize: 15),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<String> _mImages = [];
+
+  Widget monthly(mEvent, i) {
+    _mImages.clear();
+    mEvent[i]["member_list"].forEach((e) {
+      _mImages.add(Config.base_url + e);
+    });
+    int mEventcount = int.parse(mEvent[i]["total_member_list"].toString()) > 3
+        ? 3
+        : int.parse(mEvent[i]["total_member_list"].toString());
+    for (var i = 0; i < mEventcount; i++) {
+      _mImages.add(Config.userImage);
+    }
+    return GestureDetector(
+      onTap: () {
+        Get.to(() => EventsDetails(eid: mEvent[i]["event_id"]),
+            duration: Duration.zero);
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14),
+        child: Card(
+          color: notifire.getprimerycolor,
+          child: Container(
+            decoration: BoxDecoration(
+                color: notifire.getprimerycolor,
+                borderRadius: const BorderRadius.all(Radius.circular(10))),
+            height: height / 6.5,
+            width: width,
+            child: Row(
+              children: [
+                Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(
+                          left: 8, right: 8, bottom: 5, top: 5),
+                      child: Row(
+                        children: [
+                          ClipRRect(
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(16)),
+                            child: SizedBox(
+                              width: width / 5,
+                              height: height / 8,
+                              child: FadeInImage.assetNetwork(
+                                  fadeInCurve: Curves.easeInCirc,
+                                  placeholder: "image/skeleton.gif",
+                                  fit: BoxFit.cover,
+                                  image:
+                                      Config.base_url + mEvent[i]["event_img"]),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                width: Get.width * 0.45,
+                                child: Text(
+                                  mEvent[i]["event_title"],
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                      fontFamily: 'Gilroy Medium',
+                                      color: notifire.getdarkscolor,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                              ),
+                              SizedBox(height: height / 100),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Image.asset("image/location.png",
+                                      height: height / 50),
+                                  SizedBox(width: Get.width * 0.01),
+                                  SizedBox(
+                                    width: Get.width * 0.45,
+                                    child: Text(
+                                      mEvent[i]["event_address"],
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                          fontFamily: 'Gilroy Medium',
+                                          color: Colors.grey,
+                                          fontSize: 10),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: height / 100),
+                              mEvent[i]["total_member_list"] != "0"
+                                  ? Row(
+                                      children: [
+                                        FlutterImageStack(
+                                          totalCount: 0,
+                                          itemRadius: 30,
+                                          itemCount: 3,
+                                          itemBorderWidth: 1.5,
+                                          imageList: _mImages,
+                                        ),
+                                        SizedBox(width: Get.width * 0.01),
+                                        Text(
+                                            "${mEvent[i]["total_member_list"]} + Joined",
+                                            style: TextStyle(
+                                              color: const Color(0xffF0635A),
+                                              fontSize: 12,
+                                              fontFamily: 'Gilroy Bold',
+                                            )),
+                                      ],
+                                    )
+                                  : const SizedBox(),
+                            ],
+                          ),
+                          SizedBox(height: height / 80)
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                // const Spacer(),
+                Column(
+                  children: [
+                    SizedBox(height: height / 80),
+                    Container(
+                      decoration: BoxDecoration(
+                          color: notifire.getpinkcolor,
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(10))),
+                      height: height / 12,
+                      width: width / 10,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Center(
+                            child: SizedBox(
+                              width: width / 11,
+                              child: Text(
+                                mEvent[i]["event_sdate"],
+                                maxLines: 2,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    color: notifire.getdarkscolor,
+                                    fontSize: 14,
+                                    fontFamily: 'Gilroy Bold',
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(width: width / 40),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget rights(se, name1, name, img, txtcolor, ce) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Image.asset(img, height: height / 15),
+        SizedBox(width: width / 20),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              name1,
+              style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
+                  fontFamily: 'Gilroy Bold',
+                  color: txtcolor),
+            ),
+            Text(
+              name,
+              style: TextStyle(
+                  fontSize: 11,
+                  fontFamily: 'Gilroy Normal',
+                  color: Colors.grey),
+            ),
+          ],
+        ),
+        se,
+        ce
+      ],
+    );
+  }
+
+  Widget conference(nearby, i) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: GestureDetector(
+        onTap: () {
+          Get.to(() => EventsDetails(eid: nearby[i]["event_id"]),
+              duration: Duration.zero);
+        },
+        child: Container(
+          margin: const EdgeInsets.symmetric(vertical: 6),
+          decoration: BoxDecoration(
+              color: notifire.containercolore,
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
+              border: Border.all(color: notifire.bordercolore)),
+          height: height / 7,
+          width: width,
+          child: Padding(
+            padding:
+                const EdgeInsets.only(left: 8, right: 6, bottom: 5, top: 5),
+            child: Row(children: [
+              ClipRRect(
+                borderRadius: const BorderRadius.all(Radius.circular(16)),
+                child: SizedBox(
+                  width: width / 5,
+                  height: height / 8,
+                  child: FadeInImage.assetNetwork(
+                      fadeInCurve: Curves.easeInCirc,
+                      placeholder: "image/skeleton.gif",
+                      fit: BoxFit.cover,
+                      image: Config.base_url + nearby[i]["event_img"]),
+                ),
+              ),
+              Column(children: [
+                SizedBox(height: height / 200),
+                Row(
+                  children: [
+                    SizedBox(width: width / 50),
+                    Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              SizedBox(
+                                width: Get.width * 0.35,
+                                child: Text(
+                                  nearby[i]["event_sdate"],
+                                  style: const TextStyle(
+                                      fontFamily: 'Gilroy Medium',
+                                      color: Color(0xff4A43EC),
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                              ),
+                              SizedBox(width: width * 0.21),
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(100 / 2),
+                                child: BackdropFilter(
+                                  blendMode: BlendMode.srcIn,
+                                  filter: ImageFilter.blur(
+                                    sigmaX: 10, // mess with this to update blur
+                                    sigmaY: 10,
+                                  ),
+                                  child: CircleAvatar(
+                                    radius: 18,
+                                    backgroundColor:
+                                        Colors.grey.withOpacity(0.2),
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(left: 3),
+                                      child: LikeButton(
+                                        onTap: (val) {
+                                          return onLikeButtonTapped(
+                                              val, nearby[i]["event_id"]);
+                                        },
+                                        likeBuilder: (bool isLiked) {
+                                          return nearby[i]["IS_BOOKMARK"] != 0
+                                              ? const Icon(Icons.favorite,
+                                                  color: Color(0xffF0635A),
+                                                  size: 22)
+                                              : const Icon(
+                                                  Icons.favorite_border,
+                                                  color: Color(0xffF0635A),
+                                                  size: 22);
+                                        },
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            width: Get.width * 0.55,
+                            child: Text(nearby[i]["event_title"],
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    fontFamily: 'Gilroy Medium',
+                                    color: notifire.textcolor,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600)),
+                          ),
+                          SizedBox(height: height / 200),
+                          Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Image.asset(
+                                  "image/location.png",
+                                  height: height / 50,
+                                ),
+                                SizedBox(width: Get.width * 0.01),
+                                SizedBox(
+                                  width: Get.width * 0.56,
+                                  child: Text(
+                                    nearby[i]["event_address"],
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        fontFamily: 'Gilroy Medium',
+                                        color: Colors.grey,
+                                        fontSize: 10),
+                                  ),
+                                ),
+                              ]),
+                        ]),
+                  ],
+                ),
+                SizedBox(height: height / 80),
+              ])
+            ]),
+          ),
+        ),
+      ),
+    );
+  }
+
+  List<String> upMember = [];
+  Widget events(upEvent, i) {
+    /*
+    upMember.clear();
+    upEvent["member_list"].forEach((e) {
+      upMember.add(Config.base_url + e);
+    });
+
+     */
+    int membercount = int.parse(upEvent["total_member_list"].toString()) > 3
+        ? 3
+        : int.parse(upEvent["total_member_list"].toString());
+    /*
+    for (var i = 0; i < membercount; i++) {
+      upMember.add(Config.userImage);
+    }
+
+     */
+    return Stack(children: [
+      InkWell(
+        onTap: () {
+          Get.to(() => EventsDetails(eid: upEvent["event_id"]),
+              duration: Duration.zero);
+        },
+        child: Container(
+          color: Colors.transparent,
+          width: width / 1.55,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            child: Container(
+              decoration: BoxDecoration(
+                  border: Border.all(color: notifire.bordercolore),
+                  borderRadius: BorderRadius.circular(17)),
+              child: Stack(children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      height: height / 5.5,
+                      width: width / 1.7,
+                      decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(15)),
+                      ),
+                      child: Stack(
+                        children: [
+                          //! Event Image
+                          ClipRRect(
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(16)),
+
+                            /*
+                            child: SizedBox(
+                              height: Get.height * 0.20,
+                              width: Get.width * 0.62,
+                              child: FadeInImage.assetNetwork(
+                                  fadeInCurve: Curves.easeInCirc,
+                                  placeholder: "image/skeleton.gif",
+                                  fit: BoxFit.cover,
+                                  image:
+                                  Config.base_url + upEvent["event_img"]),
+                            ),
+
+                             */
+                            child: SizedBox(
+                              height: Get.height * 0.20,
+                              width: Get.width * 0.62,
+                              child: Image.asset(
+                                upEvent["event_img"],
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+
+                          Column(
+                            children: [
+                              SizedBox(height: height / 70),
+                              Row(
+                                children: [
+                                  SizedBox(width: width / 70),
+                                  const Spacer(),
+                                  ClipRRect(
+                                    borderRadius:
+                                        BorderRadius.circular(100 / 2),
+                                    child: BackdropFilter(
+                                      blendMode: BlendMode.srcIn,
+                                      filter: ImageFilter.blur(
+                                        sigmaX:
+                                            10, // mess with this to update blur
+                                        sigmaY: 10,
+                                      ),
+                                      child: CircleAvatar(
+                                        radius: 18,
+                                        backgroundColor: Colors.transparent,
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(left: 3),
+                                          child: LikeButton(
+                                            onTap: (val) {
+                                              return onLikeButtonTapped(
+                                                  val, upEvent["event_id"]);
+                                            },
+                                            likeBuilder: (bool isLiked) {
+                                              return upEvent["IS_BOOKMARK"] != 0
+                                                  ? const Icon(Icons.favorite,
+                                                      color: Color(0xffF0635A),
+                                                      size: 22)
+                                                  : const Icon(
+                                                      Icons.favorite_border,
+                                                      color: Color(0xffF0635A),
+                                                      size: 22);
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: width / 40),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: height / 40),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6),
+                      width: Get.width,
+                      child: Text(
+                        upEvent["event_title"],
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                            fontFamily: 'Gilroy Medium',
+                            color: notifire.textcolor,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                    SizedBox(height: height / 140),
+                    upEvent["total_member_list"] != "0"
+                        ? Row(
+                            children: [
+                              (upEvent["total_member_list"] != "0" &&
+                                      upMember.isNotEmpty)
+                                  ? FlutterImageStack(
+                                      totalCount: 0,
+                                      itemRadius: 30,
+                                      itemBorderWidth: 1.5,
+                                      imageList: upMember)
+                                  : const Image(
+                                      image: AssetImage("image/user.png"),
+                                      height: 28),
+                              SizedBox(width: Get.width * 0.01),
+                              Text(
+                                "${upEvent["total_member_list"]} + Going",
+                                style: TextStyle(
+                                    color: const Color(0xff5d56f3),
+                                    fontSize: 11,
+                                    fontFamily: 'Gilroy Bold'),
+                              ),
+                            ],
+                          )
+                        : const SizedBox(),
+                    SizedBox(height: height / 60),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 6),
+                      child: Row(
+                        children: [
+                          Image.asset("image/location.png",
+                              height: height / 50),
+                          SizedBox(width: Get.width * 0.01),
+                          SizedBox(
+                            width: Get.width * 0.49,
+                            child: Text(
+                              upEvent["event_address"],
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                  fontFamily: 'Gilroy Medium',
+                                  color: Colors.grey,
+                                  fontSize: 12),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                Column(
+                  children: [
+                    SizedBox(height: height / 6),
+                    Row(children: [
+                      const Spacer(),
+                      Container(
+                        decoration: BoxDecoration(
+                            color: notifire.getprimerycolor,
+                            borderRadius:
+                                const BorderRadius.all(Radius.circular(20))),
+                        height: height / 30,
+                        width: Get.width / 4,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: Get.width / 4,
+                              child: Center(
+                                child: Text(
+                                  upEvent["event_sdate"],
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                      color: const Color(0xffF0635A),
+                                      fontSize: 11,
+                                      fontFamily: 'Gilroy ExtraBold',
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(width: width / 40),
+                    ]),
+                  ],
+                ),
+              ]),
+            ),
+          ),
+        ),
+      ),
+    ]);
+  }
+
+  Future<void> share() async {
+    await FlutterShare.share(
+        title: 'Cultura Municipal App',
+        text: '¡Descubre todo lo que la cultura local tiene para ofrecer con la aplicación oficial de Cultura Municipal! Descárgala ahora y únete a nosotros para celebrar la riqueza y diversidad cultural de nuestra comunidad.',
+        linkUrl: 'https://play.google.com/store/apps/details?id=$packageName',
+        chooserTitle: 'Compartir Cultura Municipal');
+  }
+
+
+/*
+  walletrefar() async {
+    var data = {"uid": uID};
+
+    ApiWrapper.dataPost(Config.refardata, data).then((val) {
+      if ((val != null) && (val.isNotEmpty)) {
+        if ((val['ResponseCode'] == "200") && (val['Result'] == "true")) {
+          setState(() {});
+          code = val["code"];
+        } else {
+          setState(() {});
+        }
+      }
+    });
+  }
+  */
+
+/*
+  tredingEvents(tEvent, i) {
+    return InkWell(
+      onTap: () {
+        //Get.to(() => EventsDetails(eid: tEvent[i]["event_id"]), duration: Duration.zero);
+      },
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: SizedBox(
+          width: Get.width * 0.60,
+          child: Stack(
+            children: [
+              ClipRRect(
+                borderRadius: const BorderRadius.all(Radius.circular(15)),
+                child: SizedBox(
+                  height: Get.height * 0.20,
+                  width: Get.width * 0.62,
+                  child: FadeInImage.assetNetwork(
+                      fadeInCurve: Curves.easeInCirc,
+                      placeholder: "image/skeleton.gif",
+                      fit: BoxFit.cover,
+                      image: Config.base_url + tEvent[i]["event_img"]),
+                ),
+              ),
+              Positioned(
+                top: 8,
+                right: Get.width * 0.02,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(100/2),
+                  child: BackdropFilter(
+                    blendMode: BlendMode.srcIn,
+                    filter: ImageFilter.blur(
+                      sigmaX: 10, // mess with this to update blur
+                      sigmaY: 10,
+                    ),
+                    child: CircleAvatar(
+                      radius: 18,
+                      backgroundColor: Colors.transparent,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 3),
+                        child: LikeButton(
+                          onTap: (val) {
+                            return onLikeButtonTapped(val, tEvent[i]["event_id"]);
+                          },
+                          likeBuilder: (bool isLiked) {
+                            return tEvent[i]["IS_BOOKMARK"] != 0
+                                ? const Icon(Icons.favorite,
+                                color: Color(0xffF0635A), size: 22)
+                                : const Icon(Icons.favorite_border,
+                                color: Color(0xffF0635A), size: 22);
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    height: Get.height * 0.12,
+                    width: Get.width * 0.56,
+                    decoration: BoxDecoration(
+                        color: notifire.getprimerycolor,
+                        borderRadius: BorderRadius.circular(16)),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      decoration: BoxDecoration(
+                          border: Border.all(color: notifire.bordercolore),
+                          borderRadius: BorderRadius.circular(15)),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(height: Get.height * 0.01),
+                          Ink(
+                            width: Get.width * 0.50,
+                            child: Text(tEvent[i]["event_title"],
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    fontFamily: 'Gilroy Medium',
+                                    color: notifire.textcolor,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.w600)),
+                          ),
+                          SizedBox(height: Get.height * 0.006),
+                          Row(
+                            children: [
+                              Image.asset("image/location.png",
+                                  height: height / 50),
+                              SizedBox(width: Get.width * 0.01),
+                              Ink(
+                                width: Get.width * 0.45,
+                                child: Text(tEvent[i]["event_address"],
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        fontFamily: 'Gilroy Medium',
+                                        color: Colors.grey,
+                                        fontSize: 14)),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: Get.height * 0.008),
+                          Row(
+                            children: [
+                              tEvent[i]["sponsore_list"] != null
+                                  ? CircleAvatar(
+                                radius: 16.0,
+                                backgroundImage: NetworkImage(
+                                    Config.base_url +
+                                        tEvent[i]["sponsore_list"]
+                                        ["sponsore_img"]),
+                                backgroundColor: Colors.transparent,
+                              )
+                                  : const SizedBox(),
+                              SizedBox(width: Get.width * 0.01),
+                              Text(
+                                "Sponser".tr,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    fontFamily: 'Gilroy Medium',
+                                    color: Colors.grey,
+                                    fontSize: 14),
+                              ),
+                              const Spacer(),
+                              Container(
+                                height: Get.height * 0.04,
+                                width: Get.width * 0.20,
+                                decoration: BoxDecoration(
+                                    color: buttonColor.withOpacity(0.6),
+                                    borderRadius: BorderRadius.circular(10)),
+                                child: Center(
+                                  child: Text(
+                                    "Join".tr,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        fontFamily: 'Gilroy Bold',
+                                        color: Colors.white,
+                                        fontSize: 14),
+                                  ),
+                                ),
+                              )
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                  ))
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+ */
+}
+
 /*
               child: SingleChildScrollView(
                 child: !hData.isLoading
@@ -1119,1081 +2212,3 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               ),
 
  */
-
-
-
-
-
-
-
-
-
-
-            )
-          ],
-        ));
-  }
-
-  Widget treding(List<dynamic> catList, int i) {
-    return InkWell(
-      onTap: () {
-        Get.to(() => TrndingPage(catdata: catList[i]));
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 6),
-        child: Container(
-          decoration: BoxDecoration(
-            color: notifire.getprimerycolor,
-            border: Border.all(color: notifire.bordercolore, width: 0.5),
-            borderRadius: BorderRadius.circular(25),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.only(left: 4, right: 8),
-            child: Row(
-              children: [
-                Image(
-                  image: AssetImage(catList[i]["image"]), // Cambiado de NetworkImage a AssetImage
-                  height: 30,
-                ),
-                SizedBox(width: Get.width * 0.02),
-                Text(
-                  catList[i]["title"], // Usar el nombre correcto del campo
-                  style: TextStyle(
-                    fontFamily: 'Gilroy Medium',
-                    color: notifire.textcolor,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-/*
-  treding(catList, i) {
-    return InkWell(
-      onTap: () {
-        Get.to(() => TrndingPage(catdata: catList[i]));
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 6),
-        child: Container(
-          decoration: BoxDecoration(
-              color: notifire.getprimerycolor,
-              border: Border.all(color: notifire.bordercolore, width: 0.5),
-              borderRadius: BorderRadius.circular(25)),
-          child: Padding(
-            padding: const EdgeInsets.only(left: 4, right: 8),
-            child: Row(
-              children: [
-                Image(
-                    image:
-                        NetworkImage(Config.base_url + catList[i]["cat_img"]),
-                    height: 30),
-                SizedBox(width: Get.width * 0.02),
-                Text(catList[i]["title"],
-                    style: TextStyle(
-                        fontFamily: 'Gilroy Medium',
-                        color: notifire.textcolor,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600)),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
- */
-
-  imgloading() {
-    return Container(
-      height: Get.height * 0.20,
-      width: Get.width * 0.62,
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          image: const DecorationImage(
-              image: AssetImage("image/skeleton.gif"), fit: BoxFit.fill)),
-    );
-  }
-
-  tredingEvents(tEvent, i) {
-    return InkWell(
-      onTap: () {
-        //Get.to(() => EventsDetails(eid: tEvent[i]["event_id"]), duration: Duration.zero);
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: SizedBox(
-          width: Get.width * 0.60,
-          child: Stack(
-            children: [
-              ClipRRect(
-                borderRadius: const BorderRadius.all(Radius.circular(15)),
-                child: SizedBox(
-                  height: Get.height * 0.20,
-                  width: Get.width * 0.62,
-                  child: Image.asset(
-                    tEvent[i]["event_img"], // Ruta de la imagen en assets
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              Positioned(
-                top: 8,
-                right: Get.width * 0.02,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(100/2),
-                  child: BackdropFilter(
-                    blendMode: BlendMode.srcIn,
-                    filter: ImageFilter.blur(
-                      sigmaX: 10, // mess with this to update blur
-                      sigmaY: 10,
-                    ),
-                    child: CircleAvatar(
-                      radius: 18,
-                      backgroundColor: Colors.transparent,
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 3),
-                        child: LikeButton(
-                          onTap: (val) {
-                            return onLikeButtonTapped(val, tEvent[i]["event_id"]);
-                          },
-                          likeBuilder: (bool isLiked) {
-                            return tEvent[i]["IS_BOOKMARK"] != 0
-                                ? const Icon(Icons.favorite, color: Color(0xffF0635A), size: 22)
-                                : const Icon(Icons.favorite_border, color: Color(0xffF0635A), size: 22);
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Container(
-                  height: Get.height * 0.12,
-                  width: Get.width * 0.56,
-                  decoration: BoxDecoration(
-                    color: notifire.getprimerycolor,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: notifire.bordercolore),
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.max,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(height: Get.height * 0.01),
-                        Ink(
-                          width: Get.width * 0.50,
-                          child: Text(
-                            tEvent[i]["event_title"],
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontFamily: 'Gilroy Medium',
-                              color: notifire.textcolor,
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: Get.height * 0.006),
-                        Row(
-                          children: [
-                            Image.asset("image/location.png", height: height / 50),
-                            SizedBox(width: Get.width * 0.01),
-                            Ink(
-                              width: Get.width * 0.45,
-                              child: Text(
-                                tEvent[i]["event_address"],
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontFamily: 'Gilroy Medium',
-                                  color: Colors.grey,
-                                  fontSize: 14,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: Get.height * 0.008),
-                        Row(
-                          children: [
-                            tEvent[i]["sponsore_list"] != null
-                                ? CircleAvatar(
-                              radius: 16.0,
-                              backgroundImage: AssetImage(tEvent[i]["sponsore_list"]["sponsore_img"]),
-                              backgroundColor: Colors.transparent,
-                            )
-                                : const SizedBox(),
-                            SizedBox(width: Get.width * 0.01),
-                            Text(
-                              "Sponsor".tr,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontFamily: 'Gilroy Medium',
-                                color: Colors.grey,
-                                fontSize: 14,
-                              ),
-                            ),
-                            Spacer(),
-                            Container(
-                              height: Get.height * 0.04,
-                              width: Get.width * 0.20,
-                              decoration: BoxDecoration(
-                                color: buttonColor.withOpacity(0.6),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  "Join".tr,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontFamily: 'Gilroy Bold',
-                                    color: Colors.white,
-                                    fontSize: 14,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-
-  homeAppbar() {
-    return Container(
-      decoration: BoxDecoration(
-          color: notifire.homecontainercolore,
-          borderRadius: const BorderRadius.only(
-              bottomRight: Radius.circular(30),
-              bottomLeft: Radius.circular(30))),
-      height: Get.height * 0.18,
-      child: Column(
-        children: [
-          SizedBox(height: Get.height * 0.055),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: Row(
-              children: [
-                Container(
-                  height: Get.height * 0.06,
-                  color: Colors.transparent,
-                  child: Padding(
-                      padding: const EdgeInsets.all(7),
-                      child: Image.asset("image/logo.png")),
-                ),
-                Expanded(
-                  child: Column(
-                    children: [
-                      Text(
-                        "Current Location".tr,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontFamily: 'Gilroy Medium',
-                            fontWeight: FontWeight.w400),
-                      ),
-                      Text(
-                        getData.read("CurentAdd") ?? "",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                            fontFamily: 'Gilroy Medium',
-                            fontWeight: FontWeight.w600),
-                      ),
-                    ],
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    //! ------ Notification Page -----
-                    Get.to(() => const Note(), duration: Duration.zero);
-                  },
-                  child: Image.asset("image/bell.png", height: height / 20),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: Get.height * 0.015),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 22),
-            child: InkWell(
-              onTap: () {
-                Get.to(() => const SearchPage2());
-              },
-              child: Row(
-                children: [
-                  Image.asset("image/search.png", height: height / 30),
-                  SizedBox(width: width / 90),
-                  Container(width: 1, height: height / 40, color: Colors.grey),
-                  SizedBox(width: width / 90),
-                  //! ------ Search TextField -------
-                  Text(
-                    "Search...".tr,
-                    style: TextStyle(
-                        fontFamily: 'Gilroy Medium',
-                        color: const Color(0xffd2d2db),
-                        fontSize: 15),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  List<String> _mImages = [];
-
-  Widget monthly(mEvent, i) {
-    _mImages.clear();
-    mEvent[i]["member_list"].forEach((e) {
-      _mImages.add(Config.base_url + e);
-    });
-    int mEventcount = int.parse(mEvent[i]["total_member_list"].toString()) > 3
-        ? 3
-        : int.parse(mEvent[i]["total_member_list"].toString());
-    for (var i = 0; i < mEventcount; i++) {
-      _mImages.add(Config.userImage);
-    }
-    return GestureDetector(
-      onTap: () {
-        Get.to(() => EventsDetails(eid: mEvent[i]["event_id"]),
-            duration: Duration.zero);
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14),
-        child: Card(
-          color: notifire.getprimerycolor,
-          child: Container(
-            decoration: BoxDecoration(
-                color: notifire.getprimerycolor,
-                borderRadius: const BorderRadius.all(Radius.circular(10))),
-            height: height / 6.5,
-            width: width,
-            child: Row(
-              children: [
-                Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8, right: 8, bottom: 5, top: 5),
-                      child: Row(
-                        children: [
-                          ClipRRect(
-                            borderRadius: const BorderRadius.all(Radius.circular(16)),
-                            child: SizedBox(
-                              width: width / 5,
-                              height: height / 8,
-                              child: FadeInImage.assetNetwork(
-                                  fadeInCurve: Curves.easeInCirc,
-                                  placeholder: "image/skeleton.gif",
-                                  fit: BoxFit.cover,
-                                  image:
-                                      Config.base_url + mEvent[i]["event_img"]),
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              SizedBox(
-                                width: Get.width * 0.45,
-                                child: Text(
-                                  mEvent[i]["event_title"],
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                      fontFamily: 'Gilroy Medium',
-                                      color: notifire.getdarkscolor,
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                              ),
-                              SizedBox(height: height / 100),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Image.asset("image/location.png",
-                                      height: height / 50),
-                                  SizedBox(width: Get.width * 0.01),
-                                  SizedBox(
-                                    width: Get.width * 0.45,
-                                    child: Text(
-                                      mEvent[i]["event_address"],
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                          fontFamily: 'Gilroy Medium',
-                                          color: Colors.grey,
-                                          fontSize: 10),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              SizedBox(height: height / 100),
-                              mEvent[i]["total_member_list"] != "0"
-                                  ? Row(
-                                      children: [
-                                        FlutterImageStack(
-                                          totalCount: 0,
-                                          itemRadius: 30,
-                                          itemCount: 3,
-                                          itemBorderWidth: 1.5,
-                                          imageList: _mImages,
-                                        ),
-                                        SizedBox(width: Get.width * 0.01),
-                                        Text(
-                                            "${mEvent[i]["total_member_list"]} + Joined",
-                                            style: TextStyle(
-                                              color: const Color(0xffF0635A),
-                                              fontSize: 12,
-                                              fontFamily: 'Gilroy Bold',
-                                            )),
-                                      ],
-                                    )
-                                  : const SizedBox(),
-                            ],
-                          ),
-                          SizedBox(height: height / 80)
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                // const Spacer(),
-                Column(
-                  children: [
-                    SizedBox(height: height / 80),
-                    Container(
-                      decoration: BoxDecoration(
-                          color: notifire.getpinkcolor,
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(10))),
-                      height: height / 12,
-                      width: width / 10,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Center(
-                            child: SizedBox(
-                              width: width / 11,
-                              child: Text(
-                                mEvent[i]["event_sdate"],
-                                maxLines: 2,
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    color: notifire.getdarkscolor,
-                                    fontSize: 14,
-                                    fontFamily: 'Gilroy Bold',
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(width: width / 40),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget rights(se, name1, name, img, txtcolor, ce) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Image.asset(img, height: height / 15),
-        SizedBox(width: width / 20),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              name1,
-              style: TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                  fontFamily: 'Gilroy Bold',
-                  color: txtcolor),
-            ),
-            Text(
-              name,
-              style: TextStyle(
-                  fontSize: 11,
-                  fontFamily: 'Gilroy Normal',
-                  color: Colors.grey),
-            ),
-          ],
-        ),
-        se,
-        ce
-      ],
-    );
-  }
-
-  Widget conference(nearby, i) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: GestureDetector(
-        onTap: () {
-          Get.to(() => EventsDetails(eid: nearby[i]["event_id"]),
-              duration: Duration.zero);
-        },
-        child: Container(
-          margin: const EdgeInsets.symmetric(vertical: 6),
-          decoration: BoxDecoration(
-              color: notifire.containercolore,
-              borderRadius: const BorderRadius.all(Radius.circular(10)),
-              border: Border.all(color: notifire.bordercolore)),
-          height: height / 7,
-          width: width,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 8, right: 6, bottom: 5, top: 5),
-            child: Row(children: [
-              ClipRRect(
-                borderRadius: const BorderRadius.all(Radius.circular(16)),
-                child: SizedBox(
-                  width: width / 5,
-                  height: height / 8,
-                  child: FadeInImage.assetNetwork(
-                      fadeInCurve: Curves.easeInCirc,
-                      placeholder: "image/skeleton.gif",
-                      fit: BoxFit.cover,
-                      image: Config.base_url + nearby[i]["event_img"]),
-                ),
-              ),
-              Column(children: [
-                SizedBox(height: height / 200),
-                Row(
-                  children: [
-                    SizedBox(width: width / 50),
-                    Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              SizedBox(
-                                width: Get.width * 0.35,
-                                child: Text(
-                                  nearby[i]["event_sdate"],
-                                  style: const TextStyle(
-                                      fontFamily: 'Gilroy Medium',
-                                      color: Color(0xff4A43EC),
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                              ),
-                              SizedBox(width: width * 0.21),
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(100/2),
-                                child: BackdropFilter(
-                                  blendMode: BlendMode.srcIn,
-                                  filter: ImageFilter.blur(
-                                    sigmaX: 10, // mess with this to update blur
-                                    sigmaY: 10,
-                                  ),
-                                  child: CircleAvatar(
-                                    radius: 18,
-                                    backgroundColor: Colors.grey.withOpacity(0.2 ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.only(left: 3),
-                                      child: LikeButton(
-                                        onTap: (val) {
-                                          return onLikeButtonTapped(
-                                              val, nearby[i]["event_id"]);
-                                        },
-                                        likeBuilder: (bool isLiked) {
-                                          return nearby[i]["IS_BOOKMARK"] != 0
-                                              ? const Icon(Icons.favorite,
-                                                  color: Color(0xffF0635A),
-                                                  size: 22)
-                                              : const Icon(Icons.favorite_border,
-                                                  color: Color(0xffF0635A),
-                                                  size: 22);
-                                        },
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            width: Get.width * 0.55,
-                            child: Text(nearby[i]["event_title"],
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                    fontFamily: 'Gilroy Medium',
-                                    color: notifire.textcolor,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600)),
-                          ),
-                          SizedBox(height: height / 200),
-                          Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Image.asset(
-                                  "image/location.png",
-                                  height: height / 50,
-                                ),
-                                SizedBox(width: Get.width * 0.01),
-                                SizedBox(
-                                  width: Get.width * 0.56,
-                                  child: Text(
-                                    nearby[i]["event_address"],
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                        fontFamily: 'Gilroy Medium',
-                                        color: Colors.grey,
-                                        fontSize: 10),
-                                  ),
-                                ),
-                              ]),
-                        ]),
-                  ],
-                ),
-                SizedBox(height: height / 80),
-              ])
-            ]),
-          ),
-        ),
-      ),
-    );
-  }
-
-  List<String> upMember = [];
-  Widget events(upEvent, i) {
-    upMember.clear();
-    upEvent["member_list"].forEach((e) {
-      upMember.add(Config.base_url + e);
-    });
-    int membercount = int.parse(upEvent["total_member_list"].toString()) > 3
-        ? 3
-        : int.parse(upEvent["total_member_list"].toString());
-    for (var i = 0; i < membercount; i++) {
-      upMember.add(Config.userImage);
-    }
-    return Stack(children: [
-      InkWell(
-        onTap: () {
-          Get.to(() => EventsDetails(eid: upEvent["event_id"]),
-              duration: Duration.zero);
-        },
-        child: Container(
-          color: Colors.transparent,
-          width: width / 1.55,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-            child: Container(
-              decoration: BoxDecoration(
-                  border: Border.all(color: notifire.bordercolore),
-                  borderRadius: BorderRadius.circular(17)),
-              child: Stack(children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      height: height / 5.5,
-                      width: width / 1.7,
-                      decoration: const BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(15)),
-                      ),
-                      child: Stack(
-                        children: [
-                          //! Event Image
-                          ClipRRect(
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(16)),
-                            child: SizedBox(
-                              height: Get.height * 0.20,
-                              width: Get.width * 0.62,
-                              child: FadeInImage.assetNetwork(
-                                  fadeInCurve: Curves.easeInCirc,
-                                  placeholder: "image/skeleton.gif",
-                                  fit: BoxFit.cover,
-                                  image:
-                                      Config.base_url + upEvent["event_img"]),
-                            ),
-                          ),
-
-                          Column(
-                            children: [
-                              SizedBox(height: height / 70),
-                              Row(
-                                children: [
-                                  SizedBox(width: width / 70),
-                                  const Spacer(),
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(100/2),
-                                    child: BackdropFilter(
-                                      blendMode: BlendMode.srcIn,
-                                      filter: ImageFilter.blur(
-                                        sigmaX: 10, // mess with this to update blur
-                                        sigmaY: 10,
-                                      ),
-                                      child: CircleAvatar(
-                                        radius: 18,
-                                        backgroundColor:
-                                            Colors.transparent,
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(left: 3),
-                                          child: LikeButton(
-                                            onTap: (val) {
-                                              return onLikeButtonTapped(
-                                                  val, upEvent["event_id"]);
-                                            },
-                                            likeBuilder: (bool isLiked) {
-                                              return upEvent["IS_BOOKMARK"] != 0
-                                                  ? const Icon(Icons.favorite,
-                                                      color: Color(0xffF0635A),
-                                                      size: 22)
-                                                  : const Icon(
-                                                      Icons.favorite_border,
-                                                      color: Color(0xffF0635A),
-                                                      size: 22);
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(width: width / 40),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: height / 40),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6),
-                      width: Get.width,
-                      child: Text(
-                        upEvent["event_title"],
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                            fontFamily: 'Gilroy Medium',
-                            color: notifire.textcolor,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600),
-                      ),
-                    ),
-                    SizedBox(height: height / 140),
-                    upEvent["total_member_list"] != "0"
-                        ? Row(
-                            children: [
-                              upEvent["total_member_list"] != "0"
-                                  ? FlutterImageStack(
-                                      totalCount: 0,
-                                      itemRadius: 30,
-                                      itemBorderWidth: 1.5,
-                                      imageList: upMember)
-                                  : const Image(
-                                      image: AssetImage("image/user.png"),
-                                      height: 28),
-                              SizedBox(width: Get.width * 0.01),
-                              Text(
-                                "${upEvent["total_member_list"]} + Going",
-                                style: TextStyle(
-                                    color: const Color(0xff5d56f3),
-                                    fontSize: 11,
-                                    fontFamily: 'Gilroy Bold'),
-                              ),
-                            ],
-                          )
-                        : const SizedBox(),
-                    SizedBox(height: height / 60),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 6),
-                      child: Row(
-                        children: [
-                          Image.asset("image/location.png",
-                              height: height / 50),
-                          SizedBox(width: Get.width * 0.01),
-                          SizedBox(
-                            width: Get.width * 0.49,
-                            child: Text(
-                              upEvent["event_address"],
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                  fontFamily: 'Gilroy Medium',
-                                  color: Colors.grey,
-                                  fontSize: 12),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    SizedBox(height: height / 6),
-                    Row(children: [
-                      const Spacer(),
-                      Container(
-                        decoration: BoxDecoration(
-                            color: notifire.getprimerycolor,
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(20))),
-                        height: height / 30,
-                        width: Get.width / 4,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: Get.width / 4,
-                              child: Center(
-                                child: Text(
-                                  upEvent["event_sdate"],
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                      color: const Color(0xffF0635A),
-                                      fontSize: 11,
-                                      fontFamily: 'Gilroy ExtraBold',
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(width: width / 40),
-                    ]),
-                  ],
-                ),
-              ]),
-            ),
-          ),
-        ),
-      ),
-    ]);
-  }
-
-  Future<void> share() async {
-    await FlutterShare.share(
-        title: '$appName',
-        text:
-            'Hey! Now use our app to share with your family or friends. User will get wallet amount on your 1st successful transaction. Enter my referral code $code & Enjoy your shopping !!!',
-        linkUrl: 'https://play.google.com/store/apps/details?id=$packageName',
-        chooserTitle: '$appName');
-  }
-
-  /*
-  walletrefar() async {
-    var data = {"uid": uID};
-
-    ApiWrapper.dataPost(Config.refardata, data).then((val) {
-      if ((val != null) && (val.isNotEmpty)) {
-        if ((val['ResponseCode'] == "200") && (val['Result'] == "true")) {
-          setState(() {});
-          code = val["code"];
-        } else {
-          setState(() {});
-        }
-      }
-    });
-  }
-  */
-
-/*
-  tredingEvents(tEvent, i) {
-    return InkWell(
-      onTap: () {
-        //Get.to(() => EventsDetails(eid: tEvent[i]["event_id"]), duration: Duration.zero);
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: SizedBox(
-          width: Get.width * 0.60,
-          child: Stack(
-            children: [
-              ClipRRect(
-                borderRadius: const BorderRadius.all(Radius.circular(15)),
-                child: SizedBox(
-                  height: Get.height * 0.20,
-                  width: Get.width * 0.62,
-                  child: FadeInImage.assetNetwork(
-                      fadeInCurve: Curves.easeInCirc,
-                      placeholder: "image/skeleton.gif",
-                      fit: BoxFit.cover,
-                      image: Config.base_url + tEvent[i]["event_img"]),
-                ),
-              ),
-              Positioned(
-                top: 8,
-                right: Get.width * 0.02,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(100/2),
-                  child: BackdropFilter(
-                    blendMode: BlendMode.srcIn,
-                    filter: ImageFilter.blur(
-                      sigmaX: 10, // mess with this to update blur
-                      sigmaY: 10,
-                    ),
-                    child: CircleAvatar(
-                      radius: 18,
-                      backgroundColor: Colors.transparent,
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 3),
-                        child: LikeButton(
-                          onTap: (val) {
-                            return onLikeButtonTapped(val, tEvent[i]["event_id"]);
-                          },
-                          likeBuilder: (bool isLiked) {
-                            return tEvent[i]["IS_BOOKMARK"] != 0
-                                ? const Icon(Icons.favorite,
-                                color: Color(0xffF0635A), size: 22)
-                                : const Icon(Icons.favorite_border,
-                                color: Color(0xffF0635A), size: 22);
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                    height: Get.height * 0.12,
-                    width: Get.width * 0.56,
-                    decoration: BoxDecoration(
-                        color: notifire.getprimerycolor,
-                        borderRadius: BorderRadius.circular(16)),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                      decoration: BoxDecoration(
-                          border: Border.all(color: notifire.bordercolore),
-                          borderRadius: BorderRadius.circular(15)),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(height: Get.height * 0.01),
-                          Ink(
-                            width: Get.width * 0.50,
-                            child: Text(tEvent[i]["event_title"],
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                    fontFamily: 'Gilroy Medium',
-                                    color: notifire.textcolor,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.w600)),
-                          ),
-                          SizedBox(height: Get.height * 0.006),
-                          Row(
-                            children: [
-                              Image.asset("image/location.png",
-                                  height: height / 50),
-                              SizedBox(width: Get.width * 0.01),
-                              Ink(
-                                width: Get.width * 0.45,
-                                child: Text(tEvent[i]["event_address"],
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                        fontFamily: 'Gilroy Medium',
-                                        color: Colors.grey,
-                                        fontSize: 14)),
-                              ),
-                            ],
-                          ),
-                          SizedBox(height: Get.height * 0.008),
-                          Row(
-                            children: [
-                              tEvent[i]["sponsore_list"] != null
-                                  ? CircleAvatar(
-                                radius: 16.0,
-                                backgroundImage: NetworkImage(
-                                    Config.base_url +
-                                        tEvent[i]["sponsore_list"]
-                                        ["sponsore_img"]),
-                                backgroundColor: Colors.transparent,
-                              )
-                                  : const SizedBox(),
-                              SizedBox(width: Get.width * 0.01),
-                              Text(
-                                "Sponser".tr,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                    fontFamily: 'Gilroy Medium',
-                                    color: Colors.grey,
-                                    fontSize: 14),
-                              ),
-                              const Spacer(),
-                              Container(
-                                height: Get.height * 0.04,
-                                width: Get.width * 0.20,
-                                decoration: BoxDecoration(
-                                    color: buttonColor.withOpacity(0.6),
-                                    borderRadius: BorderRadius.circular(10)),
-                                child: Center(
-                                  child: Text(
-                                    "Join".tr,
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                        fontFamily: 'Gilroy Bold',
-                                        color: Colors.white,
-                                        fontSize: 14),
-                                  ),
-                                ),
-                              )
-                            ],
-                          )
-                        ],
-                      ),
-                    ),
-                  ))
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
- */
-
-}
