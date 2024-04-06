@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 import 'dart:ui';
 import '../Search/searchpage2.dart';
 import '../utils/media.dart';
@@ -42,25 +43,67 @@ const String categoriasJson = '''
   "categorias": [
     {
       "id": "1",
-      "title": "Arte",
+      "title": "Artes Escénicas",
       "image": "image/fire.png",
       "cover_img": "image/fire.png"
     },
     {
       "id": "2",
-      "title": "Musica",
+      "title": "Música y Conciertos",
       "image": "image/sport1.png",
       "cover_img": "image/discover.png"
     },
     {
       "id": "3",
-      "title": "Cinematografía",
+      "title": "Festivales y Ferias",
       "image": "image/method.png",
       "cover_img": "image/discover.png"
     },
     {
       "id": "4",
-      "title": "Teatro",
+      "title": "Deportes",
+      "image": "image/american_express.png",
+      "cover_img": "image/discover.png"
+    },
+    {
+      "id": "5",
+      "title": "Museos y Exposiciones",
+      "image": "image/american_express.png",
+      "cover_img": "image/discover.png"
+    },
+    {
+      "id": "6",
+      "title": "Cursos y Talleres",
+      "image": "image/american_express.png",
+      "cover_img": "image/discover.png"
+    },
+    {
+      "id": "7",
+      "title": "Infantiles",
+      "image": "image/american_express.png",
+      "cover_img": "image/discover.png"
+    },
+    {
+      "id": "8",
+      "title": "Cine",
+      "image": "image/american_express.png",
+      "cover_img": "image/discover.png"
+    },
+    {
+      "id": "9",
+      "title": "Congresos y Convenciones",
+      "image": "image/american_express.png",
+      "cover_img": "image/discover.png"
+    },
+    {
+      "id": "10",
+      "title": "Eventos Literarios",
+      "image": "image/american_express.png",
+      "cover_img": "image/discover.png"
+    },
+    {
+      "id": "11",
+      "title": "Recorridos",
       "image": "image/american_express.png",
       "cover_img": "image/discover.png"
     }
@@ -68,7 +111,7 @@ const String categoriasJson = '''
 }
 ''';
 
-const String trendingEventsJson = '''
+const String eventsJson = '''
 {
   "events": [
     {
@@ -166,7 +209,7 @@ const String trendingEventsJson = '''
       "event_img": "image/protection.png",
       "event_address": "Dirección del concierto de música",
       "event_sdate": "02-05-2024",
-      "IS_BOOKMARK": 0,
+      "IS_BOOKMARK": 1,
       "member_list": ["image/p1.png", "image/p2.png", "image/p3.png"],
       "total_member_list": 12,
       "cover_img": "image/verve.png", 
@@ -203,7 +246,7 @@ const String trendingEventsJson = '''
       "event_img": "image/event.png",
       "event_address": "Dirección del concierto de música",
       "event_sdate": "16-04-2024",
-      "IS_BOOKMARK": 0,
+      "IS_BOOKMARK": 1,
       "member_list": ["image/p1.png", "image/p4.png", "image/p2.png"],
       "total_member_list": 15,
       "cover_img": "image/verve.png", 
@@ -273,7 +316,7 @@ const String trendingEventsJson = '''
       "event_img": "image/p10.png",
       "event_address": "Dirección del festival de cine",
       "event_sdate": "01-05-2024",
-      "IS_BOOKMARK": 0,
+      "IS_BOOKMARK": 1,
       "member_list": ["image/p1.png", "image/p4.png", "image/p2.png"],
       "total_member_list": 30,
       "cover_img": "image/verve.png", 
@@ -333,7 +376,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
   void cargartrendingEvent() {
     // Decodifica la cadena JSON y guarda los eventos en la lista eventosList
-    Map<String, dynamic> trendingEventData = json.decode(trendingEventsJson);
+    Map<String, dynamic> trendingEventData = json.decode(eventsJson);
     setState(() {
       trendingEvent = trendingEventData['events'];
     });
@@ -341,9 +384,17 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
   void cargarUpcomingEvent() {
     // Decodifica la cadena JSON y guarda los eventos en la lista eventosList
-    Map<String, dynamic> upcomingEventData = json.decode(trendingEventsJson);
+    Map<String, dynamic> upcomingEventData = json.decode(eventsJson);
     setState(() {
       upcomingEvent = upcomingEventData['events'];
+    });
+  }
+
+  void cargarThisMonthEvent() {
+    // Decodifica la cadena JSON y guarda los eventos en la lista eventosList
+    Map<String, dynamic> thisMonthEventData = json.decode(eventsJson);
+    setState(() {
+      thisMonthEvent = thisMonthEventData['events'];
     });
   }
 
@@ -360,6 +411,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     cargarCategorias();
     cargartrendingEvent();
     cargarUpcomingEvent();
+    cargarThisMonthEvent();
     initPlatformState();
   }
 
@@ -534,7 +586,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                           Text("Event This Month".tr,
                               style: TextStyle(
                                   fontFamily: 'Gilroy Bold',
-                                  color: notifire.getdarkscolor,
+                                  color: notifire.textcolor,
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600)),
                           const Spacer(),
@@ -566,9 +618,9 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                       ),
                     ),
                     //: const SizedBox(),
-                    //! monthly event
+                    //! monthly event Listview   --------
                     ListView.builder(
-                      itemCount: thisMonthEvent.length,
+                      itemCount: min(thisMonthEvent.length, 4),
                       padding: const EdgeInsets.only(top: 8),
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
@@ -852,6 +904,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
  */
 
+  /*
   imgloading() {
     return Container(
       height: Get.height * 0.20,
@@ -862,6 +915,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               image: AssetImage("image/skeleton.gif"), fit: BoxFit.fill)),
     );
   }
+
+   */
 
   tredingEvents(tEvent, i) {
     return InkWell(
@@ -1119,16 +1174,25 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   List<String> _mImages = [];
 
   Widget monthly(mEvent, i) {
+
     _mImages.clear();
     mEvent[i]["member_list"].forEach((e) {
-      _mImages.add(Config.base_url + e);
+      _mImages.add(e);
     });
+
+
+
     int mEventcount = int.parse(mEvent[i]["total_member_list"].toString()) > 3
         ? 3
         : int.parse(mEvent[i]["total_member_list"].toString());
+
+
+
     for (var i = 0; i < mEventcount; i++) {
       _mImages.add(Config.userImage);
     }
+
+
     return GestureDetector(
       onTap: () {
         Get.to(() => EventsDetails(eid: mEvent[i]["event_id"]),
@@ -1159,18 +1223,70 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                             child: SizedBox(
                               width: width / 5,
                               height: height / 8,
-                              child: FadeInImage.assetNetwork(
-                                  fadeInCurve: Curves.easeInCirc,
-                                  placeholder: "image/skeleton.gif",
-                                  fit: BoxFit.cover,
-                                  image:
-                                      Config.base_url + mEvent[i]["event_img"]),
+                              child: Image.asset(
+                                mEvent[i]["event_img"],
+                                fit: BoxFit.cover,
+                              ),
                             ),
+
                           ),
                           const SizedBox(width: 6),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              Column(
+                                children: [
+                                  SizedBox(height: height / 80),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                        color: notifire.getpinkcolor,
+                                        borderRadius:
+                                        const BorderRadius.all(Radius.circular(10))),
+                                    height: height / 40,
+                                    width: width / 5,
+
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Center(
+                                          child: SizedBox(
+                                            width: width / 2,
+                                            child: Text(
+                                              mEvent[i]["event_sdate"],
+                                              //maxLines: 1,
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  color: const Color(0xff4A43EC),
+                                                  fontSize: 14,
+                                                  fontFamily: 'Gilroy Bold',
+                                                  fontWeight: FontWeight.bold),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+
+
+                                  ),
+                                ],
+                              ),
+
+                                    /*
+                                    SizedBox(
+                                      width: width / 5,
+                                      child: Text(
+                                        mEvent[i]["event_sdate"],
+                                        //maxLines: 1,
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(
+                                            color: const Color(0xff4A43EC),
+                                            fontSize: 14,
+                                            fontFamily: 'Gilroy Bold',
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+
+                                     */
                               SizedBox(
                                 width: Get.width * 0.45,
                                 child: Text(
@@ -1179,7 +1295,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
                                       fontFamily: 'Gilroy Medium',
-                                      color: notifire.getdarkscolor,
+                                      color: notifire.textcolor,
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600),
                                 ),
@@ -1208,6 +1324,38 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                               SizedBox(height: height / 100),
                               mEvent[i]["total_member_list"] != "0"
                                   ? Row(
+                                children: [
+                                  /*
+                                  FlutterImageStack(
+                                    totalCount: 0,
+                                    itemRadius: 30,
+                                    itemCount: 3,
+                                    itemBorderWidth: 1.5,
+                                    imageList: _mImages,
+                                  ),
+
+                                   */
+                                  Row(
+                                    children: mEvent[i]["member_list"].map<Widget>((imagePath) {
+                                      return CircleAvatar(
+                                        radius: 15,
+                                        backgroundImage: AssetImage(imagePath),
+                                      );
+                                    }).toList(),
+                                  ),
+                                  SizedBox(width: Get.width * 0.01),
+                                  Text(
+                                      "${mEvent[i]["total_member_list"]} + Joined",
+                                      style: TextStyle(
+                                        color: const Color(0xffF0635A),
+                                        fontSize: 12,
+                                        fontFamily: 'Gilroy Bold',
+                                      )),
+                                ],
+
+
+
+                                /*
                                       children: [
                                         FlutterImageStack(
                                           totalCount: 0,
@@ -1225,7 +1373,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                               fontFamily: 'Gilroy Bold',
                                             )),
                                       ],
+
+                                 */
                                     )
+
                                   : const SizedBox(),
                             ],
                           ),
@@ -1236,6 +1387,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                   ],
                 ),
                 // const Spacer(),
+                /*
                 Column(
                   children: [
                     SizedBox(height: height / 80),
@@ -1246,6 +1398,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                               const BorderRadius.all(Radius.circular(10))),
                       height: height / 12,
                       width: width / 10,
+
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -1266,10 +1419,14 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                           ),
                         ],
                       ),
+
+
                     ),
                   ],
                 ),
-                SizedBox(width: width / 40),
+
+                 */
+                //SizedBox(width: width / 40),
               ],
             ),
           ),
