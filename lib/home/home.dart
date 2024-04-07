@@ -398,6 +398,14 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     });
   }
 
+  void cargarNearbyEvent() {
+    // Decodifica la cadena JSON y guarda los eventos en la lista eventosList
+    Map<String, dynamic> nearbyEventData = json.decode(eventsJson);
+    setState(() {
+      nearbyEvent = nearbyEventData['events'];
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -412,6 +420,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     cargartrendingEvent();
     cargarUpcomingEvent();
     cargarThisMonthEvent();
+    cargarNearbyEvent();
     initPlatformState();
   }
 
@@ -569,7 +578,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                       //height: Get.height * 0.01,
                       height: Get.height * 0.37,
                       child: ListView.builder(
-                        itemCount: upcomingEvent.length,
+                        itemCount: min(upcomingEvent.length,6),
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (ctx, i) {
                           return events(upcomingEvent[i], i);
@@ -620,7 +629,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                     //: const SizedBox(),
                     //! monthly event Listview   --------
                     ListView.builder(
-                      itemCount: min(thisMonthEvent.length, 4),
+                      itemCount: min(thisMonthEvent.length, 3),
                       padding: const EdgeInsets.only(top: 8),
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
@@ -628,6 +637,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                         return monthly(thisMonthEvent, i);
                       },
                     ),
+                    SizedBox(height: Get.height * 0.03),
 
                     SizedBox(height: height / 60),
                     //! -------- Nearby You Listview  --------
@@ -675,7 +685,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                     //: const SizedBox(),
                     ListView.builder(
                       padding: EdgeInsets.zero,
-                      itemCount: nearbyEvent.length,
+                      itemCount: min(nearbyEvent.length,3),
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemBuilder: (ctx, i) {
@@ -732,7 +742,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                       child: SizedBox(
                         height: Get.height * 0.28,
                         child: ListView.builder(
-                          itemCount: trendingEvent.length,
+                          itemCount: min(trendingEvent.length,6),
                           scrollDirection: Axis.horizontal,
                           itemBuilder: (ctx, i) {
                             return tredingEvents(trendingEvent, i);
@@ -740,6 +750,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                         ),
                       ),
                     ),
+                    SizedBox(height: Get.height * 0.03),
 
                     SizedBox(height: height / 60),
 
@@ -1492,12 +1503,22 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 child: SizedBox(
                   width: width / 5,
                   height: height / 8,
+                  child: Image.asset(
+                    nearby[i]["event_img"],
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                /*
+                child: SizedBox(
+                  width: width / 5,
+                  height: height / 8,
                   child: FadeInImage.assetNetwork(
                       fadeInCurve: Curves.easeInCirc,
                       placeholder: "image/skeleton.gif",
                       fit: BoxFit.cover,
                       image: Config.base_url + nearby[i]["event_img"]),
                 ),
+                 */
               ),
               Column(children: [
                 SizedBox(height: height / 200),

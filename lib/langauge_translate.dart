@@ -1414,7 +1414,7 @@ class LocaleString extends Translations {
           "Get \$20 for ticket": "Obtén \$20 por entrada",
           "INVITE": "Invitar",
           "Nearby You": "Cerca de ti",
-          "Event This Month": "Evento de este mes",
+          "Event This Month": "Eventos de este mes",
           "Sponsor": "Patrocinador",
           "Join": "Unirse",
           "Current Location": "Ubicación actual",
