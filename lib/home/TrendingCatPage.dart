@@ -234,6 +234,7 @@ class _TrndingPageState extends State<TrndingPage> {
   late ColorNotifire notifire;
   List categoryEvent = [];
 
+
   @override
   void initState() {
     getdarkmodepreviousstate();

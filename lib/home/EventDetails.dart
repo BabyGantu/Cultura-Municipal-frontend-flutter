@@ -1,5 +1,8 @@
 // ignore_for_file: file_names, prefer_typing_uninitialized_variables, non_constant_identifier_names, unused_label, prefer_final_fields, unused_local_variable, curly_braces_in_flow_control_structures, prefer_const_constructors, avoid_print
 
+import 'dart:convert';
+import 'dart:ui';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_image_stack/flutter_image_stack.dart';
@@ -13,12 +16,302 @@ import 'package:goevent2/home/Gallery_View.dart';
 import 'package:goevent2/home/ticket.dart';
 import 'package:goevent2/utils/AppWidget.dart';
 import 'package:goevent2/utils/media.dart';
+import 'package:like_button/like_button.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import '../utils/botton.dart';
 import '../utils/colornotifire.dart';
+
+
+const String eventsJson = '''
+{
+  "EventData": [
+    {
+      "event_id": "1",
+      "cid": "1",
+      "event_title": "Evento de arte 1",
+      "event_img": "image/protection.png",
+      "event_cover_img": ["image/protection.png","image/discover.png","image/jcb.png"],
+      "event_address_title": "Nombre del lugar",
+      "event_address": "Calle Principal #123, Ciudad, País",
+      "event_sdate": "20-04-2024",
+      "IS_BOOKMARK": 1,
+      "member_list": ["image/p2.png", "image/p1.png", "image/p3.png"],
+      "total_member_list": 20,
+      "cover_img": "image/verve.png", 
+      "sponsore_list": {
+        "sponsore_img": "image/p1.png"
+      },
+      "event_about": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed blandit magna eget felis consectetur, vitae tempor magna tincidunt. Phasellus suscipit interdum libero, sed dictum eros fringilla eu. Vestibulum fringilla, ex at pharetra mollis, ante dolor ultrices lacus, eu facilisis ex turpis sit amet nulla. Integer quis augue convallis, fringilla lacus sed, vehicula elit. Integer et nulla justo. Nullam feugiat tincidunt est, in luctus nisl commodo nec. Integer a quam non mauris ultricies malesuada. Cras tristique massa id libero pharetra, id fermentum turpis lacinia. Nullam at tempor purus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Donec faucibus, ante nec efficitur posuere, metus leo posuere ipsum, sed commodo turpis orci a velit."
+    },
+    {
+      "event_id": "2",
+      "cid": "1",
+      "event_title": "Evento de arte 2",
+      "event_img": "image/event.png",
+      "event_cover_img": ["image/protection.png","image/protection.png","image/protection.png"],
+      "event_address_title": "Nombre del lugar",
+      "event_address": "Dirección del concierto de música",
+      "event_sdate": "25-04-2024",
+      "IS_BOOKMARK": 0,
+      "member_list": ["image/p1.png", "image/p4.png", "image/p2.png"],
+      "total_member_list": 15,
+      "cover_img": "image/verve.png", 
+      "sponsore_list": {
+        "sponsore_img": "image/p2.png",
+        "sponsore_img": "image/p1.png",
+        "sponsore_img": "image/p3.png",
+        "sponsore_img": "image/p4.png"
+      },
+      "event_about": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed blandit magna eget felis consectetur, vitae tempor magna tincidunt. Phasellus suscipit interdum libero, sed dictum eros fringilla eu. Vestibulum fringilla, ex at pharetra mollis, ante dolor ultrices lacus, eu facilisis ex turpis sit amet nulla. Integer quis augue convallis, fringilla lacus sed, vehicula elit. Integer et nulla justo. Nullam feugiat tincidunt est, in luctus nisl commodo nec. Integer a quam non mauris ultricies malesuada. Cras tristique massa id libero pharetra, id fermentum turpis lacinia. Nullam at tempor purus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Donec faucibus, ante nec efficitur posuere, metus leo posuere ipsum, sed commodo turpis orci a velit."
+    },
+    {
+      "event_id": "3",
+      "cid": "1",
+      "event_title": "Evento de arte 3",
+      "event_img": "image/p10.png",
+      "event_cover_img": ["image/protection.png","image/protection.png","image/protection.png"],
+      "event_address_title": "Nombre del lugar",
+      "event_address": "Dirección del festival de cine",
+      "event_sdate": "30-04-2024",
+      "IS_BOOKMARK": 1,
+      "member_list": ["image/p1.png", "image/p4.png", "image/p2.png"],
+      "total_member_list": 30,
+      "cover_img": "image/verve.png", 
+      "sponsore_list": {
+        "sponsore_img": "image/p3.png",
+        "sponsore_img": "image/p4.png",
+        "sponsore_img": "image/p1.png"
+      },
+      "event_about": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed blandit magna eget felis consectetur, vitae tempor magna tincidunt. Phasellus suscipit interdum libero, sed dictum eros fringilla eu. Vestibulum fringilla, ex at pharetra mollis, ante dolor ultrices lacus, eu facilisis ex turpis sit amet nulla. Integer quis augue convallis, fringilla lacus sed, vehicula elit. Integer et nulla justo. Nullam feugiat tincidunt est, in luctus nisl commodo nec. Integer a quam non mauris ultricies malesuada. Cras tristique massa id libero pharetra, id fermentum turpis lacinia. Nullam at tempor purus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Donec faucibus, ante nec efficitur posuere, metus leo posuere ipsum, sed commodo turpis orci a velit."
+    },
+    {
+      "event_id": "4",
+      "cid": "2",
+      "event_title": "Concierto de música 1",
+      "event_img": "image/pay.png",
+      "event_cover_img": ["image/protection.png","image/protection.png","image/protection.png"],
+      "event_address_title": "Nombre del lugar",
+      "event_address": "Dirección de la obra de teatro",
+      "event_sdate": "22-04-2024",
+      "IS_BOOKMARK": 0,
+      "member_list": ["image/p4.png", "image/p3.png", "image/p1.png"],
+      "total_member_list": 10,
+      "cover_img": "image/verve.png", 
+      "sponsore_list": {
+        "sponsore_img": "image/p4.png",
+        "sponsore_img": "image/p2.png",
+        "sponsore_img": "image/p1.png",
+        "sponsore_img": "image/p3.png",
+        "sponsore_img": "image/p1.png"
+      },
+      "event_about": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed blandit magna eget felis consectetur, vitae tempor magna tincidunt. Phasellus suscipit interdum libero, sed dictum eros fringilla eu. Vestibulum fringilla, ex at pharetra mollis, ante dolor ultrices lacus, eu facilisis ex turpis sit amet nulla. Integer quis augue convallis, fringilla lacus sed, vehicula elit. Integer et nulla justo. Nullam feugiat tincidunt est, in luctus nisl commodo nec. Integer a quam non mauris ultricies malesuada. Cras tristique massa id libero pharetra, id fermentum turpis lacinia. Nullam at tempor purus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Donec faucibus, ante nec efficitur posuere, metus leo posuere ipsum, sed commodo turpis orci a velit."
+    },
+    {
+      "event_id": "5",
+      "cid": "2",
+      "event_title": "Concierto de música 2",
+      "event_img": "image/event.png",
+      "event_cover_img": ["image/protection.png","image/protection.png","image/protection.png"],
+      "event_address_title": "Nombre del lugar",
+      "event_address": "Dirección del concierto de música",
+      "event_sdate": "28-04-2024",
+      "IS_BOOKMARK": 0,
+      "member_list": ["image/p1.png", "image/p4.png", "image/p2.png"],
+      "total_member_list": 15,
+      "cover_img": "image/verve.png", 
+      "sponsore_list": {
+        "sponsore_img": "image/p2.png",
+        "sponsore_img": "image/p1.png",
+        "sponsore_img": "image/p3.png",
+        "sponsore_img": "image/p4.png"
+      },
+      "event_about": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed blandit magna eget felis consectetur, vitae tempor magna tincidunt. Phasellus suscipit interdum libero, sed dictum eros fringilla eu. Vestibulum fringilla, ex at pharetra mollis, ante dolor ultrices lacus, eu facilisis ex turpis sit amet nulla. Integer quis augue convallis, fringilla lacus sed, vehicula elit. Integer et nulla justo. Nullam feugiat tincidunt est, in luctus nisl commodo nec. Integer a quam non mauris ultricies malesuada. Cras tristique massa id libero pharetra, id fermentum turpis lacinia. Nullam at tempor purus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Donec faucibus, ante nec efficitur posuere, metus leo posuere ipsum, sed commodo turpis orci a velit."
+    },
+    {
+      "event_id": "6",
+      "cid": "2",
+      "event_title": "Concierto de música 3",
+      "event_img": "image/protection.png",
+      "event_cover_img": ["image/protection.png","image/protection.png","image/protection.png"],
+      "event_address_title": "Nombre del lugar",
+      "event_address": "Dirección del concierto de música",
+      "event_sdate": "02-05-2024",
+      "IS_BOOKMARK": 1,
+      "member_list": ["image/p1.png", "image/p2.png", "image/p3.png"],
+      "total_member_list": 12,
+      "cover_img": "image/verve.png", 
+      "sponsore_list": {
+        "sponsore_img": "image/p2.png",
+        "sponsore_img": "image/p1.png",
+        "sponsore_img": "image/p3.png",
+        "sponsore_img": "image/p4.png"
+      },
+      "event_about": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed blandit magna eget felis consectetur, vitae tempor magna tincidunt. Phasellus suscipit interdum libero, sed dictum eros fringilla eu. Vestibulum fringilla, ex at pharetra mollis, ante dolor ultrices lacus, eu facilisis ex turpis sit amet nulla. Integer quis augue convallis, fringilla lacus sed, vehicula elit. Integer et nulla justo. Nullam feugiat tincidunt est, in luctus nisl commodo nec. Integer a quam non mauris ultricies malesuada. Cras tristique massa id libero pharetra, id fermentum turpis lacinia. Nullam at tempor purus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Donec faucibus, ante nec efficitur posuere, metus leo posuere ipsum, sed commodo turpis orci a velit."
+    },
+    {
+      "event_id": "7",
+      "cid": "3",
+      "event_title": "Festival de cine 1",
+      "event_img": "image/pay.png",
+      "event_cover_img": ["image/protection.png","image/protection.png","image/protection.png"],
+      "event_address_title": "Nombre del lugar",
+      "event_address": "Dirección de la obra de teatro",
+      "event_sdate": "18-04-2024",
+      "IS_BOOKMARK": 0,
+      "member_list": ["image/p4.png", "image/p3.png", "image/p1.png"],
+      "total_member_list": 10,
+      "cover_img": "image/verve.png", 
+      "sponsore_list": {
+        "sponsore_img": "image/p4.png",
+        "sponsore_img": "image/p2.png",
+        "sponsore_img": "image/p1.png",
+        "sponsore_img": "image/p3.png",
+        "sponsore_img": "image/p1.png"
+      },
+      "event_about": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed blandit magna eget felis consectetur, vitae tempor magna tincidunt. Phasellus suscipit interdum libero, sed dictum eros fringilla eu. Vestibulum fringilla, ex at pharetra mollis, ante dolor ultrices lacus, eu facilisis ex turpis sit amet nulla. Integer quis augue convallis, fringilla lacus sed, vehicula elit. Integer et nulla justo. Nullam feugiat tincidunt est, in luctus nisl commodo nec. Integer a quam non mauris ultricies malesuada. Cras tristique massa id libero pharetra, id fermentum turpis lacinia. Nullam at tempor purus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Donec faucibus, ante nec efficitur posuere, metus leo posuere ipsum, sed commodo turpis orci a velit."
+    },
+    {
+      "event_id": "8",
+      "cid": "3",
+      "event_title": "Festival de cine 2",
+      "event_img": "image/event.png",
+      "event_cover_img": ["image/protection.png","image/protection.png","image/protection.png"],
+      "event_address_title": "Nombre del lugar",
+      "event_address": "Dirección del concierto de música",
+      "event_sdate": "16-04-2024",
+      "IS_BOOKMARK": 1,
+      "member_list": ["image/p1.png", "image/p4.png", "image/p2.png"],
+      "total_member_list": 15,
+      "cover_img": "image/verve.png", 
+      "sponsore_list": {
+        "sponsore_img": "image/p2.png",
+        "sponsore_img": "image/p1.png",
+        "sponsore_img": "image/p3.png",
+        "sponsore_img": "image/p4.png"
+      },
+      "event_about": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed blandit magna eget felis consectetur, vitae tempor magna tincidunt. Phasellus suscipit interdum libero, sed dictum eros fringilla eu. Vestibulum fringilla, ex at pharetra mollis, ante dolor ultrices lacus, eu facilisis ex turpis sit amet nulla. Integer quis augue convallis, fringilla lacus sed, vehicula elit. Integer et nulla justo. Nullam feugiat tincidunt est, in luctus nisl commodo nec. Integer a quam non mauris ultricies malesuada. Cras tristique massa id libero pharetra, id fermentum turpis lacinia. Nullam at tempor purus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Donec faucibus, ante nec efficitur posuere, metus leo posuere ipsum, sed commodo turpis orci a velit."
+    },
+    {
+      "event_id": "9",
+      "cid": "3",
+      "event_title": "Festival de cine 3",
+      "event_img": "image/protection.png",
+      "event_cover_img": ["image/protection.png","image/protection.png","image/protection.png"],
+      "event_address_title": "Nombre del lugar",
+      "event_address": "Dirección del concierto de música",
+      "event_sdate": "24-04-2024",
+      "IS_BOOKMARK": 0,
+      "member_list": ["image/p1.png", "image/p2.png", "image/p3.png"],
+      "total_member_list": 12,
+      "cover_img": "image/verve.png", 
+      "sponsore_list": {
+        "sponsore_img": "image/p2.png",
+        "sponsore_img": "image/p1.png",
+        "sponsore_img": "image/p3.png",
+        "sponsore_img": "image/p4.png"
+      },
+      "event_about": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed blandit magna eget felis consectetur, vitae tempor magna tincidunt. Phasellus suscipit interdum libero, sed dictum eros fringilla eu. Vestibulum fringilla, ex at pharetra mollis, ante dolor ultrices lacus, eu facilisis ex turpis sit amet nulla. Integer quis augue convallis, fringilla lacus sed, vehicula elit. Integer et nulla justo. Nullam feugiat tincidunt est, in luctus nisl commodo nec. Integer a quam non mauris ultricies malesuada. Cras tristique massa id libero pharetra, id fermentum turpis lacinia. Nullam at tempor purus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Donec faucibus, ante nec efficitur posuere, metus leo posuere ipsum, sed commodo turpis orci a velit."
+    },
+    {
+      "event_id": "10",
+      "cid": "4",
+      "event_title": "Obra de teatro 1",
+      "event_img": "image/protection.png",
+      "event_cover_img": ["image/protection.png","image/protection.png","image/protection.png"],
+      "event_address_title": "Nombre del lugar",
+      "event_address": "Dirección de la obra de teatro",
+      "event_sdate": "27-04-2024",
+      "IS_BOOKMARK": 0,
+      "member_list": ["image/p2.png", "image/p1.png", "image/p3.png"],
+      "total_member_list": 20,
+      "cover_img": "image/verve.png", 
+      "sponsore_list": {
+        "sponsore_img": "image/p1.png",
+        "sponsore_img": "image/p2.png"
+      },
+      "event_about": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed blandit magna eget felis consectetur, vitae tempor magna tincidunt. Phasellus suscipit interdum libero, sed dictum eros fringilla eu. Vestibulum fringilla, ex at pharetra mollis, ante dolor ultrices lacus, eu facilisis ex turpis sit amet nulla. Integer quis augue convallis, fringilla lacus sed, vehicula elit. Integer et nulla justo. Nullam feugiat tincidunt est, in luctus nisl commodo nec. Integer a quam non mauris ultricies malesuada. Cras tristique massa id libero pharetra, id fermentum turpis lacinia. Nullam at tempor purus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Donec faucibus, ante nec efficitur posuere, metus leo posuere ipsum, sed commodo turpis orci a velit."
+    },
+    {
+      "event_id": "11",
+      "cid": "4",
+      "event_title": "Obra de teatro 2",
+      "event_img": "image/event.png",
+      "event_cover_img": ["image/protection.png","image/protection.png","image/protection.png"],
+      "event_address_title": "Nombre del lugar",
+      "event_address": "Dirección del concierto de música",
+      "event_sdate": "29-04-2024",
+      "IS_BOOKMARK": 0,
+      "member_list": ["image/p1.png", "image/p4.png", "image/p2.png"],
+      "total_member_list": 15,
+      "cover_img": "image/verve.png", 
+      "sponsore_list": {
+        "sponsore_img": "image/p2.png",
+        "sponsore_img": "image/p1.png",
+        "sponsore_img": "image/p3.png",
+        "sponsore_img": "image/p4.png"
+      },
+      "event_about": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed blandit magna eget felis consectetur, vitae tempor magna tincidunt. Phasellus suscipit interdum libero, sed dictum eros fringilla eu. Vestibulum fringilla, ex at pharetra mollis, ante dolor ultrices lacus, eu facilisis ex turpis sit amet nulla. Integer quis augue convallis, fringilla lacus sed, vehicula elit. Integer et nulla justo. Nullam feugiat tincidunt est, in luctus nisl commodo nec. Integer a quam non mauris ultricies malesuada. Cras tristique massa id libero pharetra, id fermentum turpis lacinia. Nullam at tempor purus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Donec faucibus, ante nec efficitur posuere, metus leo posuere ipsum, sed commodo turpis orci a velit."
+    },
+    {
+      "event_id": "12",
+      "cid": "4",
+      "event_title": "Obra de teatro 3",
+      "event_img": "image/p10.png",
+      "event_cover_img": ["image/protection.png","image/protection.png","image/protection.png"],
+      "event_address_title": "Nombre del lugar",
+      "event_address": "Dirección del festival de cine",
+      "event_sdate": "01-05-2024",
+      "IS_BOOKMARK": 1,
+      "member_list": ["image/p1.png", "image/p4.png", "image/p2.png"],
+      "total_member_list": 30,
+      "cover_img": "image/verve.png", 
+      "sponsore_list": {
+        "sponsore_img": "image/p3.png",
+        "sponsore_img": "image/p4.png",
+        "sponsore_img": "image/p1.png"
+      },
+      "event_about": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed blandit magna eget felis consectetur, vitae tempor magna tincidunt. Phasellus suscipit interdum libero, sed dictum eros fringilla eu. Vestibulum fringilla, ex at pharetra mollis, ante dolor ultrices lacus, eu facilisis ex turpis sit amet nulla. Integer quis augue convallis, fringilla lacus sed, vehicula elit. Integer et nulla justo. Nullam feugiat tincidunt est, in luctus nisl commodo nec. Integer a quam non mauris ultricies malesuada. Cras tristique massa id libero pharetra, id fermentum turpis lacinia. Nullam at tempor purus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Donec faucibus, ante nec efficitur posuere, metus leo posuere ipsum, sed commodo turpis orci a velit."
+    }
+  ]
+}
+''';
+
+const String sponsoreJson = '''
+{
+  "Event_sponsore": [
+    {
+      "sponsore_id": "1",
+      "sponsore_img": "image/protection.png",
+      "sponsore_title": "Nombre"
+    }
+  ]
+}
+''';
+
+const String event_galleryJson = '''
+{
+  "Event_gallery": [
+    {
+      "img": "image/protection.png"
+    },
+    {
+      "img": "image/onbonding1.png"
+    },
+    {
+      "img": "image/onbonding3.png"
+    },
+    {
+      "img": "image/p10.png"
+    },
+    {
+      "img": "image/paco2.png"
+    }
+  ]
+}
+''';
 
 // done
 class EventsDetails extends StatefulWidget {
@@ -39,7 +332,8 @@ class _EventsDetailsState extends State<EventsDetails> {
   var eventData;
   String code = "0";
   List event_gallery = [];
-  List event_sponsore = [];
+  List<dynamic> event_sponsore = [];
+  List<dynamic> eventosDetails = [];
   bool isloading = false;
 
   getdarkmodepreviousstate() async {
@@ -53,12 +347,13 @@ class _EventsDetailsState extends State<EventsDetails> {
   }
 
 
+
+
   @override
   void initState() {
     super.initState();
-    walletrefar();
+    //walletrefar();
     getPackage();
-
     eventDetailApi();
     getdarkmodepreviousstate();
 
@@ -74,6 +369,58 @@ class _EventsDetailsState extends State<EventsDetails> {
     packageName = packageInfo!.packageName;
   }
 
+  eventDetailApi() {
+
+    Map<String, dynamic> eventosDetailsData = json.decode(eventsJson);
+    if (widget.eid != null) {
+      eventosDetailsData["EventData"] = eventosDetailsData["EventData"].where((evento) => evento["event_id"] == widget.eid).toList();
+      print("Eventos encontrados:");
+      print(eventosDetailsData["EventData"]);
+    }
+    setState(() {
+      eventosDetails = eventosDetailsData["EventData"];
+    });
+
+    Map<String, dynamic> SponsoreData = json.decode(sponsoreJson);
+    setState(() {
+      event_sponsore = SponsoreData["Event_sponsore"];
+    });
+
+    Map<String, dynamic> event_galleryData = json.decode(event_galleryJson);
+    setState(() {
+      event_gallery = event_galleryData["Event_gallery"];
+    });
+
+    int userCount = 0;
+    isloading = true;
+
+
+      setState(() {});
+      if ((eventosDetails != null) && (eventosDetails.isNotEmpty)) {
+          eventosDetailsData["EventData"].forEach((e) {
+            eventData = e;
+          });
+          //event_gallery = val["Event_gallery"];
+          //event_sponsore = val["Event_sponsore"];
+          /*
+          eventData["member_list"]!.forEach((e) {
+            _images.add(Config.base_url + e);
+          });
+           */
+          for(var i = 0; i < eventosDetails.length; i++)
+            userCount = int.parse(eventosDetails[i]["total_member_list"].toString()) >
+                3
+                ? 3
+                : int.parse(
+                eventosDetails[i]["total_member_list"].toString());
+          for (var i = 0; i < userCount; i++) {
+            _images.add(Config.userImage);
+          }
+          isloading = false;
+      }
+  }
+
+/*
   eventDetailApi() {
     int userCount = 0;
     isloading = true;
@@ -110,6 +457,8 @@ class _EventsDetailsState extends State<EventsDetails> {
     });
   }
 
+ */
+
   //! ----- LikeButtonTapped -----
   Future<bool> onLikeButtonTapped(isLiked, eid) async {
     var data = {"eid": eid, "uid": uID};
@@ -134,82 +483,92 @@ class _EventsDetailsState extends State<EventsDetails> {
       extendBodyBehindAppBar: true,
       backgroundColor: notifire.backgrounde,
       //! ------ Buy Ticket button -----!//
-      // appBar:!isloading? AppBar(
-      //   elevation: 0,
-      //   backgroundColor: Colors.transparent,
-      //   iconTheme: IconThemeData(
-      //       color: Colors.white,
-      //   ),
-      //   title: Row(
-      //     children: [
-      //       Text(
-      //         "Event Details".tr,
-      //         style: TextStyle(
-      //             fontSize: 18,
-      //             fontWeight: FontWeight.w900,
-      //             fontFamily: 'Gilroy Medium',
-      //             color: Colors.white),
-      //       ),
-      //       Spacer(),
-      //       ClipRRect(
-      //         borderRadius: BorderRadius.circular(100/2),
-      //         child: BackdropFilter(
-      //           blendMode: BlendMode.srcIn,
-      //           filter: ImageFilter.blur(
-      //               sigmaX: 10, // mess with this to update blur
-      //               sigmaY: 10,
-      //           ),
-      //           child: CircleAvatar(
-      //             radius: 18,
-      //             backgroundColor: Colors.transparent,
-      //             child: Padding(
-      //               padding: const EdgeInsets.only(left: 3),
-      //               child: LikeButton(
-      //                 onTap: (val) {
-      //
-      //                   print(val);
-      //                   return onLikeButtonTapped(val, eventData["event_id"]);
-      //                 },
-      //                 likeBuilder: (bool isLiked) {
-      //                   return eventData["IS_BOOKMARK"] != 0
-      //                       ? const Icon(Icons.favorite,color: Color(0xffF0635A), size: 22)
-      //                       : const Icon(Icons.favorite_border,color: Color(0xffF0635A), size: 22);
-      //                 },
-      //               ),
-      //             ),
-      //           ),
-      //         ),
-      //       ),
-      //     ],
-      //   ),
-      //
-      // ) : null,
+      appBar: !isloading ? AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        iconTheme: IconThemeData(
+          color: Colors.white,
+        ),
+        title: Row(
+          children: [
+            Text(
+              "Event Details".tr,
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w900,
+                  fontFamily: 'Gilroy Medium',
+                  color: Colors.white),
+            ),
+            Spacer(),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(100/2),
+              child: BackdropFilter(
+                blendMode: BlendMode.srcIn,
+                filter: ImageFilter.blur(
+                  sigmaX: 10, // mess with this to update blur
+                  sigmaY: 10,
+                ),
+                child: CircleAvatar(
+                  radius: 18,
+                  backgroundColor: Colors.transparent,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 3),
+                    child: LikeButton(
+                      onTap: (val) {
+                        print(val);
+                        return onLikeButtonTapped(val, eventData["event_id"]);
+                      },
+                      likeBuilder: (bool isLiked) {
+                        return eventData["IS_BOOKMARK"] != 0
+                            ? const Icon(Icons.favorite,color: Color(0xffF0635A), size: 22)
+                            : const Icon(Icons.favorite_border,color: Color(0xffF0635A), size: 22);
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ) : null,
+
+      /*
       floatingActionButton: SizedBox(
         height: 45,
         width: 410,
+
         child: !isloading
+
             ? FloatingActionButton(
                 onPressed: () {
                   Get.to(() => Ticket(eid: eventData["event_id"]),
                       duration: Duration.zero);
                 },
+
                 child: Custombutton.button1(
+
                   notifire.getbuttonscolor,
-                  "BUY TICKET".tr + " ${mainData["currency"]}" + "${eventData != null ? eventData["ticket_price"] : ""}",
+                  "BUY TICKET".tr + " ${mainData["currency"]}",
+                  //"BUY TICKET".tr + " ${mainData["currency"]}" + "${eventData != null ? eventData["ticket_price"] : ""}",
                   SizedBox(width: width / 15),
                   SizedBox(width: width / 15),
                 ),
               )
             : const SizedBox(),
       ),
+
+       */
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       body: !isloading ? CustomScrollView(
             slivers: [
+
               SliverPersistentHeader(
                 pinned: true,
                 floating: true,
                 delegate: MySliverAppBar(expandedHeight: 200.0,eventData: eventData,images: _images,share: share),
               ),
+
+
               SliverToBoxAdapter(
                 child: Column(
                   children: [
@@ -461,8 +820,22 @@ class _EventsDetailsState extends State<EventsDetails> {
 
   }
 
-
-
+  galeryEvent(gEvent, i) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: Container(
+        width: Get.width * 0.28,
+        decoration: BoxDecoration(
+          // border: Border.all(color: Colors.grey.shade400, width: 1),
+            borderRadius: BorderRadius.circular(14),
+            image: DecorationImage(
+                image: AssetImage(gEvent[i]["img"]),
+                fit: BoxFit.cover)
+        ),
+      ),
+    );
+  }
+/*
   galeryEvent(gEvent, i) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4),
@@ -477,6 +850,8 @@ class _EventsDetailsState extends State<EventsDetails> {
       ),
     );
   }
+
+ */
 
   Widget concert(img, name1, name2) {
     return Padding(
@@ -573,7 +948,7 @@ class _EventsDetailsState extends State<EventsDetails> {
     return ListTile(
       onTap: () {
         print(eventSponsore[i]);
-        Get.to(ChatPage(resiverUserId: "1", resiverUseremail: 'admin', proPic: eventSponsore[i]["sponsore_img"]));
+        //Get.to(ChatPage(resiverUserId: "1", resiverUseremail: 'admin', proPic: eventSponsore[i]["sponsore_img"]));
       },
       leading: Container(
         height: 40,
@@ -581,7 +956,8 @@ class _EventsDetailsState extends State<EventsDetails> {
         decoration: BoxDecoration(
             color: notifire.getcardcolor,
             borderRadius: const BorderRadius.all(Radius.circular(10)),
-            image: DecorationImage(image: NetworkImage(Config.base_url + eventSponsore[i]["sponsore_img"]), fit: BoxFit.fill)
+            image: DecorationImage(image: AssetImage(eventSponsore[i]["sponsore_img"]), fit: BoxFit.fill)
+            //image: DecorationImage(image: NetworkImage(Config.base_url + eventSponsore[i]["sponsore_img"]), fit: BoxFit.fill)
         ),
         // child: Image(image: NetworkImage(Config.base_url + eventSponsore[i]["sponsore_img"])),
       ),
@@ -608,7 +984,7 @@ class _EventsDetailsState extends State<EventsDetails> {
               color: Color(0xffEAEDFF),
             borderRadius: BorderRadius.circular(6),
           ),
-          child: Center(child: Text('Chat',style: TextStyle(color: Color(0xff5669FF),fontSize: 10)))),
+          child: Center(child: Text('Details'.tr,style: TextStyle(color: Color(0xff5669FF),fontSize: 10)))),
     );
   }
   
@@ -621,6 +997,7 @@ class _EventsDetailsState extends State<EventsDetails> {
         linkUrl: 'https://play.google.com/store/apps/details?id=$packageName',
         chooserTitle: '$appName');
   }
+
 
   walletrefar() async {
     var data = {"uid": uID};
@@ -637,6 +1014,8 @@ class _EventsDetailsState extends State<EventsDetails> {
     });
 
   }
+
+
 }
 
 
@@ -660,24 +1039,32 @@ class MySliverAppBar extends SliverPersistentHeaderDelegate {
       children: [
         CarouselSlider(
           options: CarouselOptions(height: height / 4),
-          items: eventData != null
-              ? eventData["event_cover_img"].map<Widget>((i) {
+          items: eventData != null && eventData["event_cover_img"] is List
+              ? eventData["event_cover_img"].map<Widget>((image) {
             return Builder(
               builder: (BuildContext context) {
                 return Container(
                   width: Get.width,
                   decoration: const BoxDecoration(
-                      color: Colors.transparent),
+                    color: Colors.transparent,
+                  ),
+                  child: Image.asset(
+                    image,
+                    fit: BoxFit.cover,
+                  ),
+                  /*
                   child: FadeInImage.assetNetwork(
-                      fadeInCurve: Curves.easeInCirc,
-                      placeholder: "image/skeleton.gif",
-                      fit: BoxFit.cover,
-                      image: Config.base_url + i),
+                    fadeInCurve: Curves.easeInCirc,
+                    placeholder: "image/skeleton.gif",
+                    fit: BoxFit.cover,
+                    image: Config.base_url + i,
+                  ),
+                   */
                 );
               },
             );
           }).toList()
-              : [].map<Widget>((i) {
+              : [].map<Widget>((image) {
             return Builder(
               builder: (BuildContext context) {
                 return Container(
@@ -686,13 +1073,14 @@ class MySliverAppBar extends SliverPersistentHeaderDelegate {
                         horizontal: 1),
                     decoration: const BoxDecoration(
                         color: Colors.transparent),
-                    child: Image.network(Config.base_url + i,
+                    child: Image.asset(image,
                         fit: BoxFit.fill));
               },
             );
           }).toList(),
           // ),
         ),
+        /*
         Center(
           child: Opacity(
             opacity: shrinkOffset / expandedHeight,
@@ -755,6 +1143,7 @@ class MySliverAppBar extends SliverPersistentHeaderDelegate {
                 ),
                 // SizedBox(height: height / 20),
                 SizedBox(height: height / 7.5),
+                /*
                 Center(
                   child: SizedBox(
                     width: width / 1.4,
@@ -794,6 +1183,7 @@ class MySliverAppBar extends SliverPersistentHeaderDelegate {
                           eventData["total_member_list"] != "0"
                               ? SizedBox(width: width / 14)
                               : const SizedBox(),
+
                           InkWell(
                             onTap: share,
                             child: Container(
@@ -817,10 +1207,14 @@ class MySliverAppBar extends SliverPersistentHeaderDelegate {
                     ),
                   ),
                 ),
+
+                 */
               ],
             ),
           ),
         ),
+
+         */
       ],
     );
   }

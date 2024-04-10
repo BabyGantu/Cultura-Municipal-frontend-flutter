@@ -62,11 +62,35 @@ class _GalleryViewState extends State<GalleryView> {
                       onTap: () {
                         Navigator.push(context, MaterialPageRoute(builder: (_) {
                           return FullScreenImage(
+                            imageUrl: eventList[index]["img"], // Usar directamente la ruta de la imagen estática
+                            tag: "imagen ${index}",
+                          );
+                        }));
+                      },
+
+                      /*
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) {
+                          return FullScreenImage(
                             imageUrl: Config.base_url + eventList[index],
                             tag: "generate_a_unique_tag",
                           );
                         }));
                       },
+
+                       */
+                      child: Hero(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.asset(
+                            eventList[index]["img"], // Cambia eventList[index] a eventList[index]["img"]
+                            fit: BoxFit.cover,
+                          ),
+
+                        ),
+                        tag: "generate_a_unique_tag",
+                      ),
+                      /*
                       child: Hero(
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(12),
@@ -77,6 +101,8 @@ class _GalleryViewState extends State<GalleryView> {
                         ),
                         tag: "generate_a_unique_tag",
                       ),
+
+                       */
                     );
                   },
                 ))
@@ -87,6 +113,38 @@ class _GalleryViewState extends State<GalleryView> {
   }
 }
 
+
+class FullScreenImage extends StatelessWidget {
+  final String? imageUrl;
+  final String? tag;
+
+  FullScreenImage({required this.imageUrl, required this.tag});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black87,
+      body: GestureDetector(
+        child: Center(
+          child: Hero(
+            tag: tag!,
+            child: Image.asset(
+              imageUrl!, // Usar directamente la ruta de la imagen estática
+              width: MediaQuery.of(context).size.width,
+              fit: BoxFit.contain,
+            ),
+          ),
+        ),
+        onTap: () {
+          Navigator.pop(context);
+        },
+      ),
+    );
+  }
+}
+
+
+/*
 class FullScreenImage extends StatelessWidget {
   String? imageUrl;
   String? tag;
@@ -115,3 +173,5 @@ class FullScreenImage extends StatelessWidget {
     );
   }
 }
+
+ */

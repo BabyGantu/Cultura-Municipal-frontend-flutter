@@ -119,7 +119,7 @@ const String eventsJson = '''
       "cid": "1",
       "event_title": "Evento de arte 1",
       "event_img": "image/protection.png",
-      "event_address": "Dirección del evento de arte",
+      "event_address": "Calle Principal #123, Ciudad, País",
       "event_sdate": "20-04-2024",
       "IS_BOOKMARK": 1,
       "member_list": ["image/p2.png", "image/p1.png", "image/p3.png"],
@@ -932,7 +932,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   tredingEvents(tEvent, i) {
     return InkWell(
       onTap: () {
-        //Get.to(() => EventsDetails(eid: tEvent[i]["event_id"]), duration: Duration.zero);
+        Get.to(() => EventsDetails(eid: tEvent[i]["event_id"]), duration: Duration.zero);
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8),

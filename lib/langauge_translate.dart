@@ -1514,6 +1514,7 @@ class LocaleString extends Translations {
               "Por favor, selecciona el motivo de cancelación:",
           "Enter reason": "Ingresar motivo",
           "Confirm": "Confirmar",
+          "Details": "Detalles"
         },
 
         'tr_IN': {
