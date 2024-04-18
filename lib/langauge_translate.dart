@@ -1354,7 +1354,7 @@ class LocaleString extends Translations {
           "Profile": "Perfil",
           "My Booking": "Mi reserva",
           "Wallet": "Cartera",
-          "Favorite": "Favorito",
+          "Favorite": "Favoritos",
           "Notification": "Notificación",
           "Refer a Friend": "Invitar a un amigo",
           "Dark Mode": "Modo oscuro",
@@ -1514,7 +1514,11 @@ class LocaleString extends Translations {
               "Por favor, selecciona el motivo de cancelación:",
           "Enter reason": "Ingresar motivo",
           "Confirm": "Confirmar",
-          "Details": "Detalles"
+          "Details": "Detalles",
+          "Events": "Eventos",
+          "Add event": "Agregar evento",
+          "Your events": "Tus eventos",
+          "Active events": "Eventos activos",
         },
 
         'tr_IN': {

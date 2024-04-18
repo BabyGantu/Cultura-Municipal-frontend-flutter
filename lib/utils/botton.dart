@@ -64,4 +64,34 @@ class Custombutton {
       ),
     );
   }
+
+  static Widget button2(clr, text, siz, siz2) {
+    return Center(
+      child: Container(
+        decoration: BoxDecoration(
+            borderRadius: const BorderRadius.all(Radius.circular(14)),
+            color: clr),
+        height: height / 15,
+        width: Get.width / 1.3,
+        child: Row(
+          children: [
+            SizedBox(
+              width: 10,
+            ),
+            Expanded(
+              child: Text(text,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600)),
+            ),
+            SizedBox(
+              width: 10,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

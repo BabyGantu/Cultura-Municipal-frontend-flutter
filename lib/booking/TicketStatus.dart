@@ -58,7 +58,7 @@ class _TicketStatusPageState extends State<TicketStatusPage>
                   },
                   child: Icon(Icons.arrow_back, color: notifire.getdarkscolor))
               : Container(),
-          title: Text("Tickets".tr,
+          title: Text("Your events".tr,
               style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.w900,
@@ -75,8 +75,8 @@ class _TicketStatusPageState extends State<TicketStatusPage>
             indicatorSize: TabBarIndicatorSize.label,
             unselectedLabelColor: Colors.grey,
             tabs: [
-              Tab(text: "Upcoming".tr),
-              Tab(text: "Completed".tr),
+              Tab(text: "Add event".tr),
+              Tab(text: "Active events".tr),
               Tab(text: "Cancelled".tr),
             ],
           ),

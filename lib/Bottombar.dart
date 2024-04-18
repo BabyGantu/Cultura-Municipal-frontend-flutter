@@ -102,7 +102,7 @@ class _BottombarState extends State<Bottombar> {
                             ? buttonColor
                             : notifire.bottommenucolore,
                         height: MediaQuery.of(context).size.height / 35),
-                    label: 'Booking'.tr),
+                    label: 'Events'.tr),
                 BottomNavigationBarItem(
                   icon: Image.asset(Images.rectangle,
                       color: _selectedIndex == 3

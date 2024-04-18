@@ -1,5 +1,6 @@
 // ignore_for_file: avoid_print, prefer_typing_uninitialized_variables, file_names, prefer_const_constructors
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:goevent2/Api/ApiWrapper.dart';
@@ -12,6 +13,13 @@ import 'package:goevent2/utils/colornotifire.dart';
 import 'package:goevent2/utils/media.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'SelectLocation.dart';
+
+import '../../Controller/AuthController.dart';
+import '../../profile/loream.dart';
+import '../../utils/botton.dart';
+import '../../utils/ctextfield.dart';
+import '../../utils/itextfield.dart';
 
 // Done
 class UpcomingTicket extends StatefulWidget {
@@ -26,9 +34,27 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
   final note = TextEditingController();
   String? rejectmsg = '';
   List orderdata = [];
+  List event_gallery = [];
+  List<dynamic> event_sponsore = [];
   bool isLoading = false;
 
   late ColorNotifire notifire;
+  final event_title = TextEditingController();
+  final cid = TextEditingController();
+  final event_img = TextEditingController();
+  final event_cover_img = TextEditingController();
+  final event_address_title = TextEditingController();
+  final event_address = TextEditingController();
+  final event_sdate = TextEditingController();
+  final event_time = TextEditingController();
+  final event_about = TextEditingController();
+  final event_about_short = TextEditingController();
+  final price = TextEditingController();
+  final lat = TextEditingController();
+  final long = TextEditingController();
+
+  final Event_sponsore = TextEditingController();
+  final Event_gallery = TextEditingController();
 
   getdarkmodepreviousstate() async {
     final prefs = await SharedPreferences.getInstance();
@@ -80,46 +106,269 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
     notifire = Provider.of<ColorNotifire>(context, listen: true);
     return Scaffold(
       backgroundColor: notifire.backgrounde,
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-        child: !isLoading
-            ? Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  orderdata.isNotEmpty
-                      ? Expanded(
-                          child: ListView.builder(
-                            itemCount: orderdata.length,
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            padding: EdgeInsets.only(bottom: Get.height * 0.02),
-                            shrinkWrap: true,
-                            itemBuilder: (ctx, i) {
-                              return bookticket(orderdata, i);
-                            },
-                          ),
-                        )
-                      : Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Image(
-                                image: const AssetImage("image/33.png"),
-                                height: Get.height * 0.14),
-                            SizedBox(height: Get.height * 0.02),
-                            Center(
-                              child: Text("Looks like you haven't booked yet",
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    color: notifire.gettextcolor,
-                                    fontSize: 16,
-                                    fontFamily: 'Gilroy Bold',
-                                  )),
-                            ),
-                            SizedBox(height: Get.height * 0.02),
-                          ],
-                        ),
-                ],
-              )
-            : isLoadingCircular(),
+      body: SingleChildScrollView(
+        child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                SizedBox(
+                    height: MediaQuery.of(context).size.height /
+                        40), // Ajustar altura según necesidad
+                Customtextfild.textField(
+                  controller: event_title,
+                  name1: "Event title".tr,
+                  labelclr: Colors.grey,
+                  textcolor: notifire.getwhitecolor,
+                  prefixIcon: Image.asset("image/evento.png",
+                      scale: 3.5,
+                      //color: notifire.textcolor
+                  ),
+                  context: context,
+                ),
+                SizedBox(
+                    height: MediaQuery.of(context).size.height /
+                        40), // Ajustar altura según necesidad
+                Customtextfild.textField(
+                  controller: cid,
+                  name1: "Event category".tr,
+                  labelclr: Colors.grey,
+                  textcolor: notifire.getwhitecolor,
+                  prefixIcon: Image.asset("image/categoria.png",
+                      scale: 3.5,
+                      //color: notifire.textcolor
+                  ),
+                  context: context,
+                ),
+                SizedBox(
+                    height: MediaQuery.of(context).size.height /
+                        40), // Ajustar altura según necesidad
+                Customtextfild.textField(
+                  controller: event_sdate,
+                  name1: "Event date".tr,
+                  labelclr: Colors.grey,
+                  textcolor: notifire.getwhitecolor,
+                  prefixIcon: Image.asset("image/Calendar.png",
+                      scale: 3.5,
+                      //color: notifire.textcolor
+                  ),
+                  context: context,
+                ),
+                SizedBox(
+                    height: MediaQuery.of(context).size.height /
+                        40), // Ajustar altura según necesidad
+                Customtextfild.textField(
+                  controller: event_time,
+                  name1: "Event Time".tr,
+                  labelclr: Colors.grey,
+                  textcolor: notifire.getwhitecolor,
+                  prefixIcon: Image.asset("image/time.png",
+                      scale: 3.5,
+                      //color: notifire.textcolor
+                  ),
+                  context: context,
+                ),
+                SizedBox(
+                    height: MediaQuery.of(context).size.height /
+                        40), // Ajustar altura según necesidad
+                 // Ajustar altura según necesidad
+                CustomShortTextArea.textArea(
+                  controller: event_about_short,
+                  name1: "Short description".tr,
+                  labelclr: Colors.grey,
+                  textcolor: notifire.getwhitecolor,
+                  prefixIcon: Image.asset("image/descripcion.png",
+                      scale: 3.5,
+                      //color: notifire.textcolor
+                  ),
+                  context: context,
+                ),
+                SizedBox(
+                    height: MediaQuery.of(context).size.height /
+                        40), // Ajustar altura según necesidad
+                CustomTextArea.textArea(
+                  controller: event_about,
+                  name1: "Description".tr,
+                  labelclr: Colors.grey,
+                  textcolor: notifire.getwhitecolor,
+                  prefixIcon: Image.asset("image/descripcion.png",
+                      scale: 3.5,
+                      //color: notifire.textcolor
+                  ),
+                  context: context,
+                ),
+                SizedBox(
+                    height: MediaQuery.of(context).size.height /
+                        40), // Ajustar altura según necesidad
+                Customtextfild.textField(
+                  controller: price,
+                  name1: "Price".tr,
+                  keyboardType: TextInputType.number,
+                  labelclr: Colors.grey,
+                  textcolor: notifire.getwhitecolor,
+                  prefixIcon: Image.asset("image/dolar.png",
+                      scale: 3.5,
+                      //color: notifire.textcolor
+                  ),
+                  context: context,
+                ),
+                SizedBox(
+                    height: MediaQuery.of(context).size.height /
+                        40),
+                Customtextfild.textField(
+                  controller: Event_gallery,
+                  name1: "Image gallery".tr,
+                  labelclr: Colors.grey,
+                  textcolor: notifire.getwhitecolor,
+                  prefixIcon: Image.asset("image/galeria.png",
+                      scale: 3.5,
+                      //color: notifire.textcolor
+                  ),
+                  context: context,
+                ),
+                SizedBox(
+                    height: MediaQuery.of(context).size.height /
+                        40), // Ajustar altura según necesidad
+                Customtextfild.textField(
+                  controller: Event_sponsore,
+                  name1: "Organizer".tr,
+                  labelclr: Colors.grey,
+                  textcolor: notifire.getwhitecolor,
+                  prefixIcon: Image.asset("image/UserB.png",
+                      scale: 3.5,
+                      //color: notifire.textcolor
+                  ),
+                  context: context,
+                ),
+                SizedBox(
+                    height: MediaQuery.of(context).size.height /
+                        40),
+
+                Customtextfild.textField(
+                  controller: event_address_title,
+                  name1: "Event address title".tr,
+                  labelclr: Colors.grey,
+                  textcolor: notifire.getwhitecolor,
+                  prefixIcon: Image.asset("image/direction.png",
+                    scale: 3.5,
+                    //color: notifire.textcolor
+                  ),
+                  context: context,
+                ),
+                SizedBox(
+                    height: MediaQuery.of(context).size.height /
+                        40), // Ajustar altura según necesidad
+                Customtextfild.textField(
+                  controller: event_address,
+                  name1: "Event address".tr,
+                  keyboardType: TextInputType.streetAddress,
+                  labelclr: Colors.grey,
+                  textcolor: notifire.getwhitecolor,
+                  prefixIcon: Image.asset("image/direction.png",
+                    scale: 3.5,
+                    //color: notifire.textcolor
+                  ),
+                  context: context,
+                ),
+                SizedBox(
+                    height: MediaQuery.of(context).size.height /
+                        40),
+
+                GestureDetector(
+                  onTap: () async {
+                    List<double>? location = await Get.to(() => SelectLocation());
+                    if (location != null) {
+                      lat.text = location[0].toString();
+                      long.text = location[1].toString();
+                    }
+                  },
+                  child: SizedBox(
+                    height: 30,
+                    width: 200,
+                    child: Custombutton.button2(
+                      notifire.getbuttonscolor,
+                      "Select location".tr,
+                      SizedBox(width: width / 4),
+                      SizedBox(width: width / 5),
+                    ),
+                  ),
+                ),
+                SizedBox(height: MediaQuery.of(context).size.height / 100),
+                Customtextfild.textField(
+                  controller: lat,
+                  name1: "Latitude".tr,
+                  labelclr: Colors.grey,
+                  textcolor: notifire.getwhitecolor,
+                  prefixIcon: Image.asset("image/direction.png", scale: 3.5, color: notifire.textcolor),
+                  readOnly: true,
+                  context: context,
+                  keyboardType: TextInputType.none
+                ),
+                SizedBox(height: MediaQuery.of(context).size.height / 40),
+                Customtextfild.textField(
+                  controller: long,
+                  name1: "Longitude".tr,
+                  labelclr: Colors.grey,
+                  textcolor: notifire.getwhitecolor,
+                  prefixIcon: Image.asset("image/direction.png", scale: 3.5, color: notifire.textcolor),
+                  readOnly: true,
+                  context: context,
+                    keyboardType: TextInputType.none
+                ),
+                SizedBox(height: MediaQuery.of(context).size.height / 40),
+
+
+
+
+                Center(
+                  child: RichText(
+                    text: TextSpan(
+                        text: "By continuing, ".tr,
+                        style: TextStyle(
+                            color: notifire.getwhitecolor, fontSize: 12),
+                        children: <TextSpan>[
+                          TextSpan(text: "You agree to GoEvent's \n".tr),
+                          TextSpan(
+                              text: 'Terms of Use '.tr,
+                              style: const TextStyle(
+                                  decoration: TextDecoration.underline,
+                                  decorationThickness: 2.5),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  Get.to(() => Loream("Terms & Conditions".tr));
+                                }),
+                          const TextSpan(text: "and "),
+                          TextSpan(
+                              text: 'Privacy Policy.'.tr,
+                              style: const TextStyle(
+                                  decoration: TextDecoration.underline,
+                                  decorationThickness: 2.5),
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () {
+                                  Get.to(() => Loream("Terms & Conditions".tr));
+                                }),
+                        ]),
+                  ),
+                ),
+                SizedBox(height: MediaQuery.of(context).size.height / 40),
+
+                GestureDetector(
+                  onTap: () {
+                    //authSignUp();
+                    print('hahahaha');
+                  },
+                  child: SizedBox(
+                    height: 45,
+                    child: Custombutton.button1(
+                      notifire.getbuttonscolor,
+                      "Register event".tr,
+                      SizedBox(width: width / 4),
+                      SizedBox(width: width / 5),
+                    ),
+                  ),
+                ),
+              ],
+            )),
       ),
     );
   }
@@ -146,7 +395,7 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                   height: height / 7,
                   width: width * 0.32,
                   decoration: const BoxDecoration(
-                    // color: Colors.red,
+                      // color: Colors.red,
                       borderRadius: BorderRadius.all(Radius.circular(20))),
                   child: Stack(
                     children: [
@@ -316,7 +565,8 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                       physics: const NeverScrollableScrollPhysics(),
                       itemBuilder: (ctx, i) {
                         return Theme(
-                          data: ThemeData(unselectedWidgetColor: notifire.textcolor),
+                          data: ThemeData(
+                              unselectedWidgetColor: notifire.textcolor),
                           child: RadioListTile(
                             dense: true,
                             value: i,
