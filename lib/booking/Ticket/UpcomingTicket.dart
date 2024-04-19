@@ -13,6 +13,7 @@ import 'package:goevent2/utils/colornotifire.dart';
 import 'package:goevent2/utils/media.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../utils/CustomComboBox.dart';
 import 'SelectLocation.dart';
 
 import '../../Controller/AuthController.dart';
@@ -129,16 +130,12 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                 SizedBox(
                     height: MediaQuery.of(context).size.height /
                         40), // Ajustar altura según necesidad
-                Customtextfild.textField(
-                  controller: cid,
-                  name1: "Event category".tr,
-                  labelclr: Colors.grey,
-                  textcolor: notifire.getwhitecolor,
-                  prefixIcon: Image.asset("image/categoria.png",
-                      scale: 3.5,
-                      //color: notifire.textcolor
-                  ),
-                  context: context,
+                CustomComboBox(
+                  labelColor: Colors.grey,
+                  textColor: notifire.getwhitecolor,
+                  onChanged: (value) {
+                    cid.text = value;
+                  },
                 ),
                 SizedBox(
                     height: MediaQuery.of(context).size.height /
@@ -355,7 +352,19 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                 GestureDetector(
                   onTap: () {
                     //authSignUp();
-                    print('hahahaha');
+                    print('el titulo del evento es: ${event_title.text}');
+                    print('el cid es: ${cid.text}');
+                    print('el event_img es: ${event_img.text}');
+                    print('el event_cover_img es: ${event_cover_img.text}');
+                    print('el event_address_title es: ${event_address_title.text}');
+                    print('el event_address es: ${event_address.text}');
+                    print('el event_sdate es: ${event_sdate.text}');
+                    print('el event_time es: ${event_time.text}');
+                    print('el event_about_short  es: ${event_about_short.text}');
+                    print('el event_about es: ${event_about.text}');
+                    print('el price es: ${price.text}');
+                    print('el lat es: ${lat.text}');
+                    print('el long es: ${long.text}');
                   },
                   child: SizedBox(
                     height: 45,
