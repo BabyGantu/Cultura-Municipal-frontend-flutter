@@ -106,6 +106,12 @@ const String categoriasJson = '''
       "title": "Recorridos",
       "image": "image/american_express.png",
       "cover_img": "image/discover.png"
+    },
+    {
+      "id": "12",
+      "title": "Pueblos originarios",
+      "image": "image/american_express.png",
+      "cover_img": "image/discover.png"
     }
   ]
 }

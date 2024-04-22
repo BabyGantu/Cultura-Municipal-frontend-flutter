@@ -26,27 +26,30 @@ void main() async {
 
   runApp(MultiProvider(
     providers: [ChangeNotifierProvider(create: (_) => ColorNotifire())],
-    child: GetMaterialApp(
-      translations: LocaleString(),
-      locale: const Locale('es', 'ES'),
+    child: MaterialApp( // Envuelve GetMaterialApp con MaterialApp aquí
       title: 'Cultura Cajeme'.tr,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-          useMaterial3: false,
-          splashColor: Colors.transparent,
-          highlightColor: Colors.transparent,
-          hoverColor: Colors.transparent,
-          dividerColor: Colors.transparent,
-          // primarySwatch: Colors.blue,
-          fontFamily: "Gilroy"
+        useMaterial3: false,
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        hoverColor: Colors.transparent,
+        dividerColor: Colors.transparent,
+        // primarySwatch: Colors.blue,
+        fontFamily: "Gilroy",
       ),
-      home: const Directionality(
+      home: GetMaterialApp(
+        translations: LocaleString(),
+        locale: const Locale('es', 'ES'),
+        home: const Directionality(
           textDirection: TextDirection.ltr, // set this property
-          child: Spleshscreen()),
-      // home: SliverPersistentAppBar(),
+          child: Spleshscreen(),
+        ),
+      ),
     ),
   ));
 }
+
 
 // 9284798223
 // 123

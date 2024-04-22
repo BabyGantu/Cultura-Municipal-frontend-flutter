@@ -14,6 +14,9 @@ import 'package:goevent2/utils/media.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../utils/CustomComboBox.dart';
+import '../../utils/CustomDatePickerTextField.dart';
+import '../../utils/CustomTimePickerTextField.dart';
+import '../../utils/TargetAudienceComboBox.dart';
 import 'SelectLocation.dart';
 
 import '../../Controller/AuthController.dart';
@@ -46,13 +49,19 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
   final event_cover_img = TextEditingController();
   final event_address_title = TextEditingController();
   final event_address = TextEditingController();
-  final event_sdate = TextEditingController();
-  final event_time = TextEditingController();
+  late TextEditingController end_dateController;
+  late String end_date;
+  late TextEditingController start_dateController;
+  late String start_date;
+  final start_time  = TextEditingController();
+  final end_time  = TextEditingController();
   final event_about = TextEditingController();
   final event_about_short = TextEditingController();
   final price = TextEditingController();
   final lat = TextEditingController();
   final long = TextEditingController();
+  final target_audience = TextEditingController();
+
 
   final Event_sponsore = TextEditingController();
   final Event_gallery = TextEditingController();
@@ -72,6 +81,17 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
     super.initState();
     ticketStatusApi();
     getdarkmodepreviousstate();
+    start_dateController = TextEditingController();
+    start_date = ''; // Inicializa la fecha vacía
+    end_dateController = TextEditingController();
+    end_date = ''; // Inicializa la fecha vacía
+  }
+
+  @override
+  void dispose() {
+    start_dateController.dispose();
+    end_dateController.dispose();
+    super.dispose();
   }
 
   ticketStatusApi() {
@@ -115,7 +135,27 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
               children: [
                 SizedBox(
                     height: MediaQuery.of(context).size.height /
-                        40), // Ajustar altura según necesidad
+                        40),
+                CustomComboBox(
+                  labelColor: Colors.grey,
+                  textColor: notifire.getwhitecolor,
+                  onChanged: (value) {
+                    cid.text = value;
+                  },
+                ),
+                SizedBox(
+                    height: MediaQuery.of(context).size.height /
+                        40),
+                TargetAudienceComboBox(
+                  labelColor: Colors.grey,
+                  textColor: notifire.getwhitecolor,
+                  onChanged: (value) {
+                    cid.text = value;
+                  },
+                ),
+                SizedBox(
+                    height: MediaQuery.of(context).size.height /
+                        40),
                 Customtextfild.textField(
                   controller: event_title,
                   name1: "Event title".tr,
@@ -129,46 +169,113 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                 ),
                 SizedBox(
                     height: MediaQuery.of(context).size.height /
-                        40), // Ajustar altura según necesidad
-                CustomComboBox(
-                  labelColor: Colors.grey,
-                  textColor: notifire.getwhitecolor,
+                        40),
+                Customtextfild.textField(
+                  controller: event_img,
+                  name1: "Event Image".tr,
+                  labelclr: Colors.grey,
+                  textcolor: notifire.getwhitecolor,
+                  prefixIcon: Image.asset("image/imagen_icon.png",
+                    scale: 3.5,
+                    //color: notifire.textcolor
+                  ),
+                  context: context,
+                ),
+                SizedBox(
+                    height: MediaQuery.of(context).size.height /
+                        40),
+                Customtextfild.textField(
+                  controller: event_cover_img,
+                  name1: "Event Cover".tr,
+                  labelclr: Colors.grey,
+                  textcolor: notifire.getwhitecolor,
+                  prefixIcon: Image.asset("image/cover.png",
+                    scale: 3.5,
+                    //color: notifire.textcolor
+                  ),
+                  context: context,
+                ),
+                SizedBox(
+                    height: MediaQuery.of(context).size.height /
+                        40),
+                CustomDatePickerTextField(
+                  controller: start_dateController,
+                  name1: "Start date".tr,
+                  labelclr: Colors.grey,
+                  textcolor: notifire.getwhitecolor,
+                  iconImagePath: 'image/Calendar.png',
                   onChanged: (value) {
-                    cid.text = value;
+                    setState(() {
+                      start_dateController.text = value;
+                    });
+                  },
+                ),
+
+                SizedBox(
+                    height: MediaQuery.of(context).size.height /
+                        40),
+                CustomDatePickerTextField(
+                  controller: end_dateController,
+                  name1: "End date".tr,
+                  labelclr: Colors.grey,
+                  textcolor: notifire.getwhitecolor,
+                  iconImagePath: 'image/Calendar.png',
+                  onChanged: (value) {
+                    setState(() {
+                      end_dateController.text = value;
+                    });
                   },
                 ),
                 SizedBox(
                     height: MediaQuery.of(context).size.height /
-                        40), // Ajustar altura según necesidad
-                Customtextfild.textField(
-                  controller: event_sdate,
-                  name1: "Event date".tr,
+                        40),
+                CustomTimePickerTextField(
+                  controller: start_time,
+                  name1: "Start Time".tr,
                   labelclr: Colors.grey,
                   textcolor: notifire.getwhitecolor,
-                  prefixIcon: Image.asset("image/Calendar.png",
-                      scale: 3.5,
-                      //color: notifire.textcolor
+                  iconImagePath: "image/time.png",
+                  onChanged: (value) {
+                    setState(() {
+                      start_time.text = value;
+                    });
+                  },
+                ),
+
+                SizedBox(
+                    height: MediaQuery.of(context).size.height /
+                        40),
+                CustomTimePickerTextField(
+                  controller: end_time,
+                  name1: "End Time".tr,
+                  labelclr: Colors.grey,
+                  textcolor: notifire.getwhitecolor,
+                  iconImagePath: "image/time.png",
+                  onChanged: (value) {
+                    setState(() {
+                      end_time.text = value;
+                    });
+                  },
+                ),
+                SizedBox(
+                    height: MediaQuery.of(context).size.height /
+                        40),
+                Customtextfild.textField(
+                  controller: price,
+                  name1: "Price".tr,
+                  keyboardType: TextInputType.number,
+                  labelclr: Colors.grey,
+                  textcolor: notifire.getwhitecolor,
+                  prefixIcon: Image.asset("image/dolar.png",
+                    scale: 3.5,
+                    //color: notifire.textcolor
                   ),
                   context: context,
                 ),
                 SizedBox(
                     height: MediaQuery.of(context).size.height /
-                        40), // Ajustar altura según necesidad
-                Customtextfild.textField(
-                  controller: event_time,
-                  name1: "Event Time".tr,
-                  labelclr: Colors.grey,
-                  textcolor: notifire.getwhitecolor,
-                  prefixIcon: Image.asset("image/time.png",
-                      scale: 3.5,
-                      //color: notifire.textcolor
-                  ),
-                  context: context,
-                ),
-                SizedBox(
-                    height: MediaQuery.of(context).size.height /
-                        40), // Ajustar altura según necesidad
-                 // Ajustar altura según necesidad
+                        40),
+
                 CustomShortTextArea.textArea(
                   controller: event_about_short,
                   name1: "Short description".tr,
@@ -197,21 +304,7 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                 SizedBox(
                     height: MediaQuery.of(context).size.height /
                         40), // Ajustar altura según necesidad
-                Customtextfild.textField(
-                  controller: price,
-                  name1: "Price".tr,
-                  keyboardType: TextInputType.number,
-                  labelclr: Colors.grey,
-                  textcolor: notifire.getwhitecolor,
-                  prefixIcon: Image.asset("image/dolar.png",
-                      scale: 3.5,
-                      //color: notifire.textcolor
-                  ),
-                  context: context,
-                ),
-                SizedBox(
-                    height: MediaQuery.of(context).size.height /
-                        40),
+
                 Customtextfild.textField(
                   controller: Event_gallery,
                   name1: "Image gallery".tr,
@@ -231,7 +324,7 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                   name1: "Organizer".tr,
                   labelclr: Colors.grey,
                   textcolor: notifire.getwhitecolor,
-                  prefixIcon: Image.asset("image/UserB.png",
+                  prefixIcon: Image.asset("image/organizer.png",
                       scale: 3.5,
                       //color: notifire.textcolor
                   ),
@@ -243,7 +336,7 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
 
                 Customtextfild.textField(
                   controller: event_address_title,
-                  name1: "Event address title".tr,
+                  name1: "Event address title, (Example: Plaza Lázaro Cárdenas) ".tr,
                   labelclr: Colors.grey,
                   textcolor: notifire.getwhitecolor,
                   prefixIcon: Image.asset("image/direction.png",
@@ -358,8 +451,10 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                     print('el event_cover_img es: ${event_cover_img.text}');
                     print('el event_address_title es: ${event_address_title.text}');
                     print('el event_address es: ${event_address.text}');
-                    print('el event_sdate es: ${event_sdate.text}');
-                    print('el event_time es: ${event_time.text}');
+                    print('el start_date es: ${start_dateController.text}');
+                    print('el end_date es: ${end_dateController.text}');
+                    print('el start_time es: ${start_time.text}');
+                    print('el end_time es: ${end_time.text}');
                     print('el event_about_short  es: ${event_about_short.text}');
                     print('el event_about es: ${event_about.text}');
                     print('el price es: ${price.text}');
