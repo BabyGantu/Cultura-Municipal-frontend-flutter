@@ -182,7 +182,8 @@ class _LoginState extends State<Login> {
                 GestureDetector(
                   onTap: () {
                     //FocusScope.of(context).requestFocus(FocusNode());
-
+                    Get.to(() => const Bottombar(), duration: Duration.zero);
+                    /*
                     if (email.text.isNotEmpty && password.text.isNotEmpty) {
                       //Get.to(() => const Bottombar(), duration: Duration.zero);
                       login.iniciarSesion(email.text, password.text);
@@ -190,6 +191,7 @@ class _LoginState extends State<Login> {
                       ApiWrapper.showToastMessage(
                           "Please fill required field!");
                     }
+                    */
                   },
                   child: SizedBox(
                     height: 45,

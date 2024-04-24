@@ -8,6 +8,7 @@ import 'package:goevent2/Api/Config.dart';
 import 'package:goevent2/AppModel/Homedata/HomedataController.dart';
 import 'package:goevent2/booking/Ticket/TicketDetails.dart';
 import 'package:goevent2/utils/AppWidget.dart';
+import 'package:goevent2/utils/CustomImageGallery.dart';
 import 'package:goevent2/utils/color.dart';
 import 'package:goevent2/utils/colornotifire.dart';
 import 'package:goevent2/utils/media.dart';
@@ -15,7 +16,9 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../utils/CustomComboBox.dart';
 import '../../utils/CustomDatePickerTextField.dart';
+import '../../utils/CustomImagePicker.dart';
 import '../../utils/CustomTimePickerTextField.dart';
+import '../../utils/CustomPriceInput.dart';
 import '../../utils/TargetAudienceComboBox.dart';
 import 'SelectLocation.dart';
 
@@ -61,7 +64,8 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
   final lat = TextEditingController();
   final long = TextEditingController();
   final target_audience = TextEditingController();
-
+  final phone  = TextEditingController();
+  final email  = TextEditingController();
 
   final Event_sponsore = TextEditingController();
   final Event_gallery = TextEditingController();
@@ -170,34 +174,29 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                 SizedBox(
                     height: MediaQuery.of(context).size.height /
                         40),
-                Customtextfild.textField(
-                  controller: event_img,
-                  name1: "Event Image".tr,
+                CustomImagePicker(
+                  controllers: [event_img],
+                  name: "Event Image".tr,
                   labelclr: Colors.grey,
                   textcolor: notifire.getwhitecolor,
-                  prefixIcon: Image.asset("image/imagen_icon.png",
-                    scale: 3.5,
-                    //color: notifire.textcolor
-                  ),
+                  iconImagePath: "image/imagen_icon.png",
+                  context: context,
+                ),
+
+                SizedBox(
+                    height: MediaQuery.of(context).size.height /
+                        60),
+                CustomImagePicker(
+                  controllers: [event_cover_img],
+                  name: "Event Cover".tr,
+                  labelclr: Colors.grey,
+                  textcolor: notifire.getwhitecolor,
+                  iconImagePath: "image/cover.png",
                   context: context,
                 ),
                 SizedBox(
                     height: MediaQuery.of(context).size.height /
-                        40),
-                Customtextfild.textField(
-                  controller: event_cover_img,
-                  name1: "Event Cover".tr,
-                  labelclr: Colors.grey,
-                  textcolor: notifire.getwhitecolor,
-                  prefixIcon: Image.asset("image/cover.png",
-                    scale: 3.5,
-                    //color: notifire.textcolor
-                  ),
-                  context: context,
-                ),
-                SizedBox(
-                    height: MediaQuery.of(context).size.height /
-                        40),
+                        60),
                 CustomDatePickerTextField(
                   controller: start_dateController,
                   name1: "Start date".tr,
@@ -260,18 +259,16 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                 SizedBox(
                     height: MediaQuery.of(context).size.height /
                         40),
-                Customtextfild.textField(
+                CustomPriceInput(
                   controller: price,
-                  name1: "Price".tr,
-                  keyboardType: TextInputType.number,
+                  name: "Price".tr,
                   labelclr: Colors.grey,
                   textcolor: notifire.getwhitecolor,
-                  prefixIcon: Image.asset("image/dolar.png",
-                    scale: 3.5,
-                    //color: notifire.textcolor
-                  ),
+                  iconImagePath: "image/dolar.png",
                   context: context,
                 ),
+
+
                 SizedBox(
                     height: MediaQuery.of(context).size.height /
                         40),
@@ -305,17 +302,14 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                     height: MediaQuery.of(context).size.height /
                         40), // Ajustar altura según necesidad
 
-                Customtextfild.textField(
-                  controller: Event_gallery,
-                  name1: "Image gallery".tr,
-                  labelclr: Colors.grey,
-                  textcolor: notifire.getwhitecolor,
-                  prefixIcon: Image.asset("image/galeria.png",
-                      scale: 3.5,
-                      //color: notifire.textcolor
-                  ),
-                  context: context,
+                CustomImageGallery(
+                  imagePaths: [], // Lista de rutas de imágenes, puedes inicializarla con las imágenes existentes
+                  labelclr: Colors.grey, // Color del texto del título y del borde
+                  textcolor: notifire.getwhitecolor, // Color del texto dentro de la galería
+                  iconImagePath: "image/galeria.png", // Ruta de la imagen del icono de la galería
+                  context: context, // Contexto de la aplicación
                 ),
+
                 SizedBox(
                     height: MediaQuery.of(context).size.height /
                         40), // Ajustar altura según necesidad
@@ -325,6 +319,36 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                   labelclr: Colors.grey,
                   textcolor: notifire.getwhitecolor,
                   prefixIcon: Image.asset("image/organizer.png",
+                      scale: 3.5,
+                      //color: notifire.textcolor
+                  ),
+                  context: context,
+                ),
+                SizedBox(
+                    height: MediaQuery.of(context).size.height /
+                        40),
+                Customtextfild.textField(
+                  controller: phone,
+                  name1: "Phone (optional)".tr,
+                  keyboardType: TextInputType.phone,
+                  labelclr: Colors.grey,
+                  textcolor: notifire.getwhitecolor,
+                  prefixIcon: Image.asset("image/llamada.png",
+                      scale: 3.5,
+                      //color: notifire.textcolor
+                  ),
+                  context: context,
+                ),
+                SizedBox(
+                    height: MediaQuery.of(context).size.height /
+                        40),
+                Customtextfild.textField(
+                  controller: email,
+                  name1: "Email (optional)".tr,
+                  keyboardType: TextInputType.emailAddress,
+                  labelclr: Colors.grey,
+                  textcolor: notifire.getwhitecolor,
+                  prefixIcon: Image.asset("image/email.png",
                       scale: 3.5,
                       //color: notifire.textcolor
                   ),
