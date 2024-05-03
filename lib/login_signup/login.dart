@@ -75,27 +75,32 @@ class _LoginState extends State<Login> {
               children: [
                 SizedBox(height: height / 11),
                 Center(
-                    child:
-                        Image.asset("image/CajemeCultura.jpg", height: height / 13)),
+                  child: Image.asset(
+                    "image/CajemeCultura.jpg",
+                    height: height / 13,
+                  ),
+                ),
                 SizedBox(height: height / 100),
                 Text(
                   "Cultura Municipal".tr,
                   style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.w700,
-                      fontFamily: 'Gilroy Medium',
-                      color: notifire.gettextcolor),
+                    fontSize: 32,
+                    fontWeight: FontWeight.w700,
+                    fontFamily: 'Gilroy Medium',
+                    color: notifire.gettextcolor,
+                  ),
                 ),
                 SizedBox(height: height / 30),
                 Row(
                   children: [
                     Text(
-                      "Iniciae sesion".tr,
+                      "Iniciar sesión".tr,
                       style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Gilroy Medium',
-                          color: notifire.getwhitecolor),
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Gilroy Medium',
+                        color: notifire.getwhitecolor,
+                      ),
                     ),
                   ],
                 ),
@@ -104,19 +109,20 @@ class _LoginState extends State<Login> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-
-                      const SizedBox(width: 8,),
+                      const SizedBox(width: 8),
                       Expanded(
-
                         child: Customtextfild.textField(
                           controller: email,
                           name1: "Email".tr,
                           labelclr: Colors.grey,
                           textcolor: notifire.getwhitecolor,
-                          prefixIcon: Image.asset("image/Message.png",
-                              scale: 3.5,
-                              color: notifire.textcolor),
-                          context: context,),
+                          prefixIcon: Image.asset(
+                            "image/Message.png",
+                            scale: 3.5,
+                            color: notifire.textcolor,
+                          ),
+                          context: context,
+                        ),
                       ),
                     ],
                   ),
@@ -130,15 +136,44 @@ class _LoginState extends State<Login> {
                   notifire.getwhitecolor,
                   "image/Lock.png",
                   GestureDetector(
-                      onTap: () {
-                        _toggle();
-                      },
-                      child: _obscureText
-                          ? Image.asset("image/Hide.png", height: 20,color: notifire.textcolor,)
-                          : Image.asset("image/Show.png", height: 20,color: notifire.textcolor)),
+                    onTap: () {
+                      _toggle();
+                    },
+                    child: _obscureText
+                        ? Image.asset(
+                            "image/Hide.png",
+                            height: 20,
+                            color: notifire.textcolor,
+                          )
+                        : Image.asset(
+                            "image/Show.png",
+                            height: 20,
+                            color: notifire.textcolor,
+                          ),
+                  ),
                   context: context,
                 ),
-                SizedBox(height: height / 40),
+                Center(
+                  child: GestureDetector(
+                    onTap: () {
+                      Get.to(() => const Resetpassword(),
+                          duration: Duration.zero);
+                    },
+                    child: Container(
+                      color: Colors.transparent,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          "¿Olvidaste tu contraseña?".tr,
+                          style: TextStyle(
+                            color: Color(0xff5669FF),
+                            fontFamily: 'Gilroy Medium',
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
                 Row(
                   children: [
                     Transform.scale(
@@ -153,45 +188,20 @@ class _LoginState extends State<Login> {
                       ),
                     ),
                     SizedBox(width: width / 60),
-                    Text("Remember Me".tr,
-                        style: TextStyle(
-                            color: notifire.getwhitecolor,
-                            fontFamily: 'Gilroy Medium')),
-                    const Spacer(),
-                    GestureDetector(
-                      onTap: () {
-                        Get.to(() => const Resetpassword(),
-                            duration: Duration.zero);
-                      },
-                      child: Container(
-                        color: Colors.transparent,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            "Forgot Password?".tr,
-                            style: TextStyle(
-                                color: notifire.getwhitecolor,
-                                fontFamily: 'Gilroy Medium'),
-                          ),
-                        ),
+                    Text(
+                      "Recordarme".tr,
+                      style: TextStyle(
+                        color: notifire.getwhitecolor,
+                        fontFamily: 'Gilroy Medium',
                       ),
                     ),
+                    const Spacer(),
                   ],
                 ),
                 SizedBox(height: height / 20),
                 GestureDetector(
                   onTap: () {
-                    //FocusScope.of(context).requestFocus(FocusNode());
                     Get.to(() => const Bottombar(), duration: Duration.zero);
-                    /*
-                    if (email.text.isNotEmpty && password.text.isNotEmpty) {
-                      //Get.to(() => const Bottombar(), duration: Duration.zero);
-                      login.iniciarSesion(email.text, password.text);
-                    } else {
-                      ApiWrapper.showToastMessage(
-                          "Please fill required field!");
-                    }
-                    */
                   },
                   child: SizedBox(
                     height: 45,
@@ -207,17 +217,20 @@ class _LoginState extends State<Login> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("Don't have an account?".tr,
-                        style: TextStyle(
-                            color: notifire.getwhitecolor,
-                            fontSize: 12,
-                            fontFamily: 'Gilroy Medium')),
+                    Text(
+                      "¿No tienes una cuenta?".tr,
+                      style: TextStyle(
+                        color: notifire.getwhitecolor,
+                        fontSize: 12,
+                        fontFamily: 'Gilroy Medium',
+                      ),
+                    ),
                     GestureDetector(
                       onTap: () {
                         Get.to(() => const Signup(), duration: Duration.zero);
                       },
                       child: Text(
-                        "Sign up".tr,
+                        "Regístrate".tr,
                         style: const TextStyle(
                           color: Color(0xff5669FF),
                           fontFamily: 'Gilroy Medium',

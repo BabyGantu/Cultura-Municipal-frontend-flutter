@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:get/get_utils/src/extensions/internacionalization.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -143,7 +144,7 @@ class _CustomComboBoxState extends State<CustomComboBox> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Category list",
+          "Category list".tr,
           style: TextStyle(
             color: widget.labelColor,
             fontWeight: FontWeight.bold,

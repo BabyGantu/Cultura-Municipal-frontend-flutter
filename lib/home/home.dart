@@ -380,6 +380,28 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     });
   }
 
+  void cargarCategoriasApi() async {
+  // URL de tu API
+  String apiUrl = 'http://10.0.2.2:8000/eventdata/categorias/';
+
+  // Realiza una solicitud GET a la API
+  http.Response response = await http.get(Uri.parse(apiUrl));
+
+  // Verifica si la solicitud fue exitosa (código de estado 200)
+  if (response.statusCode == 200) {
+    // Decodifica la respuesta JSON con codificación UTF-8
+    var jsonResponse = utf8.decode(response.bodyBytes);
+    
+    // Guarda las categorías en la lista
+    setState(() {
+      categoriasList = json.decode(jsonResponse);
+    });
+  } else {
+    // Si la solicitud no fue exitosa, muestra un mensaje de error
+    print('Error al cargar categorías: ${response.statusCode}');
+  }
+}
+
   void cargartrendingEvent() {
     // Decodifica la cadena JSON y guarda los eventos en la lista eventosList
     Map<String, dynamic> trendingEventData = json.decode(eventsJson);
@@ -422,7 +444,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     /*getData.read("UserLogin") != null
         ? hData.homeDataApi(getData.read("UserLogin")["id"], lat, long)
         : null;*/
-    cargarCategorias();
+    //cargarCategorias();
+    cargarCategoriasApi();
     cargartrendingEvent();
     cargarUpcomingEvent();
     cargarThisMonthEvent();
@@ -584,7 +607,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                       //height: Get.height * 0.01,
                       height: Get.height * 0.37,
                       child: ListView.builder(
-                        itemCount: min(upcomingEvent.length,6),
+                        itemCount: min(upcomingEvent.length, 6),
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (ctx, i) {
                           return events(upcomingEvent[i], i);
@@ -691,7 +714,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                     //: const SizedBox(),
                     ListView.builder(
                       padding: EdgeInsets.zero,
-                      itemCount: min(nearbyEvent.length,3),
+                      itemCount: min(nearbyEvent.length, 3),
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemBuilder: (ctx, i) {
@@ -748,7 +771,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                       child: SizedBox(
                         height: Get.height * 0.28,
                         child: ListView.builder(
-                          itemCount: min(trendingEvent.length,6),
+                          itemCount: min(trendingEvent.length, 6),
                           scrollDirection: Axis.horizontal,
                           itemBuilder: (ctx, i) {
                             return tredingEvents(trendingEvent, i);
@@ -837,7 +860,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                   ],
                 ),
               ),
-
             )
           ],
         ));
@@ -857,17 +879,17 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             borderRadius: BorderRadius.circular(25),
           ),
           child: Padding(
-            padding: const EdgeInsets.only(left: 4, right: 8),
+            padding: const EdgeInsets.only(left: 4, right: 8, bottom: 10),
             child: Row(
               children: [
                 Image(
-                  image: AssetImage(catList[i]
-                      ["image"]), // Cambiado de NetworkImage a AssetImage
+                  image: NetworkImage(catList[i][
+                      "image"]), // Utiliza NetworkImage para cargar la imagen desde la URL
                   height: 30,
                 ),
                 SizedBox(width: Get.width * 0.02),
                 Text(
-                  catList[i]["title"], // Usar el nombre correcto del campo
+                  catList[i]["title"],
                   style: TextStyle(
                     fontFamily: 'Gilroy Medium',
                     color: notifire.textcolor,
@@ -938,7 +960,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   tredingEvents(tEvent, i) {
     return InkWell(
       onTap: () {
-        Get.to(() => EventsDetails(eid: tEvent[i]["event_id"]), duration: Duration.zero);
+        Get.to(() => EventsDetails(eid: tEvent[i]["event_id"]),
+            duration: Duration.zero);
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -994,8 +1017,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               Align(
                 alignment: Alignment.bottomCenter,
                 child: Container(
-                  height: Get.height * 0.12,
-                  width: Get.width * 0.56,
+                  height: Get.height * 0.15,
+                  width: Get.width * 0.58,
                   decoration: BoxDecoration(
                     color: notifire.getprimerycolor,
                     borderRadius: BorderRadius.circular(16),
@@ -1027,15 +1050,43 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                           ),
                         ),
                         SizedBox(height: Get.height * 0.006),
-                        Row(
-                          children: [
-                            Image.asset("image/location.png",
-                                height: height / 50),
-                            SizedBox(width: Get.width * 0.01),
-                            Ink(
-                              width: Get.width * 0.45,
-                              child: Text(
-                                tEvent[i]["event_address"],
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Image.asset("image/location.png",
+                                  height: height / 50),
+                              SizedBox(width: Get.width * 0.01),
+                              Ink(
+                                width: Get.width * 0.45,
+                                child: Text(
+                                  tEvent[i]["event_address"],
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontFamily: 'Gilroy Medium',
+                                    color: Colors.grey,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        //SizedBox(height: Get.height * 0.001),
+                        Expanded(
+                          child: Row(
+                            children: [
+                              tEvent[i]["sponsore_list"] != null
+                                  ? CircleAvatar(
+                                      radius: 16.0,
+                                      backgroundImage: AssetImage(tEvent[i]
+                                          ["sponsore_list"]["sponsore_img"]),
+                                      backgroundColor: Colors.transparent,
+                                    )
+                                  : const SizedBox(),
+                              SizedBox(width: Get.width * 0.01),
+                              Text(
+                                "Organizer".tr,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
@@ -1044,32 +1095,9 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                   fontSize: 14,
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(height: Get.height * 0.008),
-                        Row(
-                          children: [
-                            tEvent[i]["sponsore_list"] != null
-                                ? CircleAvatar(
-                                    radius: 16.0,
-                                    backgroundImage: AssetImage(tEvent[i]
-                                        ["sponsore_list"]["sponsore_img"]),
-                                    backgroundColor: Colors.transparent,
-                                  )
-                                : const SizedBox(),
-                            SizedBox(width: Get.width * 0.01),
-                            Text(
-                              "Sponsor".tr,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontFamily: 'Gilroy Medium',
-                                color: Colors.grey,
-                                fontSize: 14,
-                              ),
-                            ),
-                            Spacer(),
+
+                              //Spacer(),
+                              /*
                             Container(
                               height: Get.height * 0.04,
                               width: Get.width * 0.20,
@@ -1090,7 +1118,9 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                 ),
                               ),
                             ),
-                          ],
+                            */
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -1191,24 +1221,18 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   List<String> _mImages = [];
 
   Widget monthly(mEvent, i) {
-
     _mImages.clear();
     mEvent[i]["member_list"].forEach((e) {
       _mImages.add(e);
     });
 
-
-
     int mEventcount = int.parse(mEvent[i]["total_member_list"].toString()) > 3
         ? 3
         : int.parse(mEvent[i]["total_member_list"].toString());
 
-
-
     for (var i = 0; i < mEventcount; i++) {
       _mImages.add(Config.userImage);
     }
-
 
     return GestureDetector(
       onTap: () {
@@ -1245,7 +1269,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                 fit: BoxFit.cover,
                               ),
                             ),
-
                           ),
                           const SizedBox(width: 6),
                           Column(
@@ -1253,17 +1276,17 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                             children: [
                               Column(
                                 children: [
-                                  SizedBox(height: height / 80),
+                                  SizedBox(height: height / 100),
                                   Container(
                                     decoration: BoxDecoration(
                                         color: notifire.getpinkcolor,
-                                        borderRadius:
-                                        const BorderRadius.all(Radius.circular(10))),
-                                    height: height / 40,
-                                    width: width / 5,
-
+                                        borderRadius: const BorderRadius.all(
+                                            Radius.circular(10))),
+                                    height: height / 35,
+                                    width: width / 4,
                                     child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
                                         Center(
                                           child: SizedBox(
@@ -1273,8 +1296,9 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                               //maxLines: 1,
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
-                                                  color: const Color(0xff4A43EC),
-                                                  fontSize: 14,
+                                                  color:
+                                                      const Color(0xff4A43EC),
+                                                  fontSize: 11,
                                                   fontFamily: 'Gilroy Bold',
                                                   fontWeight: FontWeight.bold),
                                             ),
@@ -1282,13 +1306,11 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                         ),
                                       ],
                                     ),
-
-
                                   ),
                                 ],
                               ),
 
-                                    /*
+                              /*
                                     SizedBox(
                                       width: width / 5,
                                       child: Text(
@@ -1313,7 +1335,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                   style: TextStyle(
                                       fontFamily: 'Gilroy Medium',
                                       color: notifire.textcolor,
-                                      fontSize: 14,
+                                      fontSize: 11,
                                       fontWeight: FontWeight.w600),
                                 ),
                               ),
@@ -1338,7 +1360,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                   ),
                                 ],
                               ),
-                              SizedBox(height: height / 100),
+                              /*
+                              SizedBox(height: height / 150),
                               mEvent[i]["total_member_list"] != "0"
                                   ? Row(
                                 children: [
@@ -1395,6 +1418,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                     )
 
                                   : const SizedBox(),
+                                  */
                             ],
                           ),
                           SizedBox(height: height / 80)
@@ -1527,7 +1551,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                  */
               ),
               Column(children: [
-                SizedBox(height: height / 200),
+                SizedBox(height: height / 500),
                 Row(
                   children: [
                     SizedBox(width: width / 50),
@@ -1592,10 +1616,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                 style: TextStyle(
                                     fontFamily: 'Gilroy Medium',
                                     color: notifire.textcolor,
-                                    fontSize: 14,
+                                    fontSize: 12,
                                     fontWeight: FontWeight.w600)),
                           ),
-                          SizedBox(height: height / 200),
+                          SizedBox(height: height / 300),
                           Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -1620,7 +1644,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                         ]),
                   ],
                 ),
-                SizedBox(height: height / 80),
               ])
             ]),
           ),
@@ -1657,7 +1680,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
           color: Colors.transparent,
           width: width / 1.55,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 25),
             child: Container(
               decoration: BoxDecoration(
                   border: Border.all(color: notifire.bordercolore),
@@ -1745,7 +1768,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                       ),
                                     ),
                                   ),
-                                  SizedBox(width: width / 40),
+                                  SizedBox(width: width / 50),
                                 ],
                               ),
                             ],
@@ -1753,7 +1776,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                         ],
                       ),
                     ),
-                    SizedBox(height: height / 40),
+                    SizedBox(height: height / 50),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 6),
                       width: Get.width,
@@ -1768,6 +1791,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                             fontWeight: FontWeight.w600),
                       ),
                     ),
+                    /*
                     SizedBox(height: height / 140),
                     upEvent["total_member_list"] != "0"
                         ? Row(
@@ -1793,7 +1817,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                             ],
                           )
                         : const SizedBox(),
-                    SizedBox(height: height / 60),
+                        */
+                    SizedBox(height: height / 80),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 6),
                       child: Row(
@@ -1851,7 +1876,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                           ],
                         ),
                       ),
-                      SizedBox(width: width / 40),
                     ]),
                   ],
                 ),
@@ -1866,11 +1890,11 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   Future<void> share() async {
     await FlutterShare.share(
         title: 'Cultura Municipal App',
-        text: '¡Descubre todo lo que la cultura local tiene para ofrecer con la aplicación oficial de Cultura Municipal! Descárgala ahora y únete a nosotros para celebrar la riqueza y diversidad cultural de nuestra comunidad.',
+        text:
+            '¡Descubre todo lo que la cultura local tiene para ofrecer con la aplicación oficial de Cultura Municipal! Descárgala ahora y únete a nosotros para celebrar la riqueza y diversidad cultural de nuestra comunidad.',
         linkUrl: 'https://play.google.com/store/apps/details?id=$packageName',
         chooserTitle: 'Compartir Cultura Municipal');
   }
-
 
 /*
   walletrefar() async {

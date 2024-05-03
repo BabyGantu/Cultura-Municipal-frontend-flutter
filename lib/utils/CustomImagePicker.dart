@@ -1,9 +1,12 @@
+
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:get/get_utils/src/extensions/internacionalization.dart';
 import 'package:image_picker/image_picker.dart';
 
 class CustomImagePicker extends StatefulWidget {
-  final List<TextEditingController> controllers;
+  final List<String> imagePaths;
   final String name;
   final Color labelclr;
   final Color textcolor;
@@ -12,9 +15,9 @@ class CustomImagePicker extends StatefulWidget {
 
   const CustomImagePicker({
     Key? key,
-    required this.controllers,
-    required this.name,
+    required this.imagePaths,
     required this.labelclr,
+    required this.name,
     required this.textcolor,
     required this.iconImagePath,
     required this.context,
@@ -30,67 +33,71 @@ class _CustomImagePickerState extends State<CustomImagePicker> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: List.generate(widget.controllers.length, (index) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              widget.name,
-              style: TextStyle(
-                color: widget.labelclr,
-                fontSize: 16.0,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.symmetric(vertical: 10.0),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.grey, width: 1),
-              ),
-              child: Padding(
-                padding: EdgeInsets.all(10.0),
-                child: Row(
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        _selectImage(context, index);
-                      },
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Image.asset(
-                            widget.iconImagePath,
-                            scale: 3.5,
-                          ),
-                          SizedBox(width: 5.0),
-                          Text(
-                            'Select Image'.tr,
-                            style: TextStyle(color: Colors.blue),
-                          ),
-                        ],
-                      ),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          widget.name.tr,
+          style: TextStyle(
+            color: widget.labelclr,
+            fontSize: 16.0,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 10.0),
+        Row(
+          children: List.generate(
+            widget.imagePaths.length < 1 ? widget.imagePaths.length + 1 : 1,
+            (index) {
+              if (index == widget.imagePaths.length) {
+                return GestureDetector(
+                  onTap: () {
+                    _selectImage(context);
+                  },
+                  child: Container(
+                    width: 80.0,
+                    height: 80.0,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey, width: 1),
+                      borderRadius: BorderRadius.circular(10.0),
                     ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        );
-      }),
+                    child: Icon(
+                      Icons.add,
+                      size: 40.0,
+                      color: widget.labelclr,
+                    ),
+                  ),
+                );
+              } else {
+                return Container(
+                  width: 80.0,
+                  height: 80.0,
+                  margin: EdgeInsets.only(right: 10.0),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey, width: 1),
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: Image.file(
+                    File(widget.imagePaths[index]),
+                    //fit: BoxFit.cover,
+                  ),
+                );
+              }
+            },
+          ),
+        ),
+      ],
     );
   }
 
-  Future<void> _selectImage(BuildContext context, int index) async {
+  Future<void> _selectImage(BuildContext context) async {
     final XFile? pickedImage =
         await _picker.pickImage(source: ImageSource.gallery);
     if (pickedImage != null) {
       setState(() {
-        widget.controllers[index].text = pickedImage.path;
+        if (widget.imagePaths.length < 3) {
+          widget.imagePaths.add(pickedImage.path);
+        }
       });
     }
   }
 }
-
-
-

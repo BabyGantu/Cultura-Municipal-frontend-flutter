@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:get/get_utils/src/extensions/internacionalization.dart';
 import 'package:image_picker/image_picker.dart';
 
 class CustomImageGallery extends StatefulWidget {
@@ -30,7 +33,7 @@ class _CustomImageGalleryState extends State<CustomImageGallery> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Image Gallery',
+          'Image Gallery'.tr,
           style: TextStyle(
             color: widget.labelclr,
             fontSize: 16.0,
@@ -70,9 +73,9 @@ class _CustomImageGalleryState extends State<CustomImageGallery> {
                     border: Border.all(color: Colors.grey, width: 1),
                     borderRadius: BorderRadius.circular(10.0),
                   ),
-                  child: Image.asset(
-                    widget.imagePaths[index],
-                    fit: BoxFit.cover,
+                  child: Image.file(
+                    File(widget.imagePaths[index]),
+                    //fit: BoxFit.cover,
                   ),
                 );
               }
@@ -95,3 +98,4 @@ class _CustomImageGalleryState extends State<CustomImageGallery> {
     }
   }
 }
+

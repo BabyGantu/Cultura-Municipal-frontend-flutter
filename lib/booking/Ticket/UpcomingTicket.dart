@@ -19,6 +19,7 @@ import '../../utils/CustomDatePickerTextField.dart';
 import '../../utils/CustomImagePicker.dart';
 import '../../utils/CustomTimePickerTextField.dart';
 import '../../utils/CustomPriceInput.dart';
+import '../../utils/MunicipiosComboBox.dart';
 import '../../utils/TargetAudienceComboBox.dart';
 import 'SelectLocation.dart';
 
@@ -45,27 +46,36 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
   List<dynamic> event_sponsore = [];
   bool isLoading = false;
 
+  bool verificar = false;
+
   late ColorNotifire notifire;
   final event_title = TextEditingController();
+
   final cid = TextEditingController();
   final event_img = TextEditingController();
   final event_cover_img = TextEditingController();
+
   final event_address_title = TextEditingController();
+
   final event_address = TextEditingController();
+
   late TextEditingController end_dateController;
+
   late String end_date;
+
   late TextEditingController start_dateController;
   late String start_date;
-  final start_time  = TextEditingController();
-  final end_time  = TextEditingController();
+
+  final start_time = TextEditingController();
+  final end_time = TextEditingController();
   final event_about = TextEditingController();
   final event_about_short = TextEditingController();
   final price = TextEditingController();
   final lat = TextEditingController();
   final long = TextEditingController();
   final target_audience = TextEditingController();
-  final phone  = TextEditingController();
-  final email  = TextEditingController();
+  final phone = TextEditingController();
+  final email = TextEditingController();
 
   final Event_sponsore = TextEditingController();
   final Event_gallery = TextEditingController();
@@ -88,7 +98,8 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
     start_dateController = TextEditingController();
     start_date = ''; // Inicializa la fecha vacía
     end_dateController = TextEditingController();
-    end_date = ''; // Inicializa la fecha vacía
+    end_date = '';
+    bool verificar = false; // Inicializa la fecha vacía
   }
 
   @override
@@ -137,9 +148,7 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                SizedBox(
-                    height: MediaQuery.of(context).size.height /
-                        40),
+                SizedBox(height: MediaQuery.of(context).size.height / 40),
                 CustomComboBox(
                   labelColor: Colors.grey,
                   textColor: notifire.getwhitecolor,
@@ -147,9 +156,7 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                     cid.text = value;
                   },
                 ),
-                SizedBox(
-                    height: MediaQuery.of(context).size.height /
-                        40),
+                SizedBox(height: MediaQuery.of(context).size.height / 40),
                 TargetAudienceComboBox(
                   labelColor: Colors.grey,
                   textColor: notifire.getwhitecolor,
@@ -157,46 +164,48 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                     cid.text = value;
                   },
                 ),
-                SizedBox(
-                    height: MediaQuery.of(context).size.height /
-                        40),
+                SizedBox(height: MediaQuery.of(context).size.height / 40),
                 Customtextfild.textField(
                   controller: event_title,
                   name1: "Event title".tr,
                   labelclr: Colors.grey,
                   textcolor: notifire.getwhitecolor,
-                  prefixIcon: Image.asset("image/evento.png",
-                      scale: 3.5,
-                      //color: notifire.textcolor
+                  prefixIcon: Image.asset(
+                    "image/evento.png",
+                    scale: 3.5,
                   ),
                   context: context,
                 ),
-                SizedBox(
-                    height: MediaQuery.of(context).size.height /
-                        40),
+
+                buildEmptyFieldWarning(event_title, verificar),
+
+                SizedBox(height: MediaQuery.of(context).size.height / 40),
                 CustomImagePicker(
-                  controllers: [event_img],
-                  name: "Event Image".tr,
-                  labelclr: Colors.grey,
-                  textcolor: notifire.getwhitecolor,
-                  iconImagePath: "image/imagen_icon.png",
-                  context: context,
+                  imagePaths: [],
+                  name: "Event Image".tr, // Lista de rutas de imágenes, puedes inicializarla con las imágenes existentes
+                  labelclr:
+                      Colors.grey, // Color del texto del título y del borde
+                  textcolor: notifire
+                      .getwhitecolor, // Color del texto dentro de la galería
+                  iconImagePath:
+                      "image/imagen_icon.png", // Ruta de la imagen del icono de la galería
+                  context: context, // Contexto de la aplicación
                 ),
 
-                SizedBox(
-                    height: MediaQuery.of(context).size.height /
-                        60),
+                SizedBox(height: MediaQuery.of(context).size.height / 60),
                 CustomImagePicker(
-                  controllers: [event_cover_img],
-                  name: "Event Cover".tr,
-                  labelclr: Colors.grey,
-                  textcolor: notifire.getwhitecolor,
-                  iconImagePath: "image/cover.png",
-                  context: context,
+                  imagePaths: [],
+                  name: "Event Cover".tr, // Lista de rutas de imágenes, puedes inicializarla con las imágenes existentes
+                  labelclr:
+                      Colors.grey, // Color del texto del título y del borde
+                  textcolor: notifire
+                      .getwhitecolor, // Color del texto dentro de la galería
+                  iconImagePath:
+                      "image/imagen_icon.png", // Ruta de la imagen del icono de la galería
+                  context: context, // Contexto de la aplicación
                 ),
-                SizedBox(
-                    height: MediaQuery.of(context).size.height /
-                        60),
+
+                SizedBox(height: MediaQuery.of(context).size.height / 60),
                 CustomDatePickerTextField(
                   controller: start_dateController,
                   name1: "Start date".tr,
@@ -209,10 +218,9 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                     });
                   },
                 ),
+                buildEmptyFieldWarning(start_dateController, verificar),
 
-                SizedBox(
-                    height: MediaQuery.of(context).size.height /
-                        40),
+                SizedBox(height: MediaQuery.of(context).size.height / 40),
                 CustomDatePickerTextField(
                   controller: end_dateController,
                   name1: "End date".tr,
@@ -225,9 +233,8 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                     });
                   },
                 ),
-                SizedBox(
-                    height: MediaQuery.of(context).size.height /
-                        40),
+                buildEmptyFieldWarning(end_dateController, verificar),
+                SizedBox(height: MediaQuery.of(context).size.height / 40),
                 CustomTimePickerTextField(
                   controller: start_time,
                   name1: "Start Time".tr,
@@ -240,10 +247,9 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                     });
                   },
                 ),
+                buildEmptyFieldWarning(start_time, verificar),
 
-                SizedBox(
-                    height: MediaQuery.of(context).size.height /
-                        40),
+                SizedBox(height: MediaQuery.of(context).size.height / 40),
                 CustomTimePickerTextField(
                   controller: end_time,
                   name1: "End Time".tr,
@@ -256,9 +262,8 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                     });
                   },
                 ),
-                SizedBox(
-                    height: MediaQuery.of(context).size.height /
-                        40),
+                buildEmptyFieldWarning(end_time, verificar),
+                SizedBox(height: MediaQuery.of(context).size.height / 40),
                 CustomPriceInput(
                   controller: price,
                   name: "Price".tr,
@@ -267,23 +272,22 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                   iconImagePath: "image/dolar.png",
                   context: context,
                 ),
-
-
-                SizedBox(
-                    height: MediaQuery.of(context).size.height /
-                        40),
+                buildEmptyFieldWarning(price, verificar),
+                SizedBox(height: MediaQuery.of(context).size.height / 40),
 
                 CustomShortTextArea.textArea(
                   controller: event_about_short,
                   name1: "Short description".tr,
                   labelclr: Colors.grey,
                   textcolor: notifire.getwhitecolor,
-                  prefixIcon: Image.asset("image/descripcion.png",
-                      scale: 3.5,
-                      //color: notifire.textcolor
+                  prefixIcon: Image.asset(
+                    "image/descripcion.png",
+                    scale: 3.5,
+                    //color: notifire.textcolor
                   ),
                   context: context,
                 ),
+                buildEmptyFieldWarning(event_about_short, verificar),
                 SizedBox(
                     height: MediaQuery.of(context).size.height /
                         40), // Ajustar altura según necesidad
@@ -292,21 +296,26 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                   name1: "Description".tr,
                   labelclr: Colors.grey,
                   textcolor: notifire.getwhitecolor,
-                  prefixIcon: Image.asset("image/descripcion.png",
-                      scale: 3.5,
-                      //color: notifire.textcolor
+                  prefixIcon: Image.asset(
+                    "image/descripcion.png",
+                    scale: 3.5,
+                    //color: notifire.textcolor
                   ),
                   context: context,
                 ),
+                buildEmptyFieldWarning(event_about, verificar),
                 SizedBox(
                     height: MediaQuery.of(context).size.height /
                         40), // Ajustar altura según necesidad
 
                 CustomImageGallery(
                   imagePaths: [], // Lista de rutas de imágenes, puedes inicializarla con las imágenes existentes
-                  labelclr: Colors.grey, // Color del texto del título y del borde
-                  textcolor: notifire.getwhitecolor, // Color del texto dentro de la galería
-                  iconImagePath: "image/galeria.png", // Ruta de la imagen del icono de la galería
+                  labelclr:
+                      Colors.grey, // Color del texto del título y del borde
+                  textcolor: notifire
+                      .getwhitecolor, // Color del texto dentro de la galería
+                  iconImagePath:
+                      "image/galeria.png", // Ruta de la imagen del icono de la galería
                   context: context, // Contexto de la aplicación
                 ),
 
@@ -318,57 +327,59 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                   name1: "Organizer".tr,
                   labelclr: Colors.grey,
                   textcolor: notifire.getwhitecolor,
-                  prefixIcon: Image.asset("image/organizer.png",
-                      scale: 3.5,
-                      //color: notifire.textcolor
+                  prefixIcon: Image.asset(
+                    "image/organizer.png",
+                    scale: 3.5,
+                    //color: notifire.textcolor
                   ),
                   context: context,
                 ),
-                SizedBox(
-                    height: MediaQuery.of(context).size.height /
-                        40),
+                buildEmptyFieldWarning(Event_sponsore, verificar),
+                SizedBox(height: MediaQuery.of(context).size.height / 40),
                 Customtextfild.textField(
                   controller: phone,
                   name1: "Phone (optional)".tr,
                   keyboardType: TextInputType.phone,
                   labelclr: Colors.grey,
                   textcolor: notifire.getwhitecolor,
-                  prefixIcon: Image.asset("image/llamada.png",
-                      scale: 3.5,
-                      //color: notifire.textcolor
+                  prefixIcon: Image.asset(
+                    "image/llamada.png",
+                    scale: 3.5,
+                    //color: notifire.textcolor
                   ),
                   context: context,
                 ),
-                SizedBox(
-                    height: MediaQuery.of(context).size.height /
-                        40),
+                SizedBox(height: MediaQuery.of(context).size.height / 40),
                 Customtextfild.textField(
                   controller: email,
                   name1: "Email (optional)".tr,
                   keyboardType: TextInputType.emailAddress,
                   labelclr: Colors.grey,
                   textcolor: notifire.getwhitecolor,
-                  prefixIcon: Image.asset("image/email.png",
-                      scale: 3.5,
-                      //color: notifire.textcolor
-                  ),
-                  context: context,
-                ),
-                SizedBox(
-                    height: MediaQuery.of(context).size.height /
-                        40),
-
-                Customtextfild.textField(
-                  controller: event_address_title,
-                  name1: "Event address title, (Example: Plaza Lázaro Cárdenas) ".tr,
-                  labelclr: Colors.grey,
-                  textcolor: notifire.getwhitecolor,
-                  prefixIcon: Image.asset("image/direction.png",
+                  prefixIcon: Image.asset(
+                    "image/email.png",
                     scale: 3.5,
                     //color: notifire.textcolor
                   ),
                   context: context,
                 ),
+                SizedBox(height: MediaQuery.of(context).size.height / 40),
+
+                Customtextfild.textField(
+                  controller: event_address_title,
+                  name1: "Event address title, (Example: Plaza Lázaro Cárdenas)"
+                      .tr
+                      .tr,
+                  labelclr: Colors.grey,
+                  textcolor: notifire.getwhitecolor,
+                  prefixIcon: Image.asset(
+                    "image/direction.png",
+                    scale: 3.5,
+                    //color: notifire.textcolor
+                  ),
+                  context: context,
+                ),
+                buildEmptyFieldWarning(event_address_title, verificar),
                 SizedBox(
                     height: MediaQuery.of(context).size.height /
                         40), // Ajustar altura según necesidad
@@ -378,19 +389,29 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                   keyboardType: TextInputType.streetAddress,
                   labelclr: Colors.grey,
                   textcolor: notifire.getwhitecolor,
-                  prefixIcon: Image.asset("image/direction.png",
+                  prefixIcon: Image.asset(
+                    "image/direction.png",
                     scale: 3.5,
                     //color: notifire.textcolor
                   ),
                   context: context,
                 ),
-                SizedBox(
-                    height: MediaQuery.of(context).size.height /
-                        40),
+                buildEmptyFieldWarning(event_address, verificar),
+                SizedBox(height: MediaQuery.of(context).size.height / 40),
+
+                MunicipiosComboBox(
+                  labelColor: Colors.grey,
+                  textColor: notifire.getwhitecolor,
+                  onChanged: (value) {
+                    cid.text = value;
+                  },
+                ),
+                SizedBox(height: MediaQuery.of(context).size.height / 40),
 
                 GestureDetector(
                   onTap: () async {
-                    List<double>? location = await Get.to(() => SelectLocation());
+                    List<double>? location =
+                        await Get.to(() => SelectLocation());
                     if (location != null) {
                       lat.text = location[0].toString();
                       long.text = location[1].toString();
@@ -409,30 +430,29 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                 ),
                 SizedBox(height: MediaQuery.of(context).size.height / 100),
                 Customtextfild.textField(
-                  controller: lat,
-                  name1: "Latitude".tr,
-                  labelclr: Colors.grey,
-                  textcolor: notifire.getwhitecolor,
-                  prefixIcon: Image.asset("image/direction.png", scale: 3.5, color: notifire.textcolor),
-                  readOnly: true,
-                  context: context,
-                  keyboardType: TextInputType.none
-                ),
+                    controller: lat,
+                    name1: "Latitude".tr,
+                    labelclr: Colors.grey,
+                    textcolor: notifire.getwhitecolor,
+                    prefixIcon: Image.asset("image/direction.png",
+                        scale: 3.5, color: notifire.textcolor),
+                    readOnly: true,
+                    context: context,
+                    keyboardType: TextInputType.none),
+                buildEmptyFieldWarning(lat, verificar),
                 SizedBox(height: MediaQuery.of(context).size.height / 40),
                 Customtextfild.textField(
-                  controller: long,
-                  name1: "Longitude".tr,
-                  labelclr: Colors.grey,
-                  textcolor: notifire.getwhitecolor,
-                  prefixIcon: Image.asset("image/direction.png", scale: 3.5, color: notifire.textcolor),
-                  readOnly: true,
-                  context: context,
-                    keyboardType: TextInputType.none
-                ),
+                    controller: long,
+                    name1: "Longitude".tr,
+                    labelclr: Colors.grey,
+                    textcolor: notifire.getwhitecolor,
+                    prefixIcon: Image.asset("image/direction.png",
+                        scale: 3.5, color: notifire.textcolor),
+                    readOnly: true,
+                    context: context,
+                    keyboardType: TextInputType.none),
+                buildEmptyFieldWarning(long, verificar),
                 SizedBox(height: MediaQuery.of(context).size.height / 40),
-
-
-
 
                 Center(
                   child: RichText(
@@ -468,18 +488,27 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
 
                 GestureDetector(
                   onTap: () {
+                    setState(() {
+                      verificar = true;
+                      // Actualizar el estado según si el campo está vacío o no
+                      //isTitleEmpty = isFieldEmpty(event_title);
+                    });
+                    checkAllFieldsAndRegisterEvent(context);
                     //authSignUp();
+
                     print('el titulo del evento es: ${event_title.text}');
                     print('el cid es: ${cid.text}');
                     print('el event_img es: ${event_img.text}');
                     print('el event_cover_img es: ${event_cover_img.text}');
-                    print('el event_address_title es: ${event_address_title.text}');
+                    print(
+                        'el event_address_title es: ${event_address_title.text}');
                     print('el event_address es: ${event_address.text}');
                     print('el start_date es: ${start_dateController.text}');
                     print('el end_date es: ${end_dateController.text}');
                     print('el start_time es: ${start_time.text}');
                     print('el end_time es: ${end_time.text}');
-                    print('el event_about_short  es: ${event_about_short.text}');
+                    print(
+                        'el event_about_short  es: ${event_about_short.text}');
                     print('el event_about es: ${event_about.text}');
                     print('el price es: ${price.text}');
                     print('el lat es: ${lat.text}');
@@ -497,6 +526,52 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                 ),
               ],
             )),
+      ),
+    );
+  }
+
+  // Función para verificar si un campo de texto está vacío
+  bool isFieldEmpty(TextEditingController controller) {
+    return controller.text.isEmpty;
+  }
+
+  void checkAllFieldsAndRegisterEvent(BuildContext context) {
+    if (event_title.text.isNotEmpty &&
+        event_address_title.text.isNotEmpty &&
+        event_address.text.isNotEmpty &&
+        end_dateController.text.isNotEmpty &&
+        start_dateController.text.isNotEmpty &&
+        end_time.text.isNotEmpty &&
+        start_time.text.isNotEmpty &&
+        event_about.text.isNotEmpty &&
+        event_about_short.text.isNotEmpty &&
+        price.text.isNotEmpty &&
+        lat.text.isNotEmpty &&
+        long.text.isNotEmpty &&
+        Event_sponsore.text.isNotEmpty) {
+      print("----------------------TODO FINO-----------------------------");
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please fill all fields'.tr),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
+  Visibility buildEmptyFieldWarning(
+    TextEditingController controller,
+    bool condition,
+  ) {
+    return Visibility(
+      visible: condition && controller.text.isEmpty,
+      child: Text(
+        "Please enter this field".tr,
+        style: TextStyle(
+          color: Colors.red,
+          fontSize: 12.0,
+        ),
       ),
     );
   }

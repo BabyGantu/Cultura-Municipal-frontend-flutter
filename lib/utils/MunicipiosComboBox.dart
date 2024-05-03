@@ -8,55 +8,39 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'colornotifire.dart';
 import 'ctextfield.dart';
 
-const String audienceJson = '''
+const String municipiosJson = '''
 {
-  "categorias": [
+  "municipios": [
     {
       "id": "1",
-      "title": "Público en general",
-      "image": "image/fire.png",
-      "cover_img": "image/fire.png"
+      "title": "Hermosillo"
     },
     {
       "id": "2",
-      "title": "Niños",
-      "image": "image/sport1.png",
-      "cover_img": "image/discover.png"
+      "title": "Cajeme"
     },
     {
       "id": "3",
-      "title": "Jóvenes",
-      "image": "image/method.png",
-      "cover_img": "image/discover.png"
+      "title": "Nogales"
     },
     {
       "id": "4",
-      "title": "Adultos",
-      "image": "image/american_express.png",
-      "cover_img": "image/discover.png"
+      "title": "San Luis Río Colorado"
     },
     {
       "id": "5",
-      "title": "Adultos mayores",
-      "image": "image/american_express.png",
-      "cover_img": "image/discover.png"
-    },
-    {
-      "id": "6",
-      "title": "Personas con necesidades especiales (neurodiversas o discapacidad)",
-      "image": "image/american_express.png",
-      "cover_img": "image/discover.png"
+      "title": "Guaymas"
     }
   ]
 }
 ''';
 
-class TargetAudienceComboBox extends StatefulWidget {
+class MunicipiosComboBox extends StatefulWidget {
   final Function(String)? onChanged;
   final Color labelColor;
   final Color textColor;
 
-  const TargetAudienceComboBox({
+  const MunicipiosComboBox({
     Key? key,
     this.onChanged,
     required this.labelColor,
@@ -64,17 +48,17 @@ class TargetAudienceComboBox extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _TargetAudienceBoxState createState() => _TargetAudienceBoxState();
+  _MunicipiosBoxState createState() => _MunicipiosBoxState();
 }
 
-class _TargetAudienceBoxState extends State<TargetAudienceComboBox> {
-  late String _selectedAudienceId;
-  late List<Map<String, String>> _audienceList;
+class _MunicipiosBoxState extends State<MunicipiosComboBox> {
+  late String _selectedmunicipiosId;
+  late List<Map<String, String>> _municipiosList;
 
   @override
   void initState() {
     super.initState();
-    cargarCategorias();
+    cargarMunicipios();
     getdarkmodepreviousstate();
   }
 
@@ -89,16 +73,16 @@ class _TargetAudienceBoxState extends State<TargetAudienceComboBox> {
     }
   }
 
-  void cargarCategorias() {
+  void cargarMunicipios() {
     // Decodifica la cadena JSON y guarda los eventos en la lista eventosList
-    Map<String, dynamic> categoriasData = json.decode(audienceJson);
-    _audienceList = (categoriasData['categorias'] as List)
+    Map<String, dynamic> municipiosData = json.decode(municipiosJson);
+    _municipiosList = (municipiosData['municipios'] as List)
         .map<Map<String, String>>((categoria) =>
     Map<String, String>.from(categoria))
         .toList(); // Convierte a List<Map<String, String>>
 
     // Establecer el primer elemento como seleccionado por defecto
-    _selectedAudienceId = _audienceList.first['id']!;
+    _selectedmunicipiosId = _municipiosList.first['id']!;
   }
 
   @override
@@ -108,17 +92,17 @@ class _TargetAudienceBoxState extends State<TargetAudienceComboBox> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "Target audience".tr,
+          "Municipality".tr,
           style: TextStyle(
             color: widget.labelColor,
             fontWeight: FontWeight.bold,
           ),
         ),
         DropdownButtonFormField<String>(
-          value: _selectedAudienceId,
+          value: _selectedmunicipiosId,
           onChanged: (value) {
             setState(() {
-              _selectedAudienceId = value!;
+              _selectedmunicipiosId = value!;
               if (widget.onChanged != null) {
                 widget.onChanged!(value);
               }
@@ -129,7 +113,7 @@ class _TargetAudienceBoxState extends State<TargetAudienceComboBox> {
             //filled: true,
             //fillColor: notifire.getcardcolor,
           ),
-          items: _audienceList
+          items: _municipiosList
               .map<DropdownMenuItem<String>>((categoria) {
             return DropdownMenuItem<String>(
               value: categoria['id'],
@@ -157,5 +141,3 @@ class _TargetAudienceBoxState extends State<TargetAudienceComboBox> {
     );
   }
 }
-
-
