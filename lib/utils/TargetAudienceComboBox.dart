@@ -7,49 +7,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'colornotifire.dart';
 import 'ctextfield.dart';
+import 'package:http/http.dart' as http;
 
-const String audienceJson = '''
-{
-  "categorias": [
-    {
-      "id": "1",
-      "title": "Público en general",
-      "image": "image/fire.png",
-      "cover_img": "image/fire.png"
-    },
-    {
-      "id": "2",
-      "title": "Niños",
-      "image": "image/sport1.png",
-      "cover_img": "image/discover.png"
-    },
-    {
-      "id": "3",
-      "title": "Jóvenes",
-      "image": "image/method.png",
-      "cover_img": "image/discover.png"
-    },
-    {
-      "id": "4",
-      "title": "Adultos",
-      "image": "image/american_express.png",
-      "cover_img": "image/discover.png"
-    },
-    {
-      "id": "5",
-      "title": "Adultos mayores",
-      "image": "image/american_express.png",
-      "cover_img": "image/discover.png"
-    },
-    {
-      "id": "6",
-      "title": "Personas con necesidades especiales (neurodiversas o discapacidad)",
-      "image": "image/american_express.png",
-      "cover_img": "image/discover.png"
-    }
-  ]
-}
-''';
+
 
 class TargetAudienceComboBox extends StatefulWidget {
   final Function(String)? onChanged;
@@ -68,13 +28,13 @@ class TargetAudienceComboBox extends StatefulWidget {
 }
 
 class _TargetAudienceBoxState extends State<TargetAudienceComboBox> {
-  late String _selectedAudienceId;
-  late List<Map<String, String>> _audienceList;
+  late int _selectedAudienceId = 1;
+  List<dynamic> _audienceList = [];
 
   @override
   void initState() {
     super.initState();
-    cargarCategorias();
+    cargarTargetAudienceApi();
     getdarkmodepreviousstate();
   }
 
@@ -89,16 +49,32 @@ class _TargetAudienceBoxState extends State<TargetAudienceComboBox> {
     }
   }
 
-  void cargarCategorias() {
-    // Decodifica la cadena JSON y guarda los eventos en la lista eventosList
-    Map<String, dynamic> categoriasData = json.decode(audienceJson);
-    _audienceList = (categoriasData['categorias'] as List)
-        .map<Map<String, String>>((categoria) =>
-    Map<String, String>.from(categoria))
-        .toList(); // Convierte a List<Map<String, String>>
 
-    // Establecer el primer elemento como seleccionado por defecto
-    _selectedAudienceId = _audienceList.first['id']!;
+
+  void cargarTargetAudienceApi() async {
+    // URL de tu API
+    String apiUrl = 'http://10.0.2.2:8000/eventdata/target/';
+
+    // Realiza una solicitud GET a la API
+    http.Response response = await http.get(Uri.parse(apiUrl));
+
+    // Verifica si la solicitud fue exitosa (código de estado 200)
+    if (response.statusCode == 200) {
+      // Decodifica la respuesta JSON con codificación UTF-8
+      var jsonResponse = utf8.decode(response.bodyBytes);
+
+      // Guarda las categorías en la lista
+      setState(() {
+        _audienceList = json.decode(jsonResponse);
+      });
+      if (_audienceList.isNotEmpty) {
+        _selectedAudienceId = _audienceList.first['id']! as int;
+        // Haz algo con la ID seleccionada...
+      }
+    } else {
+      // Si la solicitud no fue exitosa, muestra un mensaje de error
+      print('Error al cargar categorías: ${response.statusCode}');
+    }
   }
 
   @override
@@ -115,10 +91,10 @@ class _TargetAudienceBoxState extends State<TargetAudienceComboBox> {
           ),
         ),
         DropdownButtonFormField<String>(
-          value: _selectedAudienceId,
+          value: _selectedAudienceId.toString(),
           onChanged: (value) {
             setState(() {
-              _selectedAudienceId = value!;
+              _selectedAudienceId = value! as int;
               if (widget.onChanged != null) {
                 widget.onChanged!(value);
               }
@@ -132,7 +108,7 @@ class _TargetAudienceBoxState extends State<TargetAudienceComboBox> {
           items: _audienceList
               .map<DropdownMenuItem<String>>((categoria) {
             return DropdownMenuItem<String>(
-              value: categoria['id'],
+              value: categoria['id'].toString(),
               child: Container(
                 width: 300, // Ancho fijo
                 child: Row(

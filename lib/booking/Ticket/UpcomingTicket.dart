@@ -161,7 +161,7 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                   labelColor: Colors.grey,
                   textColor: notifire.getwhitecolor,
                   onChanged: (value) {
-                    cid.text = value;
+                    target_audience.text = value;
                   },
                 ),
                 SizedBox(height: MediaQuery.of(context).size.height / 40),
@@ -550,6 +550,10 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
         long.text.isNotEmpty &&
         Event_sponsore.text.isNotEmpty) {
       print("----------------------TODO FINO-----------------------------");
+      print('Categoria: ${cid.text}');
+      print('Publico objetivo: ${target_audience.text}');
+      print('Titulo del evento: ${event_title.text}');
+      print('Imagen evento: ${event_title}');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

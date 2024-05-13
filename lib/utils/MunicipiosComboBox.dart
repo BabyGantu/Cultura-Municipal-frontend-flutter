@@ -7,33 +7,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'colornotifire.dart';
 import 'ctextfield.dart';
+import 'package:http/http.dart' as http;
 
-const String municipiosJson = '''
-{
-  "municipios": [
-    {
-      "id": "1",
-      "title": "Hermosillo"
-    },
-    {
-      "id": "2",
-      "title": "Cajeme"
-    },
-    {
-      "id": "3",
-      "title": "Nogales"
-    },
-    {
-      "id": "4",
-      "title": "San Luis Río Colorado"
-    },
-    {
-      "id": "5",
-      "title": "Guaymas"
-    }
-  ]
-}
-''';
+
 
 class MunicipiosComboBox extends StatefulWidget {
   final Function(String)? onChanged;
@@ -52,13 +28,13 @@ class MunicipiosComboBox extends StatefulWidget {
 }
 
 class _MunicipiosBoxState extends State<MunicipiosComboBox> {
-  late String _selectedmunicipiosId;
-  late List<Map<String, String>> _municipiosList;
+  late int _selectedmunicipiosId = 1;
+  List<dynamic> _municipiosList = [];
 
   @override
   void initState() {
     super.initState();
-    cargarMunicipios();
+    cargarMunicipiosApi();
     getdarkmodepreviousstate();
   }
 
@@ -73,16 +49,32 @@ class _MunicipiosBoxState extends State<MunicipiosComboBox> {
     }
   }
 
-  void cargarMunicipios() {
-    // Decodifica la cadena JSON y guarda los eventos en la lista eventosList
-    Map<String, dynamic> municipiosData = json.decode(municipiosJson);
-    _municipiosList = (municipiosData['municipios'] as List)
-        .map<Map<String, String>>((categoria) =>
-    Map<String, String>.from(categoria))
-        .toList(); // Convierte a List<Map<String, String>>
+ 
 
-    // Establecer el primer elemento como seleccionado por defecto
-    _selectedmunicipiosId = _municipiosList.first['id']!;
+  void cargarMunicipiosApi() async {
+    // URL de tu API
+    String apiUrl = 'http://10.0.2.2:8000/eventdata/municipios/';
+
+    // Realiza una solicitud GET a la API
+    http.Response response = await http.get(Uri.parse(apiUrl));
+
+    // Verifica si la solicitud fue exitosa (código de estado 200)
+    if (response.statusCode == 200) {
+      // Decodifica la respuesta JSON con codificación UTF-8
+      var jsonResponse = utf8.decode(response.bodyBytes);
+
+      // Guarda las categorías en la lista
+      setState(() {
+        _municipiosList = json.decode(jsonResponse);
+      });
+      if (_municipiosList.isNotEmpty) {
+        _selectedmunicipiosId = _municipiosList.first['id']! as int;
+        // Haz algo con la ID seleccionada...
+      }
+    } else {
+      // Si la solicitud no fue exitosa, muestra un mensaje de error
+      print('Error al cargar categorías: ${response.statusCode}');
+    }
   }
 
   @override
@@ -99,10 +91,10 @@ class _MunicipiosBoxState extends State<MunicipiosComboBox> {
           ),
         ),
         DropdownButtonFormField<String>(
-          value: _selectedmunicipiosId,
+          value: _selectedmunicipiosId.toString(),
           onChanged: (value) {
             setState(() {
-              _selectedmunicipiosId = value!;
+              _selectedmunicipiosId = value! as int;
               if (widget.onChanged != null) {
                 widget.onChanged!(value);
               }
@@ -116,7 +108,7 @@ class _MunicipiosBoxState extends State<MunicipiosComboBox> {
           items: _municipiosList
               .map<DropdownMenuItem<String>>((categoria) {
             return DropdownMenuItem<String>(
-              value: categoria['id'],
+              value: categoria['id'].toString(),
               child: Container(
                 width: 300, // Ancho fijo
                 child: Row(

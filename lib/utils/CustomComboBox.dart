@@ -1,91 +1,15 @@
 import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:get/get_utils/src/extensions/internacionalization.dart';
+
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'colornotifire.dart';
 import 'ctextfield.dart';
-
-const String categoriasJson = '''
-{
-  "categorias": [
-    {
-      "id": "1",
-      "title": "Artes Escénicas",
-      "image": "image/fire.png",
-      "cover_img": "image/fire.png"
-    },
-    {
-      "id": "2",
-      "title": "Música y Conciertos",
-      "image": "image/sport1.png",
-      "cover_img": "image/discover.png"
-    },
-    {
-      "id": "3",
-      "title": "Festivales y Ferias",
-      "image": "image/method.png",
-      "cover_img": "image/discover.png"
-    },
-    {
-      "id": "4",
-      "title": "Deportes",
-      "image": "image/american_express.png",
-      "cover_img": "image/discover.png"
-    },
-    {
-      "id": "5",
-      "title": "Museos y Exposiciones",
-      "image": "image/american_express.png",
-      "cover_img": "image/discover.png"
-    },
-    {
-      "id": "6",
-      "title": "Cursos y Talleres",
-      "image": "image/american_express.png",
-      "cover_img": "image/discover.png"
-    },
-    {
-      "id": "7",
-      "title": "Infantiles",
-      "image": "image/american_express.png",
-      "cover_img": "image/discover.png"
-    },
-    {
-      "id": "8",
-      "title": "Cine",
-      "image": "image/american_express.png",
-      "cover_img": "image/discover.png"
-    },
-    {
-      "id": "9",
-      "title": "Congresos y Convenciones",
-      "image": "image/american_express.png",
-      "cover_img": "image/discover.png"
-    },
-    {
-      "id": "10",
-      "title": "Eventos Literarios",
-      "image": "image/american_express.png",
-      "cover_img": "image/discover.png"
-    },
-    {
-      "id": "11",
-      "title": "Recorridos",
-      "image": "image/american_express.png",
-      "cover_img": "image/discover.png"
-    },
-    {
-      "id": "12",
-      "title": "Pueblos originarios",
-      "image": "image/american_express.png",
-      "cover_img": "image/discover.png"
-    }
-  ]
-}
-''';
+import 'package:http/http.dart' as http;
 
 class CustomComboBox extends StatefulWidget {
   final Function(String)? onChanged;
@@ -104,16 +28,15 @@ class CustomComboBox extends StatefulWidget {
 }
 
 class _CustomComboBoxState extends State<CustomComboBox> {
-  late String _selectedCategoriaId;
-  late List<Map<String, String>> _categoriasList;
+  late int _selectedCategoriaId = 2;
+  List<dynamic> _categoriasList = [];
 
   @override
   void initState() {
     super.initState();
-    cargarCategorias();
+    cargarCategoriasApi();
     getdarkmodepreviousstate();
   }
-
 
   getdarkmodepreviousstate() async {
     final prefs = await SharedPreferences.getInstance();
@@ -125,6 +48,7 @@ class _CustomComboBoxState extends State<CustomComboBox> {
     }
   }
 
+/*
   void cargarCategorias() {
     // Decodifica la cadena JSON y guarda los eventos en la lista eventosList
     Map<String, dynamic> categoriasData = json.decode(categoriasJson);
@@ -135,6 +59,35 @@ class _CustomComboBoxState extends State<CustomComboBox> {
 
     // Establecer el primer elemento como seleccionado por defecto
     _selectedCategoriaId = _categoriasList.first['id']!;
+  }
+  */
+
+  
+
+  void cargarCategoriasApi() async {
+    // URL de tu API
+    String apiUrl = 'http://10.0.2.2:8000/eventdata/categorias/';
+
+    // Realiza una solicitud GET a la API
+    http.Response response = await http.get(Uri.parse(apiUrl));
+
+    // Verifica si la solicitud fue exitosa (código de estado 200)
+    if (response.statusCode == 200) {
+      // Decodifica la respuesta JSON con codificación UTF-8
+      var jsonResponse = utf8.decode(response.bodyBytes);
+
+      // Guarda las categorías en la lista
+      setState(() {
+        _categoriasList = json.decode(jsonResponse);
+      });
+      if (_categoriasList.isNotEmpty) {
+        _selectedCategoriaId = _categoriasList.first['id']! as int;
+        // Haz algo con la ID seleccionada...
+      }
+    } else {
+      // Si la solicitud no fue exitosa, muestra un mensaje de error
+      print('Error al cargar categorías: ${response.statusCode}');
+    }
   }
 
   @override
@@ -151,10 +104,10 @@ class _CustomComboBoxState extends State<CustomComboBox> {
           ),
         ),
         DropdownButtonFormField<String>(
-          value: _selectedCategoriaId,
+          value: _selectedCategoriaId.toString(),
           onChanged: (value) {
             setState(() {
-              _selectedCategoriaId = value!;
+              _selectedCategoriaId = value! as int;
               if (widget.onChanged != null) {
                 widget.onChanged!(value);
               }
@@ -162,40 +115,41 @@ class _CustomComboBoxState extends State<CustomComboBox> {
           },
           dropdownColor: notifire.getcardcolor,
           decoration: const InputDecoration(
-            //filled: true,
-            //fillColor: notifire.getcardcolor,
-          ),
-          items: _categoriasList
-              .map<DropdownMenuItem<String>>((categoria) {
+              //filled: true,
+              //fillColor: notifire.getcardcolor,
+              ),
+          items: _categoriasList.map<DropdownMenuItem<String>>((categoria) {
             return DropdownMenuItem<String>(
-              value: categoria['id'],
+                value: categoria['id'].toString(),
                 child: Container(
                   width: 300, // Ancho fijo
                   child: Row(
                     children: [
-                      Image.asset(
-                        categoria['image']!,
+                      Image(
+                        image:NetworkImage(
+                          categoria['image']!,
+                        
+                        ),
                         width: 24,
                         height: 24,
+                        
                       ),
                       SizedBox(width: 8),
                       Expanded(
                         child: Text(
                           categoria['title']!,
                           style: TextStyle(color: widget.textColor),
-                          overflow: TextOverflow.visible, // Permite que el texto siga abajo si no cabe en una sola línea
+                          overflow: TextOverflow
+                              .visible, // Permite que el texto siga abajo si no cabe en una sola línea
                           maxLines: null, // Permite múltiples líneas
                         ),
                       ),
                     ],
                   ),
-                )
-            );
+                ));
           }).toList(),
         ),
       ],
     );
   }
 }
-
-
