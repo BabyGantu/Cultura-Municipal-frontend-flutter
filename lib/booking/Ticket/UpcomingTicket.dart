@@ -42,18 +42,19 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
   final note = TextEditingController();
   String? rejectmsg = '';
   List orderdata = [];
-  List event_gallery = [];
+  List<String> event_gallery = [];
   List<dynamic> event_sponsore = [];
   bool isLoading = false;
 
   bool verificar = false;
 
+  List<String> pathEventImage = [];
+  List<String> pathCoverImage = [];
+
   late ColorNotifire notifire;
   final event_title = TextEditingController();
 
   final cid = TextEditingController();
-  final event_img = TextEditingController();
-  final event_cover_img = TextEditingController();
 
   final event_address_title = TextEditingController();
 
@@ -76,6 +77,7 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
   final target_audience = TextEditingController();
   final phone = TextEditingController();
   final email = TextEditingController();
+  final municipio = TextEditingController();
 
   final Event_sponsore = TextEditingController();
   final Event_gallery = TextEditingController();
@@ -181,28 +183,24 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
 
                 SizedBox(height: MediaQuery.of(context).size.height / 40),
                 CustomImagePicker(
-                  imagePaths: [],
-                  name: "Event Image".tr, // Lista de rutas de imágenes, puedes inicializarla con las imágenes existentes
-                  labelclr:
-                      Colors.grey, // Color del texto del título y del borde
-                  textcolor: notifire
-                      .getwhitecolor, // Color del texto dentro de la galería
-                  iconImagePath:
-                      "image/imagen_icon.png", // Ruta de la imagen del icono de la galería
-                  context: context, // Contexto de la aplicación
+                  imagePaths:
+                      pathEventImage, // Lista de rutas de imágenes, puedes inicializarla con las imágenes existentes
+                  name: "Event Image".tr,
+                  labelclr: Colors.grey,
+                  textcolor: notifire.getwhitecolor,
+                  iconImagePath: "image/imagen_icon.png",
+                  context: context,
                 ),
 
                 SizedBox(height: MediaQuery.of(context).size.height / 60),
                 CustomImagePicker(
-                  imagePaths: [],
-                  name: "Event Cover".tr, // Lista de rutas de imágenes, puedes inicializarla con las imágenes existentes
-                  labelclr:
-                      Colors.grey, // Color del texto del título y del borde
-                  textcolor: notifire
-                      .getwhitecolor, // Color del texto dentro de la galería
-                  iconImagePath:
-                      "image/imagen_icon.png", // Ruta de la imagen del icono de la galería
-                  context: context, // Contexto de la aplicación
+                  imagePaths:
+                      pathCoverImage, // Lista de rutas de imágenes, puedes inicializarla con las imágenes existentes
+                  name: "Event Cover".tr,
+                  labelclr: Colors.grey,
+                  textcolor: notifire.getwhitecolor,
+                  iconImagePath: "image/imagen_icon.png",
+                  context: context,
                 ),
 
                 SizedBox(height: MediaQuery.of(context).size.height / 60),
@@ -309,14 +307,12 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                         40), // Ajustar altura según necesidad
 
                 CustomImageGallery(
-                  imagePaths: [], // Lista de rutas de imágenes, puedes inicializarla con las imágenes existentes
-                  labelclr:
-                      Colors.grey, // Color del texto del título y del borde
-                  textcolor: notifire
-                      .getwhitecolor, // Color del texto dentro de la galería
-                  iconImagePath:
-                      "image/galeria.png", // Ruta de la imagen del icono de la galería
-                  context: context, // Contexto de la aplicación
+                  imagePaths:
+                      event_gallery, // Lista de rutas de imágenes, puedes inicializarla con las imágenes existentes
+                  labelclr: Colors.grey,
+                  textcolor: notifire.getwhitecolor,
+                  iconImagePath: "image/galeria.png",
+                  context: context,
                 ),
 
                 SizedBox(
@@ -403,7 +399,7 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                   labelColor: Colors.grey,
                   textColor: notifire.getwhitecolor,
                   onChanged: (value) {
-                    cid.text = value;
+                    municipio.text = value;
                   },
                 ),
                 SizedBox(height: MediaQuery.of(context).size.height / 40),
@@ -494,25 +490,38 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                       //isTitleEmpty = isFieldEmpty(event_title);
                     });
                     checkAllFieldsAndRegisterEvent(context);
-                    //authSignUp();
+                    print('Categoria: ${cid.text}');
+                    print('Publico objetivo: ${target_audience.text}');
+                    print('Titulo del evento: ${event_title.text}');
+                    if (pathEventImage.isNotEmpty) {
+                      print('Imagen evento: ${pathEventImage[0]}');
+                    } else {
+                      print('La lista de rutas de imágenes está vacía.');
+                    }
+                    if (pathCoverImage.isNotEmpty) {
+                      print('Imagen evento: ${pathCoverImage[0]}');
+                    } else {
+                      print('La lista de rutas de imágenes está vacía.');
+                    }
 
-                    print('el titulo del evento es: ${event_title.text}');
-                    print('el cid es: ${cid.text}');
-                    print('el event_img es: ${event_img.text}');
-                    print('el event_cover_img es: ${event_cover_img.text}');
-                    print(
-                        'el event_address_title es: ${event_address_title.text}');
-                    print('el event_address es: ${event_address.text}');
-                    print('el start_date es: ${start_dateController.text}');
-                    print('el end_date es: ${end_dateController.text}');
-                    print('el start_time es: ${start_time.text}');
-                    print('el end_time es: ${end_time.text}');
-                    print(
-                        'el event_about_short  es: ${event_about_short.text}');
-                    print('el event_about es: ${event_about.text}');
-                    print('el price es: ${price.text}');
-                    print('el lat es: ${lat.text}');
-                    print('el long es: ${long.text}');
+                    //print('Imagen cover: ${pathCoverImage[0]}');
+                    print('Fecha inicio: ${start_dateController.text}');
+                    print('Fecha fin: ${end_dateController.text}');
+                    print('Hora inicio: ${start_time.text}');
+                    print('Hora fin: ${end_time.text}');
+                    print('Precio: ${price.text}');
+                    print('Descripcion breve: ${event_about_short.text}');
+                    print('Descripcion: ${event_about.text}');
+                    print('Galeria de imagenes: ${event_gallery}');
+                    print('Organizador: ${Event_sponsore.text}');
+                    print('Telefono: ${phone.text}');
+                    print('Correo: ${email.text}');
+                    print('Titulo de direccion: ${event_address_title.text}');
+                    print('Direccion: ${event_address.text}');
+                    print('Municipio: ${municipio.text}');
+                    print('Latitud: ${lat.text}');
+                    print('Longitud: ${long.text}');
+                    //authSignUp();
                   },
                   child: SizedBox(
                     height: 45,
@@ -553,7 +562,24 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
       print('Categoria: ${cid.text}');
       print('Publico objetivo: ${target_audience.text}');
       print('Titulo del evento: ${event_title.text}');
-      print('Imagen evento: ${event_title}');
+      print('Imagen evento: ${pathEventImage}');
+      print('Imagen cover: ${pathCoverImage}');
+      print('Fecha inicio: ${start_dateController.text}');
+      print('Fecha fin: ${end_dateController.text}');
+      print('Hora inicio: ${start_time.text}');
+      print('Hora fin: ${end_time.text}');
+      print('Precio: ${price.text}');
+      print('Descripcion breve: ${event_about_short.text}');
+      print('Descripcion: ${event_about.text}');
+      print('Galeria de imagenes: ${event_gallery}');
+      print('Organizador: ${Event_sponsore.text}');
+      print('Telefono: ${phone.text}');
+      print('Correo: ${email.text}');
+      print('Titulo de direccion: ${event_address_title.text}');
+      print('Direccion: ${event_address.text}');
+      print('Municipio: ${municipio.text}');
+      print('Latitud: ${lat.text}');
+      print('Longitud: ${long.text}');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

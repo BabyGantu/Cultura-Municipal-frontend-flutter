@@ -16,7 +16,7 @@ import '../login_signup/Login.dart';
 import '../login_signup/verification.dart';
 
 
-const String endpoin = 'http://10.0.2.2:8000';
+const String endpoin = 'http://evson.store:8000';
 
 class AuthController extends GetxController {
   // UserData? userData;

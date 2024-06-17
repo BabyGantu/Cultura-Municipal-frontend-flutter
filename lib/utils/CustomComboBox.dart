@@ -28,7 +28,7 @@ class CustomComboBox extends StatefulWidget {
 }
 
 class _CustomComboBoxState extends State<CustomComboBox> {
-  late int _selectedCategoriaId = 2;
+  late dynamic _selectedCategoriaId = '';
   List<dynamic> _categoriasList = [];
 
   @override
@@ -81,7 +81,7 @@ class _CustomComboBoxState extends State<CustomComboBox> {
         _categoriasList = json.decode(jsonResponse);
       });
       if (_categoriasList.isNotEmpty) {
-        _selectedCategoriaId = _categoriasList.first['id']! as int;
+        _selectedCategoriaId = _categoriasList.first['id'];
         // Haz algo con la ID seleccionada...
       }
     } else {
@@ -107,9 +107,9 @@ class _CustomComboBoxState extends State<CustomComboBox> {
           value: _selectedCategoriaId.toString(),
           onChanged: (value) {
             setState(() {
-              _selectedCategoriaId = value! as int;
+              _selectedCategoriaId = value;
               if (widget.onChanged != null) {
-                widget.onChanged!(value);
+                widget.onChanged!(value!);
               }
             });
           },

@@ -1,4 +1,3 @@
-
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -94,8 +93,8 @@ class _CustomImagePickerState extends State<CustomImagePicker> {
         await _picker.pickImage(source: ImageSource.gallery);
     if (pickedImage != null) {
       setState(() {
-        if (widget.imagePaths.length < 3) {
-          widget.imagePaths.add(pickedImage.path);
+        if (widget.imagePaths.length < 1) {
+          widget.imagePaths.add(pickedImage.path); // Llama a la función de devolución de llamada
         }
       });
     }

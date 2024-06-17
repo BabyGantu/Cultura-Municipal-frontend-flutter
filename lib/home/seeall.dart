@@ -117,7 +117,7 @@ class _AllState extends State<All> {
         children: [
           GestureDetector(
             onTap: () {
-              Get.to(() => EventsDetails(eid: user[i]["event_id"]),
+              Get.to(() => EventsDetails(eid: user[i]["id"]),
                   duration: Duration.zero);
             },
             child: Padding(
@@ -147,7 +147,8 @@ class _AllState extends State<All> {
                                 child: SizedBox(
                                   height: height / 3.5,
                                   width: width,
-                                  child: Image.asset(
+                                  child: 
+                                  Image.network(
                                     user[i]["event_img"], // Ruta de la imagen en assets
                                     fit: BoxFit.cover,
                                   ),
@@ -197,35 +198,11 @@ class _AllState extends State<All> {
                           ),
                         ),
                         SizedBox(height: height / 70),
+                        
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
                           child: Row(
                             children: [
-                              user[i]["total_member_list"] != "0"
-                                  ? Row(
-                                children: [
-                                  Row(
-                                    children: user[i]["member_list"].map<Widget>((imagePath) {
-                                      return CircleAvatar(
-                                        radius: 15,
-                                        backgroundImage: AssetImage(imagePath),
-                                      );
-                                    }).toList(),
-                                  ),
-                                  SizedBox(width: Get.width * 0.01),
-                                  Text(
-                                    "${user[i]["total_member_list"]} + Going",
-                                    style: TextStyle(
-                                      color: const Color(0xff5d56f3),
-                                      fontSize: 11,
-                                      fontFamily: 'Gilroy Bold',
-                                    ),
-                                  ),
-                                ],
-                              )
-
-
-                                  : const SizedBox(),
                               Spacer(),
                               CircleAvatar(
                                 radius: 18,
@@ -234,10 +211,10 @@ class _AllState extends State<All> {
                                   padding: const EdgeInsets.only(left: 3),
                                   child: LikeButton(
                                     onTap: (val) {
-                                      return onLikeButtonTapped(val, user[i]["event_id"]);
+                                      return onLikeButtonTapped(val, user[i]["id"]);
                                     },
                                     likeBuilder: (bool isLiked) {
-                                      return user[i]["IS_BOOKMARK"] != 0
+                                      return user[i]["is_bookmark"] != 0
                                           ? const Icon(Icons.favorite, color: Color(0xffF0635A), size: 22)
                                           : const Icon(Icons.favorite_border, color: Color(0xffF0635A), size: 22);
                                     },

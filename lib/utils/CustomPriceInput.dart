@@ -66,7 +66,11 @@ class _CustomPriceInputState extends State<CustomPriceInput> {
                 setState(() {
                   isFree = value!;
                   if (isFree) {
-                    widget.controller.clear();
+                    widget.controller.text =
+                        '0'; // Establece el valor del controlador como '0' cuando se selecciona "Free"
+                  } else {
+                    widget.controller
+                        .clear(); // Borra el valor del controlador si no está seleccionado "Free"
                   }
                 });
               },
@@ -78,5 +82,3 @@ class _CustomPriceInputState extends State<CustomPriceInput> {
     );
   }
 }
-
-

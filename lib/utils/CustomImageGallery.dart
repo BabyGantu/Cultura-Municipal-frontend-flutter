@@ -9,8 +9,7 @@ class CustomImageGallery extends StatefulWidget {
   final Color labelclr;
   final Color textcolor;
   final String iconImagePath;
-  final BuildContext context;
-
+  final BuildContext context;// Nueva función de devolución de llamada
   const CustomImageGallery({
     Key? key,
     required this.imagePaths,
@@ -87,15 +86,15 @@ class _CustomImageGalleryState extends State<CustomImageGallery> {
   }
 
   Future<void> _selectImage(BuildContext context) async {
-    final XFile? pickedImage =
-        await _picker.pickImage(source: ImageSource.gallery);
-    if (pickedImage != null) {
-      setState(() {
-        if (widget.imagePaths.length < 3) {
-          widget.imagePaths.add(pickedImage.path);
-        }
-      });
-    }
+  final XFile? pickedImage = await _picker.pickImage(source: ImageSource.gallery);
+  if (pickedImage != null) {
+    setState(() {
+      if (widget.imagePaths.length < 3) {
+        widget.imagePaths.add(pickedImage.path);
+        //print('New image paths: ${widget.imagePaths}');
+      }
+    });
   }
 }
 
+}

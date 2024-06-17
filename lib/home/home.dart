@@ -381,26 +381,26 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   }
 
   void cargarCategoriasApi() async {
-  // URL de tu API
-  String apiUrl = 'http://10.0.2.2:8000/eventdata/categorias/';
+    // URL de tu API
+    String apiUrl = 'http://evson.store:8000/eventdata/categorias/';
 
-  // Realiza una solicitud GET a la API
-  http.Response response = await http.get(Uri.parse(apiUrl));
+    // Realiza una solicitud GET a la API
+    http.Response response = await http.get(Uri.parse(apiUrl));
 
-  // Verifica si la solicitud fue exitosa (código de estado 200)
-  if (response.statusCode == 200) {
-    // Decodifica la respuesta JSON con codificación UTF-8
-    var jsonResponse = utf8.decode(response.bodyBytes);
-    
-    // Guarda las categorías en la lista
-    setState(() {
-      categoriasList = json.decode(jsonResponse);
-    });
-  } else {
-    // Si la solicitud no fue exitosa, muestra un mensaje de error
-    print('Error al cargar categorías: ${response.statusCode}');
+    // Verifica si la solicitud fue exitosa (código de estado 200)
+    if (response.statusCode == 200) {
+      // Decodifica la respuesta JSON con codificación UTF-8
+      var jsonResponse = utf8.decode(response.bodyBytes);
+
+      // Guarda las categorías en la lista
+      setState(() {
+        categoriasList = json.decode(jsonResponse);
+      });
+    } else {
+      // Si la solicitud no fue exitosa, muestra un mensaje de error
+      print('Error al cargar categorías: ${response.statusCode}');
+    }
   }
-}
 
   void cargartrendingEvent() {
     // Decodifica la cadena JSON y guarda los eventos en la lista eventosList
@@ -410,12 +410,42 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     });
   }
 
+  /*
   void cargarUpcomingEvent() {
     // Decodifica la cadena JSON y guarda los eventos en la lista eventosList
     Map<String, dynamic> upcomingEventData = json.decode(eventsJson);
     setState(() {
       upcomingEvent = upcomingEventData['events'];
     });
+  }
+  */
+  void cargarUpcomingEvent() async {
+    // URL de tu API
+    String apiUrl = 'http://10.0.2.2:8000/eventdata/eventos/';
+
+    try {
+      // Realiza una solicitud GET a la API
+      http.Response response = await http.get(Uri.parse(apiUrl));
+
+      // Verifica si la solicitud fue exitosa (código de estado 200)
+      if (response.statusCode == 200) {
+        // Decodifica la respuesta JSON con codificación UTF-8
+        var jsonResponse = utf8.decode(response.bodyBytes);
+
+        // Decodifica la cadena JSON y guarda los eventos en la lista
+        List<dynamic> upcomingEventData = json.decode(jsonResponse);
+
+        setState(() {
+          upcomingEvent = upcomingEventData;
+        });
+      } else {
+        // Si la solicitud no fue exitosa, muestra un mensaje de error
+        print('Error al cargar eventos: ${response.statusCode}');
+      }
+    } catch (e) {
+      // Captura y muestra cualquier error ocurrido durante la solicitud
+      print('Error al cargar eventos: $e');
+    }
   }
 
   void cargarThisMonthEvent() {
@@ -440,7 +470,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     //walletrefar();
     getdarkmodepreviousstate();
     getUserLocation();
-    getPackage();
+    //getPackage();
     /*getData.read("UserLogin") != null
         ? hData.homeDataApi(getData.read("UserLogin")["id"], lat, long)
         : null;*/
@@ -607,7 +637,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                       //height: Get.height * 0.01,
                       height: Get.height * 0.37,
                       child: ListView.builder(
-                        itemCount: min(upcomingEvent.length, 6),
+                        itemCount: min(upcomingEvent.length, 10),
                         scrollDirection: Axis.horizontal,
                         itemBuilder: (ctx, i) {
                           return events(upcomingEvent[i], i);
@@ -1660,10 +1690,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       upMember.add(Config.base_url + e);
     });
 
-     */
     int membercount = int.parse(upEvent["total_member_list"].toString()) > 3
         ? 3
         : int.parse(upEvent["total_member_list"].toString());
+        */
     /*
     for (var i = 0; i < membercount; i++) {
       upMember.add(Config.userImage);
@@ -1673,7 +1703,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     return Stack(children: [
       InkWell(
         onTap: () {
-          Get.to(() => EventsDetails(eid: upEvent["event_id"]),
+          Get.to(() => EventsDetails(eid: upEvent["id"].toString()),
               duration: Duration.zero);
         },
         child: Container(
@@ -1718,7 +1748,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                             child: SizedBox(
                               height: Get.height * 0.20,
                               width: Get.width * 0.62,
-                              child: Image.asset(
+                              child: Image.network(
                                 upEvent["event_img"],
                                 fit: BoxFit.cover,
                               ),
@@ -1751,10 +1781,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                           child: LikeButton(
                                             onTap: (val) {
                                               return onLikeButtonTapped(
-                                                  val, upEvent["event_id"]);
+                                                  val, upEvent["id"]);
                                             },
                                             likeBuilder: (bool isLiked) {
-                                              return upEvent["IS_BOOKMARK"] != 0
+                                              return upEvent["is_bookmark"] != 0
                                                   ? const Icon(Icons.favorite,
                                                       color: Color(0xffF0635A),
                                                       size: 22)
@@ -1862,7 +1892,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                               width: Get.width / 4,
                               child: Center(
                                 child: Text(
-                                  upEvent["event_sdate"],
+                                  upEvent["start_date"],
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(

@@ -201,7 +201,15 @@ class _LoginState extends State<Login> {
                 SizedBox(height: height / 20),
                 GestureDetector(
                   onTap: () {
-                    Get.to(() => const Bottombar(), duration: Duration.zero);
+                    //FocusScope.of(context).requestFocus(FocusNode());
+
+                    if (email.text.isNotEmpty && password.text.isNotEmpty) {
+                      //Get.to(() => const Bottombar(), duration: Duration.zero);
+                      login.iniciarSesion(email.text, password.text);
+                    } else {
+                      ApiWrapper.showToastMessage(
+                          "Please fill required field!");
+                    }
                   },
                   child: SizedBox(
                     height: 45,

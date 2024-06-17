@@ -23,6 +23,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import '../utils/botton.dart';
 import '../utils/colornotifire.dart';
+import 'package:http/http.dart' as http;
 
 
 const String eventsJson = '''
@@ -369,7 +370,39 @@ class _EventsDetailsState extends State<EventsDetails> {
     packageName = packageInfo!.packageName;
   }
 
-  eventDetailApi() {
+void eventDetailApi() async {
+  // URL de tu API
+  String apiUrl = 'http://10.0.2.2:8000/eventdata/eventos/${widget.eid}/';
+
+  try {
+    // Realiza una solicitud GET a la API
+    http.Response response = await http.get(Uri.parse(apiUrl));
+
+    // Verifica si la solicitud fue exitosa (código de estado 200)
+    if (response.statusCode == 200) {
+      // Decodifica la respuesta JSON con codificación UTF-8
+      var jsonResponse = utf8.decode(response.bodyBytes);
+
+      // Decodifica la cadena JSON y guarda el evento en el mapa
+      Map<String, dynamic> eventData = json.decode(jsonResponse);
+
+      setState(() {
+        // Guarda los datos del evento en el estado
+        this.eventData = eventData;
+      });
+    } else {
+      // Si la solicitud no fue exitosa, muestra un mensaje de error
+      print('Error al cargar eventos: ${response.statusCode}');
+    }
+  } catch (e) {
+    // Captura y muestra cualquier error ocurrido durante la solicitud
+    print('Error al cargar eventos: $e');
+  }
+}
+
+
+
+  cargarUpcomingEvent() {
 
     Map<String, dynamic> eventosDetailsData = json.decode(eventsJson);
     if (widget.eid != null) {
@@ -516,10 +549,10 @@ class _EventsDetailsState extends State<EventsDetails> {
                     child: LikeButton(
                       onTap: (val) {
                         print(val);
-                        return onLikeButtonTapped(val, eventData["event_id"]);
+                        return onLikeButtonTapped(val, eventData["id"]);
                       },
                       likeBuilder: (bool isLiked) {
-                        return eventData["IS_BOOKMARK"] != 0
+                        return eventData["is_bookmark"] != 0
                             ? const Icon(Icons.favorite,color: Color(0xffF0635A), size: 22)
                             : const Icon(Icons.favorite_border,color: Color(0xffF0635A), size: 22);
                       },
@@ -702,8 +735,8 @@ class _EventsDetailsState extends State<EventsDetails> {
                         ),
                         SizedBox(height: height / 50),
                         concert("image/date.png",
-                            eventData["event_sdate"] ?? "",
-                            eventData["event_time_day"] ?? ""),
+                            eventData["start_date"] ?? "",
+                            eventData["start_time"] ?? ""),
                         SizedBox(height: height / 50),
                         concert(
                             "image/direction.png",
@@ -712,7 +745,7 @@ class _EventsDetailsState extends State<EventsDetails> {
                         SizedBox(height: height / 60),
 
                         //! -------- Event_sponsore List ------
-
+/*
                         ListView.builder(
                           padding: EdgeInsets.zero,
                           itemCount: event_sponsore.length,
@@ -722,7 +755,7 @@ class _EventsDetailsState extends State<EventsDetails> {
                             return sponserList(event_sponsore, i);
                           },
                         ),
-
+*/
                         SizedBox(height: height / 50),
                         Padding(
                           padding: const EdgeInsets.only(left: 20),
