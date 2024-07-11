@@ -10,12 +10,7 @@ class DarkMode extends GetxController {
   getdarkmodepreviousstate() async {
     final prefs = await SharedPreferences.getInstance();
     bool? previusstate = prefs.getBool("setIsDark");
-    if (previusstate == null) {
-      notifire.setIsDark = false;
-      update();
-    } else {
-      notifire.setIsDark = previusstate;
-      update();
+    notifire.setIsDark = previusstate;
+    update();
     }
-  }
 }

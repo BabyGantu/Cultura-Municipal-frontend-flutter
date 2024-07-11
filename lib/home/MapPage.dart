@@ -1,16 +1,9 @@
 // ignore_for_file: file_names, unused_local_variable, must_be_immutable, prefer_final_fields, unused_field
 
-import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:geocoding/geocoding.dart';
-import 'package:get/get.dart';
-import 'package:goevent2/utils/colornotifire.dart';
-import 'package:goevent2/utils/media.dart';
 import 'package:latlong2/latlong.dart';
 //import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class DirectionPage extends StatefulWidget {
   final String? etitle;

@@ -23,11 +23,9 @@ import '../../utils/MunicipiosComboBox.dart';
 import '../../utils/TargetAudienceComboBox.dart';
 import 'SelectLocation.dart';
 
-import '../../Controller/AuthController.dart';
 import '../../profile/loream.dart';
 import '../../utils/botton.dart';
 import '../../utils/ctextfield.dart';
-import '../../utils/itextfield.dart';
 
 // Done
 class UpcomingTicket extends StatefulWidget {
@@ -85,12 +83,8 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
   getdarkmodepreviousstate() async {
     final prefs = await SharedPreferences.getInstance();
     bool? previusstate = prefs.getBool("setIsDark");
-    if (previusstate == null) {
-      notifire.setIsDark = false;
-    } else {
-      notifire.setIsDark = previusstate;
+    notifire.setIsDark = previusstate;
     }
-  }
 
   @override
   void initState() {
@@ -182,28 +176,42 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                 buildEmptyFieldWarning(event_title, verificar),
 
                 SizedBox(height: MediaQuery.of(context).size.height / 40),
-                CustomImagePicker(
-                  imagePaths:
-                      pathEventImage, // Lista de rutas de imágenes, puedes inicializarla con las imágenes existentes
-                  name: "Event Image".tr,
+
+
+                CustomShortTextArea.textArea(
+                  controller: event_about_short,
+                  name1: "Short description".tr,
                   labelclr: Colors.grey,
                   textcolor: notifire.getwhitecolor,
-                  iconImagePath: "image/imagen_icon.png",
+                  prefixIcon: Image.asset(
+                    "image/descripcion.png",
+                    scale: 3.5,
+                    //color: notifire.textcolor
+                  ),
                   context: context,
                 ),
-
-                SizedBox(height: MediaQuery.of(context).size.height / 60),
-                CustomImagePicker(
-                  imagePaths:
-                      pathCoverImage, // Lista de rutas de imágenes, puedes inicializarla con las imágenes existentes
-                  name: "Event Cover".tr,
+                buildEmptyFieldWarning(event_about_short, verificar),
+                SizedBox(
+                    height: MediaQuery.of(context).size.height /
+                        40), // Ajustar altura según necesidad
+                CustomTextArea.textArea(
+                  controller: event_about,
+                  name1: "Description".tr,
                   labelclr: Colors.grey,
                   textcolor: notifire.getwhitecolor,
-                  iconImagePath: "image/imagen_icon.png",
+                  prefixIcon: Image.asset(
+                    "image/descripcion.png",
+                    scale: 3.5,
+                    //color: notifire.textcolor
+                  ),
                   context: context,
                 ),
+                buildEmptyFieldWarning(event_about, verificar),
+                SizedBox(
+                    height: MediaQuery.of(context).size.height /
+                        40), // Ajustar altura según necesidad
 
-                SizedBox(height: MediaQuery.of(context).size.height / 60),
+                
                 CustomDatePickerTextField(
                   controller: start_dateController,
                   name1: "Start date".tr,
@@ -273,39 +281,28 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                 buildEmptyFieldWarning(price, verificar),
                 SizedBox(height: MediaQuery.of(context).size.height / 40),
 
-                CustomShortTextArea.textArea(
-                  controller: event_about_short,
-                  name1: "Short description".tr,
+                CustomImagePicker(
+                  imagePaths:
+                      pathEventImage, // Lista de rutas de imágenes, puedes inicializarla con las imágenes existentes
+                  name: "Event Image".tr,
                   labelclr: Colors.grey,
                   textcolor: notifire.getwhitecolor,
-                  prefixIcon: Image.asset(
-                    "image/descripcion.png",
-                    scale: 3.5,
-                    //color: notifire.textcolor
-                  ),
+                  iconImagePath: "image/imagen_icon.png",
                   context: context,
                 ),
-                buildEmptyFieldWarning(event_about_short, verificar),
-                SizedBox(
-                    height: MediaQuery.of(context).size.height /
-                        40), // Ajustar altura según necesidad
-                CustomTextArea.textArea(
-                  controller: event_about,
-                  name1: "Description".tr,
-                  labelclr: Colors.grey,
-                  textcolor: notifire.getwhitecolor,
-                  prefixIcon: Image.asset(
-                    "image/descripcion.png",
-                    scale: 3.5,
-                    //color: notifire.textcolor
-                  ),
-                  context: context,
-                ),
-                buildEmptyFieldWarning(event_about, verificar),
-                SizedBox(
-                    height: MediaQuery.of(context).size.height /
-                        40), // Ajustar altura según necesidad
 
+                SizedBox(height: MediaQuery.of(context).size.height / 60),
+                CustomImagePicker(
+                  imagePaths:
+                      pathCoverImage, // Lista de rutas de imágenes, puedes inicializarla con las imágenes existentes
+                  name: "Event Cover".tr,
+                  labelclr: Colors.grey,
+                  textcolor: notifire.getwhitecolor,
+                  iconImagePath: "image/imagen_icon.png",
+                  context: context,
+                ),
+
+                SizedBox(height: MediaQuery.of(context).size.height / 60),
                 CustomImageGallery(
                   imagePaths:
                       event_gallery, // Lista de rutas de imágenes, puedes inicializarla con las imágenes existentes
@@ -408,11 +405,9 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                   onTap: () async {
                     List<double>? location =
                         await Get.to(() => SelectLocation());
-                    if (location != null) {
-                      lat.text = location[0].toString();
-                      long.text = location[1].toString();
-                    }
-                  },
+                    lat.text = location![0].toString();
+                    long.text = location[1].toString();
+                                    },
                   child: SizedBox(
                     height: 30,
                     width: 200,
@@ -512,7 +507,7 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                     print('Precio: ${price.text}');
                     print('Descripcion breve: ${event_about_short.text}');
                     print('Descripcion: ${event_about.text}');
-                    print('Galeria de imagenes: ${event_gallery}');
+                    print('Galeria de imagenes: $event_gallery');
                     print('Organizador: ${Event_sponsore.text}');
                     print('Telefono: ${phone.text}');
                     print('Correo: ${email.text}');
@@ -562,8 +557,8 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
       print('Categoria: ${cid.text}');
       print('Publico objetivo: ${target_audience.text}');
       print('Titulo del evento: ${event_title.text}');
-      print('Imagen evento: ${pathEventImage}');
-      print('Imagen cover: ${pathCoverImage}');
+      print('Imagen evento: $pathEventImage');
+      print('Imagen cover: $pathCoverImage');
       print('Fecha inicio: ${start_dateController.text}');
       print('Fecha fin: ${end_dateController.text}');
       print('Hora inicio: ${start_time.text}');
@@ -571,7 +566,7 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
       print('Precio: ${price.text}');
       print('Descripcion breve: ${event_about_short.text}');
       print('Descripcion: ${event_about.text}');
-      print('Galeria de imagenes: ${event_gallery}');
+      print('Galeria de imagenes: $event_gallery');
       print('Organizador: ${Event_sponsore.text}');
       print('Telefono: ${phone.text}');
       print('Correo: ${email.text}');

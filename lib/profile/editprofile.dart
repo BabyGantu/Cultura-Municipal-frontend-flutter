@@ -32,6 +32,8 @@ class Edit extends StatefulWidget {
 class _EditState extends State<Edit> {
   late ColorNotifire notifire;
   final name = TextEditingController();
+  final userName = TextEditingController();
+  final lastName = TextEditingController();
   final email = TextEditingController();
   final password = TextEditingController();
   final number = TextEditingController();
@@ -46,17 +48,23 @@ class _EditState extends State<Edit> {
   getdarkmodepreviousstate() async {
     final prefs = await SharedPreferences.getInstance();
     bool? previusstate = prefs.getBool("setIsDark");
-    if (previusstate == null) {
-      notifire.setIsDark = false;
-    } else {
-      notifire.setIsDark = previusstate;
+    notifire.setIsDark = previusstate;
     }
-  }
 
   @override
   void initState() {
     super.initState();
-    getdarkmodepreviousstate();
+    //getdarkmodepreviousstate();
+   setState(() {
+            userName.text = "Adrian61916";
+            name.text = 'adrian';
+            number.text = '6442201444';
+            email.text = "adrian@hptmail.com";
+            password.text ="12345";
+            networkimage = "hola";
+            
+          });
+
     print("Usename " + getData.read("UserLogin")["name"]);
     print(getData.read("UserLogin")["id"]);
     getData.read("UserLogin") != null
@@ -73,6 +81,7 @@ class _EditState extends State<Edit> {
                 : const SizedBox();
           })
         : null;
+
   }
 
 //! network base64Image
@@ -164,7 +173,7 @@ class _EditState extends State<Edit> {
                           ? ClipRRect(
                               borderRadius: BorderRadius.circular(80),
                               child: Image.network(
-                                  Config.base_url + networkimage!,
+                                  'https://imgs.search.brave.com/Bii3Q-vCiXkfevV1dXyiBExpaiquhsvGlWO6X_HiXlE/rs:fit:500:0:0:0/g:ce/aHR0cHM6Ly93d3cu/YmxvZ2RlbGZvdG9n/cmFmby5jb20vd3At/Y29udGVudC91cGxv/YWRzLzIwMjIvMDEv/cmV0cmF0by1hbmls/bG8tbHV6LndlYnA',
                                   fit: BoxFit.cover),
                             )
                           : CircleAvatar(
@@ -212,7 +221,13 @@ class _EditState extends State<Edit> {
             child:
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               SizedBox(height: height / 60),
+              Customtextfild3.textField(name, notifire.getwhitecolor, "User name".tr,
+                  width, TextInputType.name, 50, TextAlign.start, false, context: context),
+              SizedBox(height: height / 60),
               Customtextfild3.textField(name, notifire.getwhitecolor, "Name".tr,
+                  width, TextInputType.name, 50, TextAlign.start, false, context: context),
+              SizedBox(height: height / 60),
+              Customtextfild3.textField(name, notifire.getwhitecolor, "Last name".tr,
                   width, TextInputType.name, 50, TextAlign.start, false, context: context),
               SizedBox(height: height / 60),
               Customtextfild3.textField(
@@ -228,7 +243,7 @@ class _EditState extends State<Edit> {
               Customtextfild3.textField(
                   number,
                   notifire.getwhitecolor,
-                  "Number".tr,
+                  "Phone (optional)".tr,
                   width,
                   TextInputType.name,
                   50,
@@ -238,7 +253,7 @@ class _EditState extends State<Edit> {
               Customtextfild3.textField(
                   password,
                   notifire.getwhitecolor,
-                  "password".tr,
+                  "Password".tr,
                   width,
                   TextInputType.name,
                   50,

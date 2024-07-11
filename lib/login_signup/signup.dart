@@ -6,15 +6,12 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:goevent2/Api/ApiWrapper.dart';
-import 'package:goevent2/Api/Config.dart';
 import 'package:goevent2/login_signup/login.dart';
-import 'package:goevent2/login_signup/verification.dart';
 import 'package:goevent2/profile/loream.dart';
 import 'package:goevent2/utils/AppWidget.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Controller/AuthController.dart';
-import '../agent_chat_screen/auth_service.dart';
 import '../home/home.dart';
 import '../utils/botton.dart';
 import '../utils/colornotifire.dart';
@@ -31,12 +28,15 @@ class Signup extends StatefulWidget {
 
 class _SignupState extends State<Signup> {
   bool status = false;
+  bool verificar = false;
   //final auth = FirebaseAuth.instance;
   late ColorNotifire notifire;
   final name = TextEditingController();
+  final userName = TextEditingController();
   final lastname = TextEditingController();
   final number = TextEditingController();
   final email = TextEditingController();
+  final semail = TextEditingController();
   final fpassword = TextEditingController();
   final spassword = TextEditingController();
   final referral = TextEditingController();
@@ -48,11 +48,7 @@ class _SignupState extends State<Signup> {
   getdarkmodepreviousstate() async {
     final prefs = await SharedPreferences.getInstance();
     bool? previusstate = prefs.getBool("setIsDark");
-    if (previusstate == null) {
-      notifire.setIsDark = false;
-    } else {
-      notifire.setIsDark = previusstate;
-    }
+    notifire.setIsDark = previusstate;
   }
 
   bool _obscureText = true;
@@ -93,7 +89,8 @@ class _SignupState extends State<Signup> {
                     onTap: () {
                       Navigator.pop(context);
                     },
-                    child: Icon(Icons.arrow_back, color: notifire.getwhitecolor),
+                    child:
+                        Icon(Icons.arrow_back, color: notifire.getwhitecolor),
                   ),
                 ],
               ),
@@ -108,31 +105,90 @@ class _SignupState extends State<Signup> {
                             children: [
                               Row(
                                 children: [
-                                  Text("Registrate".tr, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'Gilroy Medium', color: notifire.getwhitecolor),),
+                                  Text(
+                                    "Registrate".tr,
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'Gilroy Medium',
+                                        color: notifire.getwhitecolor),
+                                  ),
                                 ],
                               ),
                               SizedBox(height: height / 40),
-                              Customtextfild.textField(controller: email, name1: "Email".tr, labelclr: Colors.grey, textcolor: notifire.getwhitecolor, prefixIcon: Image.asset("image/Message.png", scale: 3.5,color: notifire.textcolor), context: context,),
-                              SizedBox(height: height / 40),
-                              Customtextfild.textField(controller: name, name1: "Nombre".tr, labelclr: Colors.grey, textcolor: notifire.getwhitecolor, prefixIcon: Image.asset("image/Profile.png", scale: 3.5,color: notifire.textcolor), context: context,),
-                              SizedBox(height: height / 40),
                               Customtextfild.textField(
-                                controller: lastname,
-                                name1: "Apellido".tr,
+                                controller: email,
+                                name1: "Email".tr,
                                 labelclr: Colors.grey,
                                 textcolor: notifire.getwhitecolor,
-                                keyboardType: TextInputType.text,
-                                prefixIcon: Image.asset("image/Profile.png", scale: 3.5,color: notifire.textcolor), context: context,
+                                prefixIcon: Image.asset("image/Message.png",
+                                    scale: 3.5, color: notifire.textcolor),
+                                context: context,
                               ),
-                              SizedBox(height: height / 40),
+                              
+                              buildEmptyFieldWarning(email, verificar),
+                              SizedBox(height: height / 100),
+
+                              Customtextfild.textField(
+                                controller: semail,
+                                name1: "Confirm email".tr,
+                                labelclr: Colors.grey,
+                                textcolor: notifire.getwhitecolor,
+                                prefixIcon: Image.asset("image/Message.png",
+                                    scale: 3.5, color: notifire.textcolor),
+                                context: context,
+                              ),
+                              buildEmptyFieldWarning(semail, verificar),
+                              buildNoMatchEmailFieldWarning(email, semail, verificar),
+                              SizedBox(height: height / 100),
+
+                              Customtextfild.textField(
+                                controller: name,
+                                name1: "Nombre".tr,
+                                labelclr: Colors.grey,
+                                textcolor: notifire.getwhitecolor,
+                                prefixIcon: Image.asset("image/Profile.png",
+                                    scale: 3.5, color: notifire.textcolor),
+                                context: context,
+                              ),
+                              buildEmptyFieldWarning(name, verificar),
+                              SizedBox(height: height / 100),
+
+                              Customtextfild.textField(
+                                controller: lastname,
+                                name1: "Last name".tr,
+                                labelclr:Colors.grey,
+                                textcolor: notifire.getwhitecolor,
+                                keyboardType: TextInputType.text,
+                                prefixIcon: Image.asset("image/Profile.png",
+                                    scale: 3.5, color: notifire.textcolor),
+                                context: context,
+                              ),
+                              buildEmptyFieldWarning(lastname, verificar),
+                              SizedBox(height: height / 100),
+
+                              Customtextfild.textField(
+                                controller: userName,
+                                name1: "User name".tr,
+                                labelclr: Colors.grey,
+                                textcolor: notifire.getwhitecolor,
+                                prefixIcon: Image.asset("image/Profile.png",
+                                    scale: 3.5, color: notifire.textcolor),
+                                context: context,
+                              ),
+                              buildEmptyFieldWarning(userName, verificar),
+                              SizedBox(height: height / 100),
+
                               Ink(
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Container(
                                       height: 45,
                                       decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.circular(10),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
                                           border: Border.all(
                                               width: 1,
                                               color: notifire.bordercolore)),
@@ -140,25 +196,31 @@ class _SignupState extends State<Signup> {
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           const SizedBox(width: 12),
-                                          Image.asset("image/Call1.png", scale: 3.5,color: notifire.textcolor),
+                                          Image.asset("image/Call1.png",
+                                              scale: 3.5,
+                                              color: notifire.textcolor),
                                           cpicker(),
                                         ],
                                       ),
                                     ),
-                                    const SizedBox(width: 8,),
+                                    const SizedBox(
+                                      width: 8,
+                                    ),
                                     Expanded(
                                       child: Customtextfild.textField(
                                         controller: number,
-                                        name1: "Telefono".tr,
+                                        name1: "Phone (optional)".tr,
                                         keyboardType: TextInputType.phone,
                                         labelclr: Colors.grey,
-                                        textcolor: notifire.getwhitecolor, context: context,
+                                        textcolor: notifire.getwhitecolor,
+                                        context: context,
                                       ),
                                     ),
                                   ],
                                 ),
                               ),
-                              SizedBox(height: height / 40),
+                              //buildEmptyFieldWarning(number, verificar),
+                              SizedBox(height: height / 100),
                               Customtextfild2.textField(
                                 fpassword,
                                 _obscureText,
@@ -171,12 +233,18 @@ class _SignupState extends State<Signup> {
                                       _toggle();
                                     },
                                     child: _obscureText
-                                        ? Image.asset("image/Hide.png",
-                                            scale: 3.5,color: notifire.textcolor,)
+                                        ? Image.asset(
+                                            "image/Hide.png",
+                                            scale: 3.5,
+                                            color: notifire.textcolor,
+                                          )
                                         : Image.asset("image/Show.png",
-                                            scale: 3.5,color: notifire.textcolor)), context: context,
+                                            scale: 3.5,
+                                            color: notifire.textcolor)),
+                                context: context,
                               ),
-                              SizedBox(height: height / 40),
+                              buildEmptyFieldWarning(fpassword, verificar),
+                              SizedBox(height: height / 100),
                               Customtextfild2.textField(
                                 spassword,
                                 obscureText_,
@@ -190,11 +258,16 @@ class _SignupState extends State<Signup> {
                                     },
                                     child: obscureText_
                                         ? Image.asset("image/Hide.png",
-                                            height: 22,color: notifire.textcolor)
+                                            height: 22,
+                                            color: notifire.textcolor)
                                         : Image.asset("image/Show.png",
-                                            height: 22,color: notifire.textcolor)), context: context,
+                                            height: 22,
+                                            color: notifire.textcolor)),
+                                context: context,
                               ),
-
+                              buildEmptyFieldWarning(spassword, verificar),
+                              buildNoMatchPasswordFieldWarning(fpassword, spassword, verificar),
+                              SizedBox(height: height / 100),
                               SizedBox(height: Get.height * 0.02),
                               Row(
                                 children: [
@@ -221,7 +294,10 @@ class _SignupState extends State<Signup> {
                                               color: notifire.getwhitecolor,
                                               fontSize: 12),
                                           children: <TextSpan>[
-                                            TextSpan(text: "You agree to GoEvent's \n".tr),
+                                            TextSpan(
+                                                text:
+                                                    "You agree to GoEvent's \n"
+                                                        .tr),
                                             TextSpan(
                                                 text: 'Terms of Use '.tr,
                                                 style: const TextStyle(
@@ -231,9 +307,11 @@ class _SignupState extends State<Signup> {
                                                 recognizer:
                                                     TapGestureRecognizer()
                                                       ..onTap = () {
-                                                        Get.to(() => Loream("Terms & Conditions".tr));
+                                                        Get.to(() => Loream(
+                                                            "Terms & Conditions"
+                                                                .tr));
                                                       }),
-                                            const TextSpan(text: "and "),
+                                            TextSpan(text: "and ".tr),
                                             TextSpan(
                                                 text: 'Privacy Policy.'.tr,
                                                 style: const TextStyle(
@@ -243,7 +321,9 @@ class _SignupState extends State<Signup> {
                                                 recognizer:
                                                     TapGestureRecognizer()
                                                       ..onTap = () {
-                                                        Get.to(() => Loream("Terms & Conditions".tr));
+                                                        Get.to(() => Loream(
+                                                            "Terms & Conditions"
+                                                                .tr));
                                                       }),
                                           ]),
                                     ),
@@ -253,7 +333,6 @@ class _SignupState extends State<Signup> {
                               SizedBox(height: Get.height * 0.10),
                               GestureDetector(
                                 onTap: () {
-
                                   authSignUp();
                                   // print('hahahaha');
                                 },
@@ -278,6 +357,7 @@ class _SignupState extends State<Signup> {
                                         fontSize: 14,
                                         fontFamily: 'Gilroy Medium'),
                                   ),
+                                  Text(" "),
                                   GestureDetector(
                                     onTap: () {
                                       Get.to(() => const Login(),
@@ -306,6 +386,78 @@ class _SignupState extends State<Signup> {
           )),
     );
   }
+
+  Visibility buildEmptyFieldWarning(
+    TextEditingController controller,
+    bool condition,
+  ) {
+    return Visibility(
+      visible: condition && controller.text.isEmpty,
+      child: Text(
+        "Please enter this field".tr,
+        style: TextStyle(
+          color: Colors.red,
+          fontSize: 12.0,
+        ),
+      ),
+    );
+  }
+
+
+
+ValueListenableBuilder buildNoMatchPasswordFieldWarning(
+  TextEditingController controller1,
+  TextEditingController controller2,
+  bool condition,
+) {
+  return ValueListenableBuilder(
+    valueListenable: controller1, 
+    builder: (context, value, child) {
+      return ValueListenableBuilder(
+        valueListenable: controller2,
+        builder: (context, value, child) {
+          return Visibility(
+            visible: controller1.text != controller2.text && condition,
+            child: Text(
+              "Password no match".tr,
+              style: TextStyle(
+                color: Colors.red,
+                fontSize: 12.0,
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
+}
+
+  ValueListenableBuilder buildNoMatchEmailFieldWarning(
+  TextEditingController controller1,
+  TextEditingController controller2,
+  bool condition,
+) {
+  return ValueListenableBuilder(
+    valueListenable: controller1, 
+    builder: (context, value, child) {
+      return ValueListenableBuilder(
+        valueListenable: controller2,
+        builder: (context, value, child) {
+          return Visibility(
+            visible: controller1.text != controller2.text && condition,
+            child: Text(
+              "Email no match".tr,
+              style: TextStyle(
+                color: Colors.red,
+                fontSize: 12.0,
+              ),
+            ),
+          );
+        },
+      );
+    },
+  );
+}
 
   Widget log(clr, name, img, clr2) {
     return Center(
@@ -342,24 +494,27 @@ class _SignupState extends State<Signup> {
   }
 
   cpicker() {
-    var countryCode = ['+52','+43','+45','+48'];
+    var countryCode = ['+52', '+1'];
     var countryDropDown = Ink(
       child: DropdownButtonHideUnderline(
         child: ButtonTheme(
           alignedDropdown: true,
           child: DropdownButton(
-              value: _selectedCountryCode,
-              items: countryCode.map((value) {
-                return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value, style: const TextStyle(fontSize: 14.0, color: Colors.grey)));
-              }).toList(),
-              onChanged: (String? value) {
-                setState(() {
-                  _selectedCountryCode = value;
-                });
-              },
-              style: Theme.of(context).textTheme.headline6),
+            value: _selectedCountryCode,
+            items: countryCode.map((value) {
+              return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value,
+                      style:
+                          const TextStyle(fontSize: 14.0, color: Colors.grey)));
+            }).toList(),
+            onChanged: (String? value) {
+              setState(() {
+                _selectedCountryCode = value;
+              });
+            },
+            //style: Theme.of(context).textTheme.headline6
+          ),
         ),
       ),
     );
@@ -370,81 +525,67 @@ class _SignupState extends State<Signup> {
   authSignUp() {
     print('uhuhuhuhu');
     FocusScope.of(context).requestFocus(FocusNode());
-
+    setState(() {
+      verificar = true;
+      // Actualizar el estado según si el campo está vacío o no
+      //isTitleEmpty = isFieldEmpty(event_title);
+    });
 
     if (name.text.isNotEmpty &&
-        lastname.text.isNotEmpty &&
-        email.text.isNotEmpty &&
-        number.text.isNotEmpty &&
-        fpassword.text.isNotEmpty &&
-        spassword.text.isNotEmpty
-    // &&        referral.text.isNotEmpty
-    ) {
+            lastname.text.isNotEmpty &&
+            userName.text.isNotEmpty &&
+            email.text.isNotEmpty &&
+            semail.text.isNotEmpty &&
+            //number.text.isNotEmpty &&
+            fpassword.text.isNotEmpty &&
+            spassword.text.isNotEmpty
+        // &&        referral.text.isNotEmpty
+        ) {
       if ((RegExp(
-          r"^[a-zA-Z0-9.a-zA-Z0-9!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9.a-zA-Z0-9!#$%&'*+-/=?^_`{|}~]+\.[a-zA-Z]+")
+              r"^[a-zA-Z0-9.a-zA-Z0-9!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9.a-zA-Z0-9!#$%&'*+-/=?^_`{|}~]+\.[a-zA-Z]+")
           .hasMatch(email.text))) {
-        if (fpassword.text == spassword.text) {
-          if (status == true) {
-            setState(() {
-              isLoading = true;
-            });
-            var register = {
-              "UserName": name.text.trim(),
-              "Usernumber": number.text.trim(),
-              "UserEmail": email.text.trim(),
-              //"Ccode": _selectedCountryCode,
-              "FPassword": fpassword.text.trim(),
-              "SPassword": spassword.text.trim(),
-              //"ReferralCode": referral.text.trim(),
-            };
-            save("User", register);
-            login.registrarUsuario(email.text, name.text, lastname.text, number.text, spassword.text);
-            //Get.to(() => Verification(verID: '123445', number: '123456678'));
-            /**ApiWrapper.dataPost(Config.mobilecheck, 53).then((val) {
-              if ((val != null) && (val.isNotEmpty)) {
-                if (val["Result"] == "true") {
-                  setState(() {
-                    isLoading = true;
-                  });
-                  var register = {
-                    "UserName": name.text.trim(),
-                    "Usernumber": number.text.trim(),
-                    "UserEmail": email.text.trim(),
-                    "Ccode": _selectedCountryCode,
-                    "FPassword": fpassword.text.trim(),
-                    "SPassword": spassword.text.trim(),
-                    "ReferralCode": referral.text.trim(),
-                  };
-                  save("User", register);
+        if (email.text == semail.text) {
+          if (fpassword.text == spassword.text) {
+            if (status == true) {
+              setState(() {
+                isLoading = true;
+              });
+              var register = {
+                "UserName": name.text.trim(),
+                "Usernumber": number.text.trim(),
+                "UserEmail": email.text.trim(),
+                //"Ccode": _selectedCountryCode,
+                "FPassword": fpassword.text.trim(),
+                "SPassword": spassword.text.trim(),
+                //"ReferralCode": referral.text.trim(),
+              };
+              save("User", register);
+              login.registrarUsuario(
+                  email: email.text,
+                  nombreUsuario: userName.text,
+                  nombre: name.text,
+                  telefono: int.parse(number.text),
+                  apellido: lastname.text,
+                  password: fpassword.text);
 
-                  verifyPhone("${_selectedCountryCode}" "${number.text}");
-                } else {
-                  setState(() {
-                    isLoading = false;
-                  });
-                  ApiWrapper.showToastMessage(val['ResponseMsg']);
-                }
-              }
-            });**/
-
-            print('Chingon');
+              print('Chingon');
+            } else {
+              ApiWrapper.showToastMessage(
+                  "Accept terms & Condition is required".tr);
+            }
           } else {
-            ApiWrapper.showToastMessage("Accept terms & Condition is required");
+            ApiWrapper.showToastMessage("Password not match".tr);
           }
         } else {
-          ApiWrapper.showToastMessage("password not match");
+          ApiWrapper.showToastMessage("Email not match".tr);
         }
       } else {
-        ApiWrapper.showToastMessage('Please enter valid email address');
+        ApiWrapper.showToastMessage('Please enter valid email address'.tr);
       }
     } else {
-      ApiWrapper.showToastMessage("Please fill required field!");
+      ApiWrapper.showToastMessage("Please fill required field!".tr);
     }
   }
-
-
-
-
 
 /*
   Future<void> verifyPhone(String number) async {

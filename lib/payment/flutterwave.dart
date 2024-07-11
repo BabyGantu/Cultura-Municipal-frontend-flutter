@@ -1,16 +1,8 @@
-import 'dart:convert';
-import 'dart:developer';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
-import 'package:html/parser.dart' as html_parser;
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert' as convert;
 
 import '../Api/Config.dart';
 
@@ -19,14 +11,14 @@ class Flutterwave extends StatefulWidget {
   final String? totalAmount;
   final String? email;
 
-  const Flutterwave({this.totalAmount, this.email});
+  const Flutterwave({Key? key, this.totalAmount, this.email}) : super(key: key);
 
   @override
   State<Flutterwave> createState() => _FlutterwaveState();
 }
 
 class _FlutterwaveState extends State<Flutterwave> {
-  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   String? accessToken;
   bool isLoading = true;
@@ -58,7 +50,7 @@ class _FlutterwaveState extends State<Flutterwave> {
               accessToken = uri.queryParameters["token"];
             } else {
               if (uri.queryParameters["status"] == "successful") {
-                payerID = await uri.queryParameters["transaction_id"];
+                payerID = uri.queryParameters["transaction_id"];
                 Get.back(result: payerID);
               } else {
 
@@ -72,7 +64,7 @@ class _FlutterwaveState extends State<Flutterwave> {
         ),
       )
       ..loadRequest(Uri.parse(
-          "${Config.base_url + "/flutterwave/index.php?amt=${widget.totalAmount}&email=${widget.email}"}"));
+          "${Config.base_url}/flutterwave/index.php?amt=${widget.totalAmount}&email=${widget.email}"));
   }
 
   late final WebViewController controller;
@@ -128,7 +120,7 @@ class _FlutterwaveState extends State<Flutterwave> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         child: CircularProgressIndicator(),
                       ),
                       SizedBox(height: Get.height * 0.02),
@@ -149,7 +141,7 @@ class _FlutterwaveState extends State<Flutterwave> {
                     ],
                   ),
                 )
-                    : Stack(),
+                    : const Stack(),
               ],
             )),
       );
@@ -164,7 +156,7 @@ class _FlutterwaveState extends State<Flutterwave> {
             elevation: 0.0),
         body: Center(
             child: Container(
-              child: CircularProgressIndicator(),
+              child: const CircularProgressIndicator(),
             )),
       );
     }

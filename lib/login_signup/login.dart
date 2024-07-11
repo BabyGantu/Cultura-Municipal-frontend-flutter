@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:goevent2/Api/ApiWrapper.dart';
+import 'package:goevent2/Bottombar.dart';
 import 'package:goevent2/Controller/AuthController.dart';
 import 'package:goevent2/home/home.dart';
 import 'package:goevent2/login_signup/resetpass.dart';
@@ -17,7 +18,6 @@ import 'package:goevent2/utils/media.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../Bottombar.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -38,12 +38,8 @@ class _LoginState extends State<Login> {
   getdarkmodepreviousstate() async {
     final prefs = await SharedPreferences.getInstance();
     bool? previusstate = prefs.getBool("setIsDark");
-    if (previusstate == null) {
-      notifire.setIsDark = false;
-    } else {
-      notifire.setIsDark = previusstate;
+    notifire.setIsDark = previusstate;
     }
-  }
 
   bool _obscureText = true;
   void _toggle() {
@@ -82,7 +78,7 @@ class _LoginState extends State<Login> {
                 ),
                 SizedBox(height: height / 100),
                 Text(
-                  "Cultura Municipal".tr,
+                  "Evson".tr,
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.w700,
@@ -94,7 +90,7 @@ class _LoginState extends State<Login> {
                 Row(
                   children: [
                     Text(
-                      "Iniciar sesión".tr,
+                      "Log in".tr,
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -164,8 +160,8 @@ class _LoginState extends State<Login> {
                       child: Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          "¿Olvidaste tu contraseña?".tr,
-                          style: TextStyle(
+                          "Did you forget your password?".tr,
+                          style: const TextStyle(
                             color: Color(0xff5669FF),
                             fontFamily: 'Gilroy Medium',
                           ),
@@ -189,7 +185,7 @@ class _LoginState extends State<Login> {
                     ),
                     SizedBox(width: width / 60),
                     Text(
-                      "Recordarme".tr,
+                      "Remember me for 15 days".tr,
                       style: TextStyle(
                         color: notifire.getwhitecolor,
                         fontFamily: 'Gilroy Medium',
@@ -202,14 +198,16 @@ class _LoginState extends State<Login> {
                 GestureDetector(
                   onTap: () {
                     //FocusScope.of(context).requestFocus(FocusNode());
-
+                    //Get.to(() => const Bottombar(), duration: Duration.zero);
+                    
                     if (email.text.isNotEmpty && password.text.isNotEmpty) {
-                      //Get.to(() => const Bottombar(), duration: Duration.zero);
+                      
                       login.iniciarSesion(email.text, password.text);
                     } else {
                       ApiWrapper.showToastMessage(
-                          "Please fill required field!");
+                          "Please fill required field!".tr);
                     }
+                    
                   },
                   child: SizedBox(
                     height: 45,
@@ -226,7 +224,7 @@ class _LoginState extends State<Login> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "¿No tienes una cuenta?".tr,
+                      "You do not have an account? ".tr,
                       style: TextStyle(
                         color: notifire.getwhitecolor,
                         fontSize: 12,
@@ -238,7 +236,7 @@ class _LoginState extends State<Login> {
                         Get.to(() => const Signup(), duration: Duration.zero);
                       },
                       child: Text(
-                        "Regístrate".tr,
+                        "Sign up".tr,
                         style: const TextStyle(
                           color: Color(0xff5669FF),
                           fontFamily: 'Gilroy Medium',
@@ -312,7 +310,8 @@ class _LoginState extends State<Login> {
                     dropdownValue = value!;
                   });
                 },
-                style: Theme.of(context).textTheme.headline6),
+                //style: Theme.of(context).textTheme.headline6
+            ),
           ),
         ),
       ),

@@ -33,7 +33,7 @@ class HomeController extends GetxController {
     update();
     uID = uid;
     var data = {"uid": uid, "lats": lat, "longs": long};
-    print("Home Date-->"+data.toString());
+    print("Home Date-->$data");
     ApiWrapper.dataPost(Config.homedat, data).then((val) {
       if ((val != null) && (val.isNotEmpty)) {
         if ((val['ResponseCode'] == "200") && (val['Result'] == "true")) {
@@ -60,7 +60,7 @@ class HomeController extends GetxController {
   homeDataReffressApi(uid, lat, long) {
     uID = uid;
     var data = {"uid": uid, "lats": lat, "longs": long};
-    print("Home Date-->"+data.toString());
+    print("Home Date-->$data");
 
     ApiWrapper.dataPost(Config.homedat, data).then((val) {
       if ((val != null) && (val.isNotEmpty)) {

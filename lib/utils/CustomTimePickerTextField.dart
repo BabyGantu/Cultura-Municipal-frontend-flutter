@@ -49,7 +49,7 @@ class CustomTimePickerTextField extends StatelessWidget {
               ),
               Expanded(
                 child: Padding(
-                  padding: EdgeInsets.only(left: 10),
+                  padding: const EdgeInsets.only(left: 10),
                   child: Text(
                     controller.text.isNotEmpty ? controller.text : name1,
                     style: TextStyle(color: textcolor),

@@ -42,10 +42,10 @@ class _CustomImagePickerState extends State<CustomImagePicker> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        SizedBox(height: 10.0),
+        const SizedBox(height: 10.0),
         Row(
           children: List.generate(
-            widget.imagePaths.length < 1 ? widget.imagePaths.length + 1 : 1,
+            widget.imagePaths.isEmpty ? widget.imagePaths.length + 1 : 1,
             (index) {
               if (index == widget.imagePaths.length) {
                 return GestureDetector(
@@ -70,7 +70,7 @@ class _CustomImagePickerState extends State<CustomImagePicker> {
                 return Container(
                   width: 80.0,
                   height: 80.0,
-                  margin: EdgeInsets.only(right: 10.0),
+                  margin: const EdgeInsets.only(right: 10.0),
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.grey, width: 1),
                     borderRadius: BorderRadius.circular(10.0),
@@ -93,7 +93,7 @@ class _CustomImagePickerState extends State<CustomImagePicker> {
         await _picker.pickImage(source: ImageSource.gallery);
     if (pickedImage != null) {
       setState(() {
-        if (widget.imagePaths.length < 1) {
+        if (widget.imagePaths.isEmpty) {
           widget.imagePaths.add(pickedImage.path); // Llama a la función de devolución de llamada
         }
       });

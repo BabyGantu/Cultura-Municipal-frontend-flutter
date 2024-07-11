@@ -59,12 +59,8 @@ class _SpleshscreenState extends State<Spleshscreen> {
     x.cCodeApi();
     final prefs = await SharedPreferences.getInstance();
     bool? previusstate = prefs.getBool("setIsDark");
-    if (previusstate == null) {
-      notifire.setIsDark = false;
-    } else {
-      notifire.setIsDark = previusstate;
+    notifire.setIsDark = previusstate;
     }
-  }
 
 //! permission handel
   checkGps() async {
@@ -145,19 +141,13 @@ class _SpleshscreenState extends State<Spleshscreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Cultura".tr,
+                    "Evson".tr,
                     style: TextStyle(
                         fontSize: 35,
                         fontFamily: 'Gilroy ExtraBold',
                         color: notifire.gettextcolor),
                   ),
-                  Text(
-                    "Municipal".tr,
-                    style: TextStyle(
-                        fontSize: 35,
-                        fontFamily: 'Gilroy ExtraBold',
-                        color: notifire.gettext1color),
-                  ),
+                  
                 ],
               ),
             ],

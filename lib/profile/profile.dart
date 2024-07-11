@@ -66,12 +66,8 @@ class _ProfileState extends State<Profile> {
   getdarkmodepreviousstate() async {
     final prefs = await SharedPreferences.getInstance();
     bool? previusstate = prefs.getBool("setIsDark");
-    if (previusstate == null) {
-      notifire.setIsDark = false;
-    } else {
-      notifire.setIsDark = previusstate;
+    notifire.setIsDark = previusstate;
     }
-  }
 
   @override
   void initState() {
@@ -117,7 +113,7 @@ class _ProfileState extends State<Profile> {
                     ),
                     SizedBox(height: Get.height * 0.02),
                     settingWidget(
-                      tital: "My Booking".tr,
+                      tital: "Events".tr,
                       image: "image/Calendar.png",
                       onTap: () {
                         Get.to(() => const TicketStatusPage(type: "0"));
@@ -258,10 +254,10 @@ class _ProfileState extends State<Profile> {
                   style: const TextStyle(fontWeight: FontWeight.w600)),
               actions: <Widget>[
                 TextButton(
+                    onPressed: accountDelete,
                     child: Text("Delete".tr,
                         style: const TextStyle(
-                            fontWeight: FontWeight.w500, letterSpacing: 0.5)),
-                    onPressed: accountDelete),
+                            fontWeight: FontWeight.w500, letterSpacing: 0.5))),
                 TextButton(
                   child: Text("No".tr,
                       style: const TextStyle(
@@ -490,8 +486,7 @@ class _ProfileState extends State<Profile> {
             text = "";
           }
         }
-        print("jwgqdskdjchsjdilcuhsilcjsailkfhcjilsjfcsilkjfchidshfcid" +
-            dynamicPageDataList.length.toString());
+        print("jwgqdskdjchsjdilcuhsilcjsailkfhcjilsjfcsilkjfchidshfcid${dynamicPageDataList.length}");
         setState(() {
           isLodding = true;
         });

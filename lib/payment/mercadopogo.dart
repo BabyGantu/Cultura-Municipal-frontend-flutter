@@ -1,16 +1,8 @@
-import 'dart:convert';
-import 'dart:developer';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
-import 'package:html/parser.dart' as html_parser;
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert' as convert;
 
 import '../Api/Config.dart';
 
@@ -18,14 +10,14 @@ import '../Api/Config.dart';
 class merpago extends StatefulWidget {
   final String? totalAmount;
 
-  const merpago({this.totalAmount});
+  const merpago({Key? key, this.totalAmount}) : super(key: key);
 
   @override
   State<merpago> createState() => _merpagoState();
 }
 
 class _merpagoState extends State<merpago> {
-  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   String? accessToken;
   bool isLoading = true;
@@ -57,7 +49,7 @@ class _merpagoState extends State<merpago> {
               accessToken = uri.queryParameters["token"];
             } else {
               if (uri.queryParameters["status"] == "successful") {
-                payerID = await uri.queryParameters["transaction_id"];
+                payerID = uri.queryParameters["transaction_id"];
                 Get.back(result: payerID);
               }else{
 
@@ -71,7 +63,7 @@ class _merpagoState extends State<merpago> {
         ),
       )
       ..loadRequest(Uri.parse(
-          "${Config.base_url + "/merpago/index.php?amt=${widget.totalAmount}"}"));
+          "${Config.base_url}/merpago/index.php?amt=${widget.totalAmount}"));
   }
 
   late final WebViewController controller;
@@ -127,7 +119,7 @@ class _merpagoState extends State<merpago> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         child: CircularProgressIndicator(),
                       ),
                       SizedBox(height: Get.height * 0.02),
@@ -148,7 +140,7 @@ class _merpagoState extends State<merpago> {
                     ],
                   ),
                 )
-                    : Stack(),
+                    : const Stack(),
               ],
             )),
       );
@@ -163,7 +155,7 @@ class _merpagoState extends State<merpago> {
             elevation: 0.0),
         body: Center(
             child: Container(
-              child: CircularProgressIndicator(),
+              child: const CircularProgressIndicator(),
             )),
       );
     }

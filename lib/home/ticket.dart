@@ -129,7 +129,7 @@ class _TicketState extends State<Ticket> {
   }
   late ColorNotifire notifire;
   void _handlePaymentError(PaymentFailureResponse response) {
-    print('Error Response: ${"ERROR: " + response.code.toString() + " - " + response.message!}');
+    print('Error Response: ${"ERROR: ${response.code} - ${response.message!}"}');
     ApiWrapper.showToastMessage(response.message!);
   }
 
@@ -590,19 +590,19 @@ class _TicketState extends State<Ticket> {
 
     if (couponamount != "0") {
       couponprice = valueCal(subtotal, couponamount);
-      print(couponprice + " coponprice ------ : ");
+      print("$couponprice coponprice ------ : ");
     } else {
       couponprice = subtotal;
 
-      print(couponprice + " coponprice ------ else: ");
+      print("$couponprice coponprice ------ else: ");
     }
     ticketax = doublevaluPer(subtotal, eventTax);
-    print(ticketax + "event tax : ");
+    print("${ticketax}event tax : ");
     var newprice = couponprice != "0" ? couponprice : subtotal;
-    print(newprice + " newprice : ");
+    print("$newprice newprice : ");
 
     ticketTotal = valuePlus(newprice, ticketax);
-    print(ticketTotal + "event plus : ");
+    print("${ticketTotal}event plus : ");
   }
 
   void _handlePaymentSuccess(PaymentSuccessResponse response) {
@@ -723,7 +723,7 @@ class _TicketState extends State<Ticket> {
                       Checkbox(
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         checkColor: Colors.white,
-                        fillColor: MaterialStateProperty.resolveWith(
+                        fillColor: WidgetStateProperty.resolveWith(
                             (states) => dMode.notifire.getbuttonscolor),
                         value: isChecked,
                         onChanged: (bool? value) {

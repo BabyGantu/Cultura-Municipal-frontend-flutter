@@ -1,8 +1,6 @@
 // ignore_for_file: file_names, avoid_print, must_be_immutable, avoid_function_literals_in_foreach_calls, use_key_in_widget_constructors, prefer_const_constructors
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:goevent2/Api/Config.dart';
 import 'package:provider/provider.dart';
 
 import '../utils/colornotifire.dart';
@@ -23,7 +21,7 @@ class _GalleryViewState extends State<GalleryView> {
   void initState() {
     eventList = widget.list ?? [];
 
-    print("!!!!!!!!!!!!!!!!" + eventList.toString());
+    print("!!!!!!!!!!!!!!!!$eventList");
 
     super.initState();
   }
@@ -63,7 +61,7 @@ class _GalleryViewState extends State<GalleryView> {
                         Navigator.push(context, MaterialPageRoute(builder: (_) {
                           return FullScreenImage(
                             imageUrl: eventList[index]["img"], // Usar directamente la ruta de la imagen estática
-                            tag: "imagen ${index}",
+                            tag: "imagen $index",
                           );
                         }));
                       },
@@ -80,6 +78,7 @@ class _GalleryViewState extends State<GalleryView> {
 
                        */
                       child: Hero(
+                        tag: "generate_a_unique_tag",
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(12),
                           child: Image.asset(
@@ -88,7 +87,6 @@ class _GalleryViewState extends State<GalleryView> {
                           ),
 
                         ),
-                        tag: "generate_a_unique_tag",
                       ),
                       /*
                       child: Hero(
@@ -118,7 +116,7 @@ class FullScreenImage extends StatelessWidget {
   final String? imageUrl;
   final String? tag;
 
-  FullScreenImage({required this.imageUrl, required this.tag});
+  const FullScreenImage({required this.imageUrl, required this.tag});
 
   @override
   Widget build(BuildContext context) {

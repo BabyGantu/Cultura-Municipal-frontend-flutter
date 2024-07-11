@@ -5,9 +5,9 @@ class Config {
 
   static const String base_url = 'https://colecciondeeventos.000webhostapp.com/';
 
-  static const String api_url = base_url + '/eapi/';
+  static const String api_url = '$base_url/eapi/';
 
-  static const String userImage = base_url + "/images/profile/pic.png";
+  static const String userImage = "$base_url/images/profile/pic.png";
 
   static const String firebaseKey = "**********************************************";
   static const String notificationUrl = "https://fcm.googleapis.com/fcm/send";

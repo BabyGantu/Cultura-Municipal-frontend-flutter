@@ -3,8 +3,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:goevent2/Api/ApiWrapper.dart';
-import 'package:goevent2/Api/Config.dart';
-import 'package:goevent2/login_signup/login.dart';
 import 'package:goevent2/login_signup/verification.dart';
 import 'package:goevent2/utils/botton.dart';
 import 'package:goevent2/utils/colornotifire.dart';
@@ -30,12 +28,8 @@ class _PasswordsetPageState extends State<PasswordsetPage> {
   getdarkmodepreviousstate() async {
     final prefs = await SharedPreferences.getInstance();
     bool? previusstate = prefs.getBool("setIsDark");
-    if (previusstate == null) {
-      notifire.setIsDark = false;
-    } else {
-      notifire.setIsDark = previusstate;
+    notifire.setIsDark = previusstate;
     }
-  }
 
   @override
   void initState() {

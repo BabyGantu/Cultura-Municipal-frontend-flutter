@@ -5,7 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:goevent2/Api/ApiWrapper.dart';
 import 'package:goevent2/Controller/AuthController.dart';
-import 'package:goevent2/login_signup/ForgetPass.dart';
+import 'package:goevent2/login_signup/login.dart';
+import 'package:goevent2/utils/itextfield.dart';
 import 'package:otp_text_field/otp_field.dart';
 import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
@@ -13,17 +14,20 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/botton.dart';
 import '../utils/colornotifire.dart';
 import '../utils/media.dart';
-import 'Login.dart';
-import '../Controller/AuthController.dart';
-final login = Get.put(AuthController());
 
+final login = Get.put(AuthController());
 
 class Verification extends StatefulWidget {
   final String? type;
   final String? email;
-  final String? verID;
+  final int verID;
   final bool isReset;
-  const Verification({Key? key, this.verID, this.email, this.type, required this.isReset})
+  const Verification(
+      {Key? key,
+      required this.verID,
+      this.email,
+      this.type,
+      required this.isReset})
       : super(key: key);
 
   @override
@@ -40,10 +44,28 @@ class _VerificationState extends State<Verification> {
   String otpPin = " ";
 
   late ColorNotifire notifire;
-  String? vID = "";
+  int vID = 0;
 
   Timer? _timer;
   int _start = 20;
+
+  final fpassword = TextEditingController();
+  final spassword = TextEditingController();
+
+  bool _obscureText = true;
+  bool _obscureText1 = true;
+
+  void _toggle() {
+    setState(() {
+      _obscureText = !_obscureText;
+    });
+  }
+
+  void _toggle2() {
+    setState(() {
+      _obscureText1 = !_obscureText1;
+    });
+  }
 
   @override
   void dispose() {
@@ -54,11 +76,7 @@ class _VerificationState extends State<Verification> {
   getdarkmodepreviousstate() async {
     final prefs = await SharedPreferences.getInstance();
     bool? previusstate = prefs.getBool("setIsDark");
-    if (previusstate == null) {
-      notifire.setIsDark = false;
-    } else {
-      notifire.setIsDark = previusstate;
-    }
+    notifire.setIsDark = previusstate;
   }
 
   void startTimer() {
@@ -95,40 +113,29 @@ class _VerificationState extends State<Verification> {
 
   Future<void> verifyOTP(BuildContext context) async {
     FocusScope.of(context).requestFocus(FocusNode());
-    String id = widget.verID!;
+    int id = widget.verID!;
     // Llama a verificarCodigo y espera a que se complete
     print('___________________________________');
     print(otpController.text);
     print(id);
-    print(widget.isReset);
     print('___________________________________');
-    bool? codigoVerificado = await login.verificarCodigo(otpController.text, id,widget.isReset);
 
-    // Verifica el resultado devuelto por verificarCodigo
-    if (codigoVerificado == true) {
-      // Si el código fue verificado con éxito, navega a la pantalla Login
-      //Get.to(() => Login());
-      ApiWrapper.showToastMessage("Verificado");
+    Map<String, dynamic> result =
+        await login.upDatePassword(id, fpassword.text, otpController.text);
+
+    if (result['success']) {
+      Get.to(() => const Login());
     } else {
-      // Si ocurrió un error o el código no fue verificado, puedes manejarlo aquí
-      ApiWrapper.showToastMessage("El código no coincide");
+      ApiWrapper.showToastMessage(
+          "No se pudo actualizar la contraseña. Inténtalo de nuevo.");
     }
   }
 
   Future<void> reenviarCodigo(BuildContext context) async {
     FocusScope.of(context).requestFocus(FocusNode());
-    String id = widget.verID!;
+    int id = widget.verID;
     // Llama a verificarCodigo y espera a que se complete
-    bool? reenvioDeCodigo = await login.reenviarCodigo(id);
-
-    // Verifica el resultado devuelto por verificarCodigo
-    if (reenvioDeCodigo == true) {
-      // Si el código fue verificado con éxito, navega a la pantalla Login
-      ApiWrapper.showToastMessage("Codigo reenviado");
-    } else {
-      // Si ocurrió un error o el código no fue verificado, puedes manejarlo aquí
-      ApiWrapper.showToastMessage("Algo salio mal");
-    }
+    bool? reenvioDeCodigo = await login.reSendCode(id);
   }
 
   /*void signInWithPhoneAuthCredential(
@@ -169,7 +176,7 @@ class _VerificationState extends State<Verification> {
                   onTap: () {
                     Navigator.pop(context);
                   },
-                  child: Icon(Icons.arrow_back,color: notifire.getwhitecolor),
+                  child: Icon(Icons.arrow_back, color: notifire.getwhitecolor),
                 ),
               ],
             ),
@@ -178,7 +185,14 @@ class _VerificationState extends State<Verification> {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(left: 20),
-                  child: Text("Verifica tu correo".tr, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, fontFamily: 'Gilroy Medium', color: notifire.getwhitecolor),),
+                  child: Text(
+                    "Check email".tr,
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Gilroy Medium',
+                        color: notifire.getwhitecolor),
+                  ),
                 ),
               ],
             ),
@@ -190,9 +204,21 @@ class _VerificationState extends State<Verification> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Hemos enviado un código de verificación".tr, style: TextStyle(fontSize: 15, fontFamily: 'Gilroy Medium', color: notifire.getwhitecolor),),
+                      Text(
+                        "Hemos enviado un código de verificación".tr,
+                        style: TextStyle(
+                            fontSize: 15,
+                            fontFamily: 'Gilroy Medium',
+                            color: notifire.getwhitecolor),
+                      ),
                       SizedBox(height: height / 400),
-                      Text("a ${widget.email ?? ""}", style: TextStyle(fontSize: 15, fontFamily: 'Gilroy Medium', color: notifire.getwhitecolor),),
+                      Text(
+                        "a ${widget.email ?? ""}",
+                        style: TextStyle(
+                            fontSize: 15,
+                            fontFamily: 'Gilroy Medium',
+                            color: notifire.getwhitecolor),
+                      ),
                     ],
                   ),
                 ),
@@ -201,16 +227,107 @@ class _VerificationState extends State<Verification> {
             SizedBox(height: height / 30),
             animatedBorders(),
             SizedBox(height: height / 30),
+            SizedBox(height: height / 100),
+            Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 20),
+                  child: Text(
+                    "Change Password".tr,
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Gilroy Medium',
+                        color: notifire.getwhitecolor),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: height / 100),
+            Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Por favor, ingrese su nueva contraseña".tr,
+                        style: TextStyle(
+                            fontSize: 15,
+                            fontFamily: 'Gilroy Medium',
+                            color: notifire.getwhitecolor),
+                      ),
+                      SizedBox(height: height / 400),
+                      
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: height / 30),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18),
+              child: Customtextfild2.textField(
+                fpassword,
+                _obscureText,
+                "New Password".tr,
+                Colors.grey,
+                notifire.getwhitecolor,
+                "image/Lock.png",
+                GestureDetector(
+                    onTap: () {
+                      _toggle();
+                    },
+                    child: _obscureText
+                        ? Image.asset("image/Hide.png", height: 22)
+                        : Image.asset("image/Show.png", height: 22)),
+                context: context,
+              ),
+            ),
+            SizedBox(height: Get.height * 0.02),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18),
+              child: Customtextfild2.textField(
+                spassword,
+                _obscureText1,
+                "Confirm Password".tr,
+                Colors.grey,
+                notifire.getwhitecolor,
+                "image/Lock.png",
+                GestureDetector(
+                    onTap: () {
+                      _toggle2();
+                    },
+                    child: _obscureText1
+                        ? Image.asset("image/Hide.png", height: 22)
+                        : Image.asset("image/Show.png", height: 22)),
+                context: context,
+              ),
+            ),
+            SizedBox(height: height / 20),
             SizedBox(height: height / 30),
             GestureDetector(
               onTap: () {
-                verifyOTP(context);
+                if (fpassword.text.isNotEmpty &&
+                    spassword.text.isNotEmpty &&
+                    otpController.text.isNotEmpty) {
+                  print((fpassword.text == spassword.text));
+                  if (fpassword.text == spassword.text) {
+                    verifyOTP(context);
+                  } else {
+                    ApiWrapper.showToastMessage("Password does not match");
+                  }
+                } else {
+                  ApiWrapper.showToastMessage(
+                      "Please complete the required fields!");
+                }
               },
               child: SizedBox(
                 height: 45,
                 child: Custombutton.button1(
                   notifire.getbuttonscolor,
-                  "Verificar".tr,
+                  "Verify".tr,
                   SizedBox(width: width / 5),
                   SizedBox(width: width / 7),
                 ),
@@ -226,8 +343,12 @@ class _VerificationState extends State<Verification> {
                           otpController.clear();
                           reenviarCodigo(context);
                         },
-                        child: Text("Reenviar código".tr,
-                          style: TextStyle(color: notifire.getwhitecolor, fontSize: 12, fontFamily: 'Gilroy Bold'),
+                        child: Text(
+                          "Resend code".tr,
+                          style: TextStyle(
+                              color: notifire.getwhitecolor,
+                              fontSize: 12,
+                              fontFamily: 'Gilroy Bold'),
                         ),
                       )
                     ],
@@ -236,8 +357,20 @@ class _VerificationState extends State<Verification> {
                     child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Re-send code in ",style: TextStyle(color: notifire.getwhitecolor, fontSize: 12, fontFamily: 'Gilroy Medium'),),
-                      Text(durationToString(_start).toString(), style:  TextStyle(fontWeight: FontWeight.w600, fontSize: 16,color: notifire.textcolor),),
+                      Text(
+                        "Re-send code in ",
+                        style: TextStyle(
+                            color: notifire.getwhitecolor,
+                            fontSize: 12,
+                            fontFamily: 'Gilroy Medium'),
+                      ),
+                      Text(
+                        durationToString(_start).toString(),
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 16,
+                            color: notifire.textcolor),
+                      ),
                     ],
                   )),
           ],
@@ -245,10 +378,14 @@ class _VerificationState extends State<Verification> {
       ),
     );
   }
+
   final defaultPinTheme = PinTheme(
     width: 56,
     height: 56,
-    textStyle: TextStyle(fontSize: 20, color: Color.fromRGBO(30, 60, 87, 1), fontWeight: FontWeight.w600),
+    textStyle: const TextStyle(
+        fontSize: 20,
+        color: Color.fromRGBO(30, 60, 87, 1),
+        fontWeight: FontWeight.w600),
     decoration: BoxDecoration(
       border: Border.all(color: const Color.fromRGBO(234, 239, 243, 1)),
       borderRadius: BorderRadius.circular(20),
@@ -261,61 +398,54 @@ class _VerificationState extends State<Verification> {
       width: Get.width * 0.90,
       child: Pinput(
         length: 6,
-          controller: otpController,
-          onSubmitted: (val) {},
-          // onSubmit: (val) {},
-          onChanged: (val) {},
-          // textStyle: TextStyle(
-          //     color: Colors.black,
-          //     fontWeight: FontWeight.w500,
-          //     fontFamily: 'Gilroy_Bold',
-          //     fontSize: height / 40),
-          // fieldsCount: 6,
-          // eachFieldWidth: Get.width * 0.13,
-          showCursor: false,
+        controller: otpController,
+        onSubmitted: (val) {},
+        // onSubmit: (val) {},
+        onChanged: (val) {},
+        // textStyle: TextStyle(
+        //     color: Colors.black,
+        //     fontWeight: FontWeight.w500,
+        //     fontFamily: 'Gilroy_Bold',
+        //     fontSize: height / 40),
+        // fieldsCount: 6,
+        // eachFieldWidth: Get.width * 0.13,
+        showCursor: false,
 
-          defaultPinTheme: PinTheme(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10.0),
-                border: Border.all(color: Colors.grey,width: 2)
-            ),
-          ),
-         focusedPinTheme: defaultPinTheme.copyDecorationWith(
-           color: Colors.grey.shade200,
-           borderRadius: BorderRadius.circular(10.0),
-           border: Border.all(color: Colors.grey.shade200)
-         ),
+        defaultPinTheme: PinTheme(
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10.0),
+              border: Border.all(color: Colors.grey, width: 2)),
+        ),
+        focusedPinTheme: defaultPinTheme.copyDecorationWith(
+            color: Colors.grey.shade200,
+            borderRadius: BorderRadius.circular(10.0),
+            border: Border.all(color: Colors.grey.shade200)),
         submittedPinTheme: defaultPinTheme.copyWith(
           decoration: defaultPinTheme.decoration?.copyWith(
               color: Colors.white,
               borderRadius: BorderRadius.circular(10.0),
-              border: Border.all(color: Colors.grey)
-          ),
+              border: Border.all(color: Colors.grey)),
         ),
 
-          // submittedFieldDecoration: BoxDecoration(
-          //     color: Colors.white,
-          //     borderRadius: BorderRadius.circular(10.0),
-          //     border: Border.all(color: Colors.grey)
-          // ),
-          // selectedFieldDecoration: BoxDecoration(
-          //     color: Colors.grey.shade200,
-          //     borderRadius: BorderRadius.circular(10.0),
-          //     border: Border.all(color: Colors.grey.shade200)),
-          // disabledDecoration: BoxDecoration(border: Border.all(color: Colors.black, width: 2), color: Colors.grey),
-          // followingFieldDecoration: BoxDecoration(
-          //   backgroundBlendMode: BlendMode.color,
-          //   border: Border.all(color: notifire.bordercolore),
-          //   color: Colors.grey,
-          //   borderRadius: BorderRadius.circular(10.0),
-          // ),
-
+        // submittedFieldDecoration: BoxDecoration(
+        //     color: Colors.white,
+        //     borderRadius: BorderRadius.circular(10.0),
+        //     border: Border.all(color: Colors.grey)
+        // ),
+        // selectedFieldDecoration: BoxDecoration(
+        //     color: Colors.grey.shade200,
+        //     borderRadius: BorderRadius.circular(10.0),
+        //     border: Border.all(color: Colors.grey.shade200)),
+        // disabledDecoration: BoxDecoration(border: Border.all(color: Colors.black, width: 2), color: Colors.grey),
+        // followingFieldDecoration: BoxDecoration(
+        //   backgroundBlendMode: BlendMode.color,
+        //   border: Border.all(color: notifire.bordercolore),
+        //   color: Colors.grey,
+        //   borderRadius: BorderRadius.circular(10.0),
+        // ),
       ),
     );
   }
-
-
-
 
   // Widget animatedBorders() {
   //   return Container(
@@ -346,8 +476,6 @@ class _VerificationState extends State<Verification> {
   //   );
   // }
 
-
-
   /*Future<void> verifyPhone(String number) async {
     await FirebaseAuth.instance.verifyPhoneNumber(
       phoneNumber: number,
@@ -367,7 +495,4 @@ class _VerificationState extends State<Verification> {
       },
     );
   }*/
-
 }
-
-

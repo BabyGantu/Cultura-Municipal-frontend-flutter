@@ -1,16 +1,7 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:get/get.dart';
-import 'package:goevent2/Api/ApiWrapper.dart';
-import 'package:goevent2/Api/Config.dart';
-import 'package:goevent2/AppModel/Homedata/HomedataController.dart';
-import 'package:goevent2/booking/Ticket/TicketDetails.dart';
-import 'package:goevent2/utils/AppWidget.dart';
-import 'package:goevent2/utils/color.dart';
 import 'package:goevent2/utils/colornotifire.dart';
-import 'package:goevent2/utils/media.dart';
 import 'package:open_street_map_search_and_pick/open_street_map_search_and_pick.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -32,12 +23,8 @@ class _SelectLocationState extends State<SelectLocation> {
   getdarkmodepreviousstate() async {
     final prefs = await SharedPreferences.getInstance();
     bool? previusstate = prefs.getBool("setIsDark");
-    if (previusstate == null) {
-      notifire.setIsDark = false;
-    } else {
-      notifire.setIsDark = previusstate;
+    notifire.setIsDark = previusstate;
     }
-  }
 
   @override
   void initState() {

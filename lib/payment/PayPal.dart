@@ -221,7 +221,7 @@ class _PayPalPaymentState extends State<PayPalPayment> {
         ),
       )
       ..loadRequest(Uri.parse(
-          Config.base_url+"/paypal/index.php?amt=${widget.totalAmount}"));
+          "${Config.base_url}/paypal/index.php?amt=${widget.totalAmount}"));
   }
 
   late final WebViewController controller;
@@ -277,7 +277,7 @@ class _PayPalPaymentState extends State<PayPalPayment> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         child: CircularProgressIndicator(),
                       ),
                       SizedBox(height: Get.height * 0.02),
@@ -298,7 +298,7 @@ class _PayPalPaymentState extends State<PayPalPayment> {
                     ],
                   ),
                 )
-                    : Stack(),
+                    : const Stack(),
               ],
             )),
       );
@@ -313,7 +313,7 @@ class _PayPalPaymentState extends State<PayPalPayment> {
             elevation: 0.0),
         body: Center(
             child: Container(
-              child: CircularProgressIndicator(),
+              child: const CircularProgressIndicator(),
             )),
       );
     }

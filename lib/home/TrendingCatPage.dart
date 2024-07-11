@@ -246,12 +246,8 @@ class _TrndingPageState extends State<TrndingPage> {
     final prefs = await SharedPreferences.getInstance();
     bool? previusstate = prefs.getBool("setIsDark");
 
-    if (previusstate == null) {
-      notifire.setIsDark = false;
-    } else {
-      notifire.setIsDark = previusstate;
+    notifire.setIsDark = previusstate;
     }
-  }
 /*
   catEventListApi() {
     var data = {"uid": uID, "cid": widget.catdata!["id"]};
@@ -296,7 +292,7 @@ class _TrndingPageState extends State<TrndingPage> {
       body: SafeArea(
         child: Column(
           children: [
-            Container(
+            SizedBox(
               height: Get.height * 0.06,
               width: Get.width,
               /*

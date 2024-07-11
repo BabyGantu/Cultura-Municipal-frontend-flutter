@@ -69,12 +69,8 @@ class _AddWalletPageState extends State<AddWalletPage> {
   getdarkmodepreviousstate() async {
     final prefs = await SharedPreferences.getInstance();
     bool? previusstate = prefs.getBool("setIsDark");
-    if (previusstate == null) {
-      notifire.setIsDark = false;
-    } else {
-      notifire.setIsDark = previusstate;
+    notifire.setIsDark = previusstate;
     }
-  }
 
   walletupdate() async {
     var data = {"uid": uID, "wallet": addAmount.text};
@@ -101,7 +97,7 @@ class _AddWalletPageState extends State<AddWalletPage> {
 
   void _handlePaymentError(PaymentFailureResponse response) {
     print(
-        'Error Response: ${"ERROR: " + response.code.toString() + " - " + response.message!}');
+        'Error Response: ${"ERROR: ${response.code} - ${response.message!}"}');
     ApiWrapper.showToastMessage(response.message!);
   }
 

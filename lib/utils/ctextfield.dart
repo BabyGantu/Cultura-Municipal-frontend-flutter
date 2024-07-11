@@ -7,11 +7,25 @@ import 'colornotifire.dart';
 late ColorNotifire notifire;
 
 class Customtextfild {
-  static Widget textField({required context,TextEditingController? controller, String? name1, Color? labelclr, Color? textcolor, Color? imagecolor, String? Function(String?)? validator, Widget? prefixIcon, Function(String)? onChanged, TextInputType? keyboardType, TextInputAction? textInputAction,bool readOnly = false,}) {
+  static Widget textField({
+    required context,
+    TextEditingController? controller,
+    String? name1,
+    Color? labelclr,
+    Color? textcolor,
+    Color? imagecolor,
+    String? Function(String?)? validator,
+    Widget? prefixIcon,
+    Function(String)? onChanged,
+    TextInputType? keyboardType,
+    TextInputAction? textInputAction,
+    bool readOnly = false,
+  }) {
     notifire = Provider.of<ColorNotifire>(context, listen: true);
     return Container(
       color: Colors.transparent,
-      height: 45,
+      // Elimina la altura fija
+      // height: 45,
       child: TextFormField(
         controller: controller,
         onChanged: onChanged,
@@ -21,6 +35,8 @@ class Customtextfild {
         readOnly: readOnly,
         style: TextStyle(color: textcolor),
         decoration: InputDecoration(
+          isDense: true,
+          contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
           disabledBorder:
               OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
           labelText: name1,
@@ -54,7 +70,7 @@ class CustomTextArea {
   }) {
     ColorNotifire notifire = Provider.of<ColorNotifire>(context, listen: true);
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: notifire.bordercolore, width: 1),
@@ -100,7 +116,7 @@ class CustomShortTextArea {
   }) {
     ColorNotifire notifire = Provider.of<ColorNotifire>(context, listen: true);
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: notifire.bordercolore, width: 1),

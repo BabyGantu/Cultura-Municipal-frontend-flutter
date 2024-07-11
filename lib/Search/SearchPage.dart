@@ -4,14 +4,12 @@ import 'dart:convert';
 import 'dart:ui' as ui;
 import 'dart:developer';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:goevent2/Api/ApiWrapper.dart';
 import 'package:goevent2/Api/Config.dart';
 import 'package:goevent2/AppModel/Homedata/HomedataController.dart';
-import 'package:goevent2/home/EventDetails.dart';
 import 'package:goevent2/spleshscreen.dart';
 import 'package:goevent2/utils/colornotifire.dart';
 import 'package:goevent2/utils/media.dart';
@@ -19,7 +17,6 @@ import 'package:latlong2/latlong.dart';
 //import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:flutter_map/flutter_map.dart';
 
 
@@ -190,12 +187,8 @@ class _SearchPageState extends State<SearchPage> {
   getdarkmodepreviousstate() async {
     final prefs = await SharedPreferences.getInstance();
     bool? previusstate = prefs.getBool("setIsDark");
-    if (previusstate == null) {
-      notifire.setIsDark = false;
-    } else {
-      notifire.setIsDark = previusstate;
+    notifire.setIsDark = previusstate;
     }
-  }
 
   Future<Uint8List> getImages(String path, int width) async {
     ByteData data = await rootBundle.load(path);
@@ -476,9 +469,9 @@ class _SearchPageState extends State<SearchPage> {
 }
 
 TileLayer get openStreetMapTileLater => TileLayer(
-      urlTemplate: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', //mapa blanco
+      //urlTemplate: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', //mapa blanco
       //urlTemplate: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',  //mapa negro
       //urlTemplate: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', //mapa feo
-      //urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',  //mapa estandar
+      urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',  //mapa estandar
       userAgentPackageName: 'com.goevent'
     );

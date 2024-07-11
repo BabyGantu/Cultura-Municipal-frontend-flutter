@@ -1,7 +1,6 @@
 // ignore_for_file: prefer_const_constructors, avoid_print
 
 import 'dart:convert';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -19,15 +18,15 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // await Firebase.initializeApp();
 
-  requestPermission();
-  listenFCM();
+  //requestPermission();
+  //listenFCM();
   loadFCM();
   initializeNotifications();
 
   runApp(MultiProvider(
     providers: [ChangeNotifierProvider(create: (_) => ColorNotifire())],
     child: MaterialApp( // Envuelve GetMaterialApp con MaterialApp aquí
-      title: 'Cultura Cajeme'.tr,
+      title: 'Evson'.tr,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: false,
@@ -107,11 +106,13 @@ void listenFCM() async {
               presentBadge: true,
             ),
           ),
+          
           payload: jsonEncode({
             "name": message.data["name"],
             "id": message.data["id"],
             "propic": message.data["propic"]
-          }));
+          })
+          );
     }
   });
 }
@@ -165,13 +166,15 @@ void loadFCM() async {
 
     /// Update the iOS foreground notification presentation options to allow
     /// heads up notifications.
+    /*
     await FirebaseMessaging.instance
         .setForegroundNotificationPresentationOptions(
       alert: true,
       badge: true,
       sound: true,
     );
+    */
   }
 }
 
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {}
+//Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {}

@@ -263,7 +263,7 @@ class _OnbondingState extends State<Onbonding> {
                                         horizontal: 15.0),
                                     child: Center(
                                       child: Text(
-                                        'Skip',
+                                        'Skip'.tr,
                                         style: TextStyle(
                                             fontFamily: 'Gilroy Medium',
                                             color: Colors.white,
@@ -294,7 +294,7 @@ class _OnbondingState extends State<Onbonding> {
                                         horizontal: 15.0),
                                     child: Center(
                                       child: Text(
-                                        'Next',
+                                        'Next'.tr,
                                         style: TextStyle(
                                             fontFamily: 'Gilroy Medium',
                                             color: Colors.white,
@@ -331,7 +331,7 @@ class _OnbondingState extends State<Onbonding> {
                                         horizontal: 15.0),
                                     child: Center(
                                       child: Text(
-                                        'Skip',
+                                        'Skip'.tr,
                                         style: TextStyle(
                                             fontFamily: 'Gilroy Medium',
                                             color: Colors.white,
@@ -360,7 +360,7 @@ class _OnbondingState extends State<Onbonding> {
                                         horizontal: 15.0),
                                     child: Center(
                                       child: Text(
-                                        'Start',
+                                        'Start'.tr,
                                         style: TextStyle(
                                             fontFamily: 'Gilroy Medium',
                                             color: Colors.white,

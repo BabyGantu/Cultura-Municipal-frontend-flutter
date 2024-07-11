@@ -4,9 +4,13 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'dart:ui';
+import 'package:goevent2/Controller/UserPreferences.dart';
+import 'package:goevent2/home/Categoria.dart';
+
 import '../Search/searchpage2.dart';
 import '../utils/media.dart';
 import 'package:get/get.dart';
+import 'package:flutter/services.dart' show ByteData, Uint8List, rootBundle;
 
 import '../utils/colornotifire.dart';
 import 'package:flutter/material.dart';
@@ -354,11 +358,16 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   String? packageName;
   bool isChecked = false;
   String code = "0";
-  List<dynamic> categoriasList = [];
+  //List<dynamic> categoriasList = [];
+  List<Categoria> categoriasList = [];
   List<dynamic> trendingEvent = [];
   List<dynamic> upcomingEvent = [];
   List<dynamic> nearbyEvent = [];
   List<dynamic> thisMonthEvent = [];
+
+  String? token;
+  String? userId;
+  String? fechaExpiracion;
 
   getdarkmodepreviousstate() async {
     final prefs = await SharedPreferences.getInstance();
@@ -371,6 +380,15 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     }
   }
 
+  Future<void> _loadUserData() async {
+    token = await UserPreferences.getToken();
+    userId = await UserPreferences.getUserId();
+    fechaExpiracion = await UserPreferences.getFechaExpiracion();
+    setState(
+        () {}); // Actualiza la interfaz de usuario con los datos recuperados
+  }
+
+/*
   void cargarCategorias() {
     // Decodifica la cadena JSON y guarda los eventos en la lista eventosList
     Map<String, dynamic> categoriasData = json.decode(categoriasJson);
@@ -379,10 +397,10 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       // Inicializa la lista de estados de los marcadores con `false` para indicar que ningún marcador está seleccionado inicialmente
     });
   }
-
+*/
   void cargarCategoriasApi() async {
     // URL de tu API
-    String apiUrl = 'http://evson.store:8000/eventdata/categorias/';
+    String apiUrl = 'http://216.225.205.93:3000/api/categorias';
 
     // Realiza una solicitud GET a la API
     http.Response response = await http.get(Uri.parse(apiUrl));
@@ -390,12 +408,18 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     // Verifica si la solicitud fue exitosa (código de estado 200)
     if (response.statusCode == 200) {
       // Decodifica la respuesta JSON con codificación UTF-8
-      var jsonResponse = utf8.decode(response.bodyBytes);
+      var jsonResponse = json.decode(utf8.decode(response.bodyBytes));
+      print('todo bien');
 
-      // Guarda las categorías en la lista
-      setState(() {
-        categoriasList = json.decode(jsonResponse);
-      });
+      // Asegúrate de que jsonResponse es un mapa y contiene la clave 'categorias'
+      if (jsonResponse is Map && jsonResponse['categorias'] is List) {
+        setState(() {
+          categoriasList = jsonResponse['categorias'];
+          print(categoriasList);
+        });
+      } else {
+        print('Error: La respuesta no contiene una lista de categorías.');
+      }
     } else {
       // Si la solicitud no fue exitosa, muestra un mensaje de error
       print('Error al cargar categorías: ${response.statusCode}');
@@ -464,6 +488,73 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     });
   }
 
+  Future<void> enviarCategoria(String nombre, String imagePath) async {
+    try {
+      // Cargar la imagen desde los assets y convertirla a base64
+      ByteData bytes = await rootBundle.load(imagePath);
+      String base64Image = base64Encode(bytes.buffer.asUint8List());
+
+      // Preparar los datos para enviar
+      Map<String, dynamic> data = {
+        'nombre': nombre,
+        'imagen': 'data:image/png;base64,$base64Image',
+        'status_active': true,
+      };
+
+      // Convertir los datos a JSON
+      String body = jsonEncode(data);
+
+      // Token fijo
+      String token =
+          r'$2b$10$AwcnSzFM7yBmtmjRm1mA7.IHuZuxNZWYSsniy7swR/XXrcaTRJ.Ni'; // Reemplaza esto con tu token
+
+      // Realizar la solicitud POST con el token en los encabezados
+      final Uri url = Uri.parse('http://216.225.205.93:3000/api/categorias');
+      final response = await http.post(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+        body: body,
+      );
+
+      // Procesar la respuesta
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        Map<String, dynamic> responseData = json.decode(response.body);
+        bool rta = responseData['rta'];
+        if (rta) {
+          print('Categoria creada correctamente: ${responseData['message']}');
+          // Aquí puedes manejar la respuesta exitosa según sea necesario
+        } else {
+          print('Error al crear la categoría: ${responseData['message']}');
+        }
+      } else {
+        print('Error de red: ${response.reasonPhrase}');
+      }
+    } catch (e) {
+      print('Error al enviar la categoría: $e');
+    }
+  }
+
+  Future<void> cargarCategorias() async {
+    CategoriaService service = CategoriaService();
+    try {
+      List<Categoria> categorias = await service.cargarCategoriasApi();
+      setState(() {
+        categoriasList = categorias;
+      });
+
+      // Imprimir los datos de las categorías cargadas
+      for (var categoria in categoriasList) {
+        print(
+            'ID: ${categoria.id}, Nombre: ${categoria.nombre}, Imagen: ${categoria.imagen}, Activo: ${categoria.statusActive}');
+      }
+    } catch (e) {
+      print('Error al cargar categorías: $e');
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -474,12 +565,13 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     /*getData.read("UserLogin") != null
         ? hData.homeDataApi(getData.read("UserLogin")["id"], lat, long)
         : null;*/
-    //cargarCategorias();
-    cargarCategoriasApi();
+    cargarCategorias();
+    //cargarCategoriasApi();
     cargartrendingEvent();
     cargarUpcomingEvent();
     cargarThisMonthEvent();
     cargarNearbyEvent();
+    _loadUserData();
     initPlatformState();
   }
 
@@ -489,10 +581,11 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     OneSignal.Notifications.addPermissionObserver((changes) {
       print("Accepted OSPermissionStateChanges : $changes");
     });
-
+/*
     print("--------------__uID : ${getData.read("UserLogin")["id"]}");
     await OneSignal.User.addTagWithKey(
         "storeid", getData.read("UserLogin")["id"]);
+        */
   }
 
   void getPackage() async {
@@ -510,8 +603,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
     latD = position.latitude;
     longD = position.longitude;
-    print('la latitud es:${latD}');
-    print('la longitud es:${longD}');
+    print('la latitud es:$latD');
+    print('la longitud es:$longD');
     setState(() {});
   }
 
@@ -571,6 +664,16 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 child: Column(
                   children: [
                     //! --------- categoriesList ---------
+                    Text('Token: $token'),
+                    Text('fecha Expiracion: $fechaExpiracion'),
+                    Text('User ID: $userId'),
+                    ElevatedButton(
+                      onPressed: () {
+                        enviarCategoria('Musica', 'image/fire.png');
+                      },
+                      child: Text('Upload Image'),
+                    ),
+
                     Padding(
                       padding: const EdgeInsets.only(left: 8),
                       child: SizedBox(
@@ -895,16 +998,17 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         ));
   }
 
-  Widget treding(List<dynamic> catList, int i) {
+  Widget treding(List<Categoria> catList, int i) {
+    Uint8List decodedbytes = base64.decode(catList[i].imagen);
     return InkWell(
       onTap: () {
-        Get.to(() => TrndingPage(catdata: catList[i]));
+        //Get.to(() => TrndingPage(catdata: catList[i]));
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 6),
         child: Container(
           decoration: BoxDecoration(
-            color: notifire.getprimerycolor,
+            color: notifire.backgrounde,
             border: Border.all(color: notifire.bordercolore, width: 0.5),
             borderRadius: BorderRadius.circular(25),
           ),
@@ -912,14 +1016,14 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             padding: const EdgeInsets.only(left: 4, right: 8, bottom: 10),
             child: Row(
               children: [
-                Image(
-                  image: NetworkImage(catList[i][
-                      "image"]), // Utiliza NetworkImage para cargar la imagen desde la URL
-                  height: 30,
-                ),
+                Image.memory(
+                        base64Decode(catList[i].imagen.split(',')[1]),
+                        height: 30,
+                      ),
+                     
                 SizedBox(width: Get.width * 0.02),
                 Text(
-                  catList[i]["title"],
+                  catList[i].nombre,
                   style: TextStyle(
                     fontFamily: 'Gilroy Medium',
                     color: notifire.textcolor,
@@ -1251,255 +1355,143 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   List<String> _mImages = [];
 
   Widget monthly(mEvent, i) {
-    _mImages.clear();
-    mEvent[i]["member_list"].forEach((e) {
-      _mImages.add(e);
-    });
-
-    int mEventcount = int.parse(mEvent[i]["total_member_list"].toString()) > 3
-        ? 3
-        : int.parse(mEvent[i]["total_member_list"].toString());
-
-    for (var i = 0; i < mEventcount; i++) {
-      _mImages.add(Config.userImage);
-    }
-
-    return GestureDetector(
-      onTap: () {
-        Get.to(() => EventsDetails(eid: mEvent[i]["event_id"]),
-            duration: Duration.zero);
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14),
-        child: Card(
-          color: notifire.getprimerycolor,
-          child: Container(
-            decoration: BoxDecoration(
-                color: notifire.getprimerycolor,
-                borderRadius: const BorderRadius.all(Radius.circular(10))),
-            height: height / 6.5,
-            width: width,
-            child: Row(
-              children: [
-                Column(
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      child: GestureDetector(
+        onTap: () {
+          Get.to(() => EventsDetails(eid: mEvent[i]["event_id"]),
+              duration: Duration.zero);
+        },
+        child: Container(
+          margin: const EdgeInsets.symmetric(vertical: 6),
+          decoration: BoxDecoration(
+              color: notifire.containercolore,
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
+              border: Border.all(color: notifire.bordercolore)),
+          height: height / 7,
+          width: width,
+          child: Padding(
+            padding:
+                const EdgeInsets.only(left: 8, right: 6, bottom: 5, top: 5),
+            child: Row(children: [
+              ClipRRect(
+                borderRadius: const BorderRadius.all(Radius.circular(16)),
+                child: SizedBox(
+                  width: width / 5,
+                  height: height / 8,
+                  child: Image.asset(
+                    mEvent[i]["event_img"],
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                /*
+                child: SizedBox(
+                  width: width / 5,
+                  height: height / 8,
+                  child: FadeInImage.assetNetwork(
+                      fadeInCurve: Curves.easeInCirc,
+                      placeholder: "image/skeleton.gif",
+                      fit: BoxFit.cover,
+                      image: Config.base_url + nearby[i]["event_img"]),
+                ),
+                 */
+              ),
+              Column(children: [
+                SizedBox(height: height / 500),
+                Row(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          left: 8, right: 8, bottom: 5, top: 5),
-                      child: Row(
+                    SizedBox(width: width / 50),
+                    Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          ClipRRect(
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(16)),
-                            child: SizedBox(
-                              width: width / 5,
-                              height: height / 8,
-                              child: Image.asset(
-                                mEvent[i]["event_img"],
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          Row(
                             children: [
-                              Column(
-                                children: [
-                                  SizedBox(height: height / 100),
-                                  Container(
-                                    decoration: BoxDecoration(
-                                        color: notifire.getpinkcolor,
-                                        borderRadius: const BorderRadius.all(
-                                            Radius.circular(10))),
-                                    height: height / 35,
-                                    width: width / 4,
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Center(
-                                          child: SizedBox(
-                                            width: width / 2,
-                                            child: Text(
-                                              mEvent[i]["event_sdate"],
-                                              //maxLines: 1,
-                                              textAlign: TextAlign.center,
-                                              style: TextStyle(
-                                                  color:
-                                                      const Color(0xff4A43EC),
-                                                  fontSize: 11,
-                                                  fontFamily: 'Gilroy Bold',
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-
-                              /*
-                                    SizedBox(
-                                      width: width / 5,
-                                      child: Text(
-                                        mEvent[i]["event_sdate"],
-                                        //maxLines: 1,
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            color: const Color(0xff4A43EC),
-                                            fontSize: 14,
-                                            fontFamily: 'Gilroy Bold',
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    ),
-
-                                     */
                               SizedBox(
-                                width: Get.width * 0.45,
+                                width: Get.width * 0.35,
                                 child: Text(
-                                  mEvent[i]["event_title"],
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
+                                  mEvent[i]["event_sdate"],
+                                  style: const TextStyle(
                                       fontFamily: 'Gilroy Medium',
-                                      color: notifire.textcolor,
-                                      fontSize: 11,
+                                      color: Color(0xff4A43EC),
+                                      fontSize: 12,
                                       fontWeight: FontWeight.w600),
                                 ),
                               ),
-                              SizedBox(height: height / 100),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Image.asset("image/location.png",
-                                      height: height / 50),
-                                  SizedBox(width: Get.width * 0.01),
-                                  SizedBox(
-                                    width: Get.width * 0.45,
-                                    child: Text(
-                                      mEvent[i]["event_address"],
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                          fontFamily: 'Gilroy Medium',
-                                          color: Colors.grey,
-                                          fontSize: 10),
+                              SizedBox(width: width * 0.21),
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(100 / 2),
+                                child: BackdropFilter(
+                                  blendMode: BlendMode.srcIn,
+                                  filter: ImageFilter.blur(
+                                    sigmaX: 10, // mess with this to update blur
+                                    sigmaY: 10,
+                                  ),
+                                  child: CircleAvatar(
+                                    radius: 18,
+                                    backgroundColor:
+                                        Colors.grey.withOpacity(0.2),
+                                    child: Padding(
+                                      padding: const EdgeInsets.only(left: 3),
+                                      child: LikeButton(
+                                        onTap: (val) {
+                                          return onLikeButtonTapped(
+                                              val, mEvent[i]["event_id"]);
+                                        },
+                                        likeBuilder: (bool isLiked) {
+                                          return mEvent[i]["IS_BOOKMARK"] != 0
+                                              ? const Icon(Icons.favorite,
+                                                  color: Color(0xffF0635A),
+                                                  size: 22)
+                                              : const Icon(
+                                                  Icons.favorite_border,
+                                                  color: Color(0xffF0635A),
+                                                  size: 22);
+                                        },
+                                      ),
                                     ),
                                   ),
-                                ],
+                                ),
                               ),
-                              /*
-                              SizedBox(height: height / 150),
-                              mEvent[i]["total_member_list"] != "0"
-                                  ? Row(
-                                children: [
-                                  /*
-                                  FlutterImageStack(
-                                    totalCount: 0,
-                                    itemRadius: 30,
-                                    itemCount: 3,
-                                    itemBorderWidth: 1.5,
-                                    imageList: _mImages,
-                                  ),
-
-                                   */
-                                  Row(
-                                    children: mEvent[i]["member_list"].map<Widget>((imagePath) {
-                                      return CircleAvatar(
-                                        radius: 15,
-                                        backgroundImage: AssetImage(imagePath),
-                                      );
-                                    }).toList(),
-                                  ),
-                                  SizedBox(width: Get.width * 0.01),
-                                  Text(
-                                      "${mEvent[i]["total_member_list"]} + Joined",
-                                      style: TextStyle(
-                                        color: const Color(0xffF0635A),
-                                        fontSize: 12,
-                                        fontFamily: 'Gilroy Bold',
-                                      )),
-                                ],
-
-
-
-                                /*
-                                      children: [
-                                        FlutterImageStack(
-                                          totalCount: 0,
-                                          itemRadius: 30,
-                                          itemCount: 3,
-                                          itemBorderWidth: 1.5,
-                                          imageList: _mImages,
-                                        ),
-                                        SizedBox(width: Get.width * 0.01),
-                                        Text(
-                                            "${mEvent[i]["total_member_list"]} + Joined",
-                                            style: TextStyle(
-                                              color: const Color(0xffF0635A),
-                                              fontSize: 12,
-                                              fontFamily: 'Gilroy Bold',
-                                            )),
-                                      ],
-
-                                 */
-                                    )
-
-                                  : const SizedBox(),
-                                  */
                             ],
                           ),
-                          SizedBox(height: height / 80)
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                // const Spacer(),
-                /*
-                Column(
-                  children: [
-                    SizedBox(height: height / 80),
-                    Container(
-                      decoration: BoxDecoration(
-                          color: notifire.getpinkcolor,
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(10))),
-                      height: height / 12,
-                      width: width / 10,
-
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Center(
-                            child: SizedBox(
-                              width: width / 11,
-                              child: Text(
-                                mEvent[i]["event_sdate"],
-                                maxLines: 2,
-                                textAlign: TextAlign.center,
+                          SizedBox(
+                            width: Get.width * 0.55,
+                            child: Text(mEvent[i]["event_title"],
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
-                                    color: notifire.getdarkscolor,
-                                    fontSize: 14,
-                                    fontFamily: 'Gilroy Bold',
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ),
+                                    fontFamily: 'Gilroy Medium',
+                                    color: notifire.textcolor,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600)),
                           ),
-                        ],
-                      ),
-
-
-                    ),
+                          SizedBox(height: height / 300),
+                          Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Image.asset(
+                                  "image/location.png",
+                                  height: height / 50,
+                                ),
+                                SizedBox(width: Get.width * 0.01),
+                                SizedBox(
+                                  width: Get.width * 0.56,
+                                  child: Text(
+                                    mEvent[i]["event_address"],
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        fontFamily: 'Gilroy Medium',
+                                        color: Colors.grey,
+                                        fontSize: 10),
+                                  ),
+                                ),
+                              ]),
+                        ]),
                   ],
                 ),
-
-                 */
-                //SizedBox(width: width / 40),
-              ],
-            ),
+              ])
+            ]),
           ),
         ),
       ),
@@ -1919,11 +1911,11 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
   Future<void> share() async {
     await FlutterShare.share(
-        title: 'Cultura Municipal App',
+        title: 'Evson App',
         text:
-            '¡Descubre todo lo que la cultura local tiene para ofrecer con la aplicación oficial de Cultura Municipal! Descárgala ahora y únete a nosotros para celebrar la riqueza y diversidad cultural de nuestra comunidad.',
+            '¡Descubre todo lo que la cultura local tiene para ofrecer con la aplicación oficial de Evson! Descárgala ahora y únete a nosotros para celebrar la riqueza y diversidad cultural de nuestra comunidad.',
         linkUrl: 'https://play.google.com/store/apps/details?id=$packageName',
-        chooserTitle: 'Compartir Cultura Municipal');
+        chooserTitle: 'Compartir Evson');
   }
 
 /*

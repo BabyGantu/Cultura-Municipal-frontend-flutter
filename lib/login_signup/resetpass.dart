@@ -1,11 +1,8 @@
 // ignore_for_file: unnecessary_brace_in_string_interps, deprecated_member_use
 
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:goevent2/Api/ApiWrapper.dart';
-import 'package:goevent2/Api/Config.dart';
 import 'package:goevent2/Controller/AuthController.dart';
 import 'package:goevent2/login_signup/verification.dart';
 import 'package:provider/provider.dart';
@@ -27,18 +24,14 @@ class _ResetpasswordState extends State<Resetpassword> {
   late ColorNotifire notifire;
   final email = TextEditingController();
   final x = Get.put(AuthController());
-  String? _selectedCountryCode = "";
+  final String _selectedCountryCode = "";
 
   bool isLoading = false;
 
   getdarkmodepreviousstate() async {
     final prefs = await SharedPreferences.getInstance();
     bool? previusstate = prefs.getBool("setIsDark");
-    if (previusstate == null) {
-      notifire.setIsDark = false;
-    } else {
-      notifire.setIsDark = previusstate;
-    }
+    notifire.setIsDark = previusstate;
   }
 
   @override
@@ -50,12 +43,8 @@ class _ResetpasswordState extends State<Resetpassword> {
 
   String? vID = "";
 
-  verifyEmail(String email) async {
-    bool? exist = await login.userExists(email);
-    if (!exist) {
-    ApiWrapper.showToastMessage("Usuario no encontrado");
-    }
-  }
+  
+
   @override
   Widget build(BuildContext context) {
     notifire = Provider.of<ColorNotifire>(context, listen: true);
@@ -72,8 +61,7 @@ class _ResetpasswordState extends State<Resetpassword> {
                   onTap: () {
                     Navigator.pop(context);
                   },
-                  child: Icon(Icons.arrow_back,
-                      color: notifire.getwhitecolor),
+                  child: Icon(Icons.arrow_back, color: notifire.getwhitecolor),
                 ),
               ],
             ),
@@ -83,7 +71,7 @@ class _ResetpasswordState extends State<Resetpassword> {
                 Padding(
                   padding: const EdgeInsets.only(left: 20),
                   child: Text(
-                    "Restablecer contraseña".tr,
+                    "Restore password".tr,
                     style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -102,7 +90,7 @@ class _ResetpasswordState extends State<Resetpassword> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        "Por favor, Ingrese su correo electrónico para".tr,
+                        "Please enter your email to ".tr,
                         style: TextStyle(
                             fontSize: 16,
                             fontFamily: 'Gilroy Medium',
@@ -110,7 +98,7 @@ class _ResetpasswordState extends State<Resetpassword> {
                       ),
                       SizedBox(height: height / 400),
                       Text(
-                        "restablecer su contraseña".tr,
+                        "reset your password".tr,
                         style: TextStyle(
                             fontSize: 16,
                             fontFamily: 'Gilroy Medium',
@@ -128,9 +116,19 @@ class _ResetpasswordState extends State<Resetpassword> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const SizedBox(width: 8,),
+                    const SizedBox(
+                      width: 8,
+                    ),
                     Expanded(
-                     child: Customtextfild.textField(controller: email, name1: "Email".tr, labelclr: Colors.grey, textcolor: notifire.getwhitecolor, prefixIcon: Image.asset("image/Message.png", scale: 3.5,color: notifire.textcolor), context: context,),
+                      child: Customtextfild.textField(
+                        controller: email,
+                        name1: "Email".tr,
+                        labelclr: Colors.grey,
+                        textcolor: notifire.getwhitecolor,
+                        prefixIcon: Image.asset("image/Message.png",
+                            scale: 3.5, color: notifire.textcolor),
+                        context: context,
+                      ),
                     ),
                   ],
                 ),
@@ -139,12 +137,22 @@ class _ResetpasswordState extends State<Resetpassword> {
             SizedBox(height: height / 20),
             !isLoading
                 ? GestureDetector(
-                    onTap: () {
+                    onTap: () async {
                       if (email.text.isNotEmpty) {
-                        verifyEmail(email.text);
+                        Map<String, dynamic> result =
+                            await login.resetPassword(email.text);
+                        if (result['success']) {
+                          Get.to(() => Verification(
+                              verID: result['verID'],
+                              email: email.text,
+                              isReset: true));
+                        } else {
+                          ApiWrapper.showToastMessage(
+                              "The email could not be sent. Try again.".tr);
+                        }
                       } else {
                         ApiWrapper.showToastMessage(
-                            "¡Se requiere el correo electrónico!");
+                            "Email is required!".tr);
                       }
                     },
                     child: SizedBox(
@@ -163,5 +171,4 @@ class _ResetpasswordState extends State<Resetpassword> {
       ),
     );
   }
-
 }

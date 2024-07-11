@@ -5,15 +5,12 @@ import 'dart:ui';
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_image_stack/flutter_image_stack.dart';
 import 'package:flutter_share/flutter_share.dart';
 import 'package:get/get.dart';
 import 'package:goevent2/Api/ApiWrapper.dart';
 import 'package:goevent2/Api/Config.dart';
 import 'package:goevent2/AppModel/Homedata/HomedataController.dart';
-import 'package:goevent2/agent_chat_screen/chat_screen.dart';
 import 'package:goevent2/home/Gallery_View.dart';
-import 'package:goevent2/home/ticket.dart';
 import 'package:goevent2/utils/AppWidget.dart';
 import 'package:goevent2/utils/media.dart';
 import 'package:like_button/like_button.dart';
@@ -21,7 +18,6 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
-import '../utils/botton.dart';
 import '../utils/colornotifire.dart';
 import 'package:http/http.dart' as http;
 
@@ -340,12 +336,8 @@ class _EventsDetailsState extends State<EventsDetails> {
   getdarkmodepreviousstate() async {
     final prefs = await SharedPreferences.getInstance();
     bool? previusstate = prefs.getBool("setIsDark");
-    if (previusstate == null) {
-      notifire.setIsDark = false;
-    } else {
-      notifire.setIsDark = previusstate;
+    notifire.setIsDark = previusstate;
     }
-  }
 
 
 

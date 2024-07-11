@@ -42,18 +42,16 @@ class _TargetAudienceBoxState extends State<TargetAudienceComboBox> {
   getdarkmodepreviousstate() async {
     final prefs = await SharedPreferences.getInstance();
     bool? previusstate = prefs.getBool("setIsDark");
-    if (previusstate == null) {
-      notifire.setIsDark = false;
-    } else {
-      notifire.setIsDark = previusstate;
+    notifire.setIsDark = previusstate;
     }
-  }
 
 
+
+  
 
   void cargarTargetAudienceApi() async {
     // URL de tu API
-    String apiUrl = 'http://10.0.2.2:8000/eventdata/target/';
+    String apiUrl = 'http://216.225.205.93:3000/api/publico-objetivo';
 
     // Realiza una solicitud GET a la API
     http.Response response = await http.get(Uri.parse(apiUrl));
@@ -61,19 +59,25 @@ class _TargetAudienceBoxState extends State<TargetAudienceComboBox> {
     // Verifica si la solicitud fue exitosa (código de estado 200)
     if (response.statusCode == 200) {
       // Decodifica la respuesta JSON con codificación UTF-8
-      var jsonResponse = utf8.decode(response.bodyBytes);
+      var jsonResponse = json.decode(utf8.decode(response.bodyBytes));
+      print('todo bien');
 
-      // Guarda las categorías en la lista
-      setState(() {
-        _audienceList = json.decode(jsonResponse);
-      });
-      if (_audienceList.isNotEmpty) {
-        _selectedAudienceId = _audienceList.first['id']! as int;
+      // Asegúrate de que jsonResponse es un mapa y contiene la clave 'categorias'
+      if (jsonResponse is Map && jsonResponse['publicosObjetivos'] is List) {
+        setState(() {
+          _audienceList = jsonResponse['publicosObjetivos'];
+          print(_audienceList);
+          if (_audienceList.isNotEmpty) {
+        _selectedAudienceId = _audienceList.first['id'];
         // Haz algo con la ID seleccionada...
+      }
+        });
+      } else {
+        print('Error: La respuesta no contiene una lista de publico.');
       }
     } else {
       // Si la solicitud no fue exitosa, muestra un mensaje de error
-      print('Error al cargar categorías: ${response.statusCode}');
+      print('Error al cargar publico: ${response.statusCode}');
     }
   }
 
@@ -109,14 +113,14 @@ class _TargetAudienceBoxState extends State<TargetAudienceComboBox> {
               .map<DropdownMenuItem<String>>((categoria) {
             return DropdownMenuItem<String>(
               value: categoria['id'].toString(),
-              child: Container(
+              child: SizedBox(
                 width: 300, // Ancho fijo
                 child: Row(
                   children: [
-                    SizedBox(width: 8),
+                    const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        categoria['title']!,
+                        categoria['nombre']!,
                         style: TextStyle(color: widget.textColor),
                         overflow: TextOverflow.visible, // Permite que el texto siga abajo si no cabe en una sola línea
                         maxLines: null, // Permite múltiples líneas

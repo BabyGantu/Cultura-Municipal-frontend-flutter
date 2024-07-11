@@ -56,10 +56,10 @@ class _BottombarState extends State<Bottombar> {
   }
 
   Future<bool> _handleWillPop() async {
-    final _currentTime = DateTime.now().millisecondsSinceEpoch;
+    final currentTime = DateTime.now().millisecondsSinceEpoch;
 
     if (_lastTimeBackButtonWasTapped != null &&
-        (_currentTime - _lastTimeBackButtonWasTapped) < exitTimeInMillis) {
+        (currentTime - _lastTimeBackButtonWasTapped) < exitTimeInMillis) {
       return true;
     } else {
       _lastTimeBackButtonWasTapped = DateTime.now().millisecondsSinceEpoch;

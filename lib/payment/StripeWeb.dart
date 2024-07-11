@@ -336,7 +336,7 @@ class _StripePaymentWebState extends State<StripePaymentWeb> {
                   onPressed: () => Get.back()),
               backgroundColor: Colors.black12,
               elevation: 0.0),
-          body: Center(child: CircularProgressIndicator()));
+          body: const Center(child: CircularProgressIndicator()));
     }
   }
 

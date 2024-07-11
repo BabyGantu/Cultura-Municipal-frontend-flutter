@@ -83,6 +83,10 @@ dependencies:
   open_street_map_search_and_pick: ^0.1.1
 
 
+  path_provider: any
+  firebase_core: any
+  package_info_plus: any
+  html: any
 dev_dependencies:
   flutter_test:
     sdk: flutter

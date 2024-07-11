@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ffi';
 
 import 'package:flutter/material.dart';
 import 'package:get/get_utils/src/extensions/internacionalization.dart';
@@ -41,12 +40,8 @@ class _CustomComboBoxState extends State<CustomComboBox> {
   getdarkmodepreviousstate() async {
     final prefs = await SharedPreferences.getInstance();
     bool? previusstate = prefs.getBool("setIsDark");
-    if (previusstate == null) {
-      notifire.setIsDark = false;
-    } else {
-      notifire.setIsDark = previusstate;
+    notifire.setIsDark = previusstate;
     }
-  }
 
 /*
   void cargarCategorias() {
@@ -64,9 +59,11 @@ class _CustomComboBoxState extends State<CustomComboBox> {
 
   
 
+  
+
   void cargarCategoriasApi() async {
     // URL de tu API
-    String apiUrl = 'http://10.0.2.2:8000/eventdata/categorias/';
+    String apiUrl = 'http://216.225.205.93:3000/api/categorias';
 
     // Realiza una solicitud GET a la API
     http.Response response = await http.get(Uri.parse(apiUrl));
@@ -74,15 +71,21 @@ class _CustomComboBoxState extends State<CustomComboBox> {
     // Verifica si la solicitud fue exitosa (código de estado 200)
     if (response.statusCode == 200) {
       // Decodifica la respuesta JSON con codificación UTF-8
-      var jsonResponse = utf8.decode(response.bodyBytes);
+      var jsonResponse = json.decode(utf8.decode(response.bodyBytes));
+      print('todo bien');
 
-      // Guarda las categorías en la lista
-      setState(() {
-        _categoriasList = json.decode(jsonResponse);
-      });
-      if (_categoriasList.isNotEmpty) {
+      // Asegúrate de que jsonResponse es un mapa y contiene la clave 'categorias'
+      if (jsonResponse is Map && jsonResponse['categorias'] is List) {
+        setState(() {
+          _categoriasList = jsonResponse['categorias'];
+          print(_categoriasList);
+          if (_categoriasList.isNotEmpty) {
         _selectedCategoriaId = _categoriasList.first['id'];
         // Haz algo con la ID seleccionada...
+      }
+        });
+      } else {
+        print('Error: La respuesta no contiene una lista de categorías.');
       }
     } else {
       // Si la solicitud no fue exitosa, muestra un mensaje de error
@@ -121,10 +124,11 @@ class _CustomComboBoxState extends State<CustomComboBox> {
           items: _categoriasList.map<DropdownMenuItem<String>>((categoria) {
             return DropdownMenuItem<String>(
                 value: categoria['id'].toString(),
-                child: Container(
+                child: SizedBox(
                   width: 300, // Ancho fijo
                   child: Row(
                     children: [
+                      /*
                       Image(
                         image:NetworkImage(
                           categoria['image']!,
@@ -134,10 +138,11 @@ class _CustomComboBoxState extends State<CustomComboBox> {
                         height: 24,
                         
                       ),
-                      SizedBox(width: 8),
+*/
+                      const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          categoria['title']!,
+                          categoria['nombre']!,
                           style: TextStyle(color: widget.textColor),
                           overflow: TextOverflow
                               .visible, // Permite que el texto siga abajo si no cabe en una sola línea
