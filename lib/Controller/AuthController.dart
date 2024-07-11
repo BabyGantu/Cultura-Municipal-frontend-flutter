@@ -71,8 +71,9 @@ class AuthController extends GetxController {
     required int telefono,
     required String password,
   }) async {
-    final Uri url = Uri.parse('$endpoin/api/usuarios');
-    final response = await http.post(
+    final Uri url = Uri.parse('http://216.225.205.93:3000/api/auth/register');
+
+    final response = await http.put(
       url,
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
@@ -84,26 +85,37 @@ class AuthController extends GetxController {
         'apellido': apellido,
         'telefono': telefono,
         'password': password,
-        'status_register': 2,
-        'status_active': true,
+        "status_register": 2,
+        "status_active": true
       }),
     );
 
     if (response.statusCode == 200) {
       // Extracción de datos del cuerpo de la respuesta
       final Map<String, dynamic> responseData = json.decode(response.body);
-      final Map<String, dynamic> user = responseData['user'];
-      final id = user['id'];
-      final emailResponse = user['email'];
-      final nombreUsuarioResponse = user['nombreUsuario'];
+      final bool rta = responseData['rta'];
+      final String message = responseData['message'];
 
-      print('ID del usuario: $id');
-      print('Email del usuario: $emailResponse');
-      print('Nombre de usuario: $nombreUsuarioResponse');
+      if (rta) {
+        final Map<String, dynamic> user = responseData['user'];
+        final int id = user['id'];
+        final String emailResponse = user['email'];
+        final String nombreUsuarioResponse = user['nombreUsuario'];
 
-      // Puedes navegar a otra pantalla o realizar otras acciones aquí
-      Get.to(() => const Bottombar(), duration: Duration.zero);
-      update();
+        print('ID del usuario: $id');
+        print('Email del usuario: $emailResponse');
+        print('Nombre de usuario: $nombreUsuarioResponse');
+        print('Mensaje: $message');
+
+        // Puedes navegar a otra pantalla o realizar otras acciones aquí
+        Get.to(() =>
+            Verification(verID: id, email: emailResponse, isReset: false));
+        //Get.to(() => const Bottombar(), duration: Duration.zero);
+        // Si estás utilizando un controlador de estado, no olvides llamar a update() o setState()
+        // update(); // Descomentar si es necesario
+      } else {
+        print('Error: $message');
+      }
     } else {
       // Si la solicitud falla, imprime el mensaje de error
       print('Error: ${response.reasonPhrase}');
@@ -220,98 +232,126 @@ class AuthController extends GetxController {
   }
 
   Future<Map<String, dynamic>> resetPassword(String email) async {
-  final Uri url = Uri.parse('$endpoin/api/auth/resetPassword');
-  final response = await http.post(
-    url,
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(<String, String>{
-      'email': email,
-    }),
-  );
+    final Uri url = Uri.parse('$endpoin/api/auth/resetPassword');
+    final response = await http.post(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'email': email,
+      }),
+    );
 
-  if (response.statusCode == 200) {
-    final Map<String, dynamic> responseData = json.decode(response.body);
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseData = json.decode(response.body);
 
-    if (responseData['rta'] == true) {
-      final user = responseData['user'];
-      final id = user['id'];
+      if (responseData['rta'] == true) {
+        final user = responseData['user'];
+        final id = user['id'];
 
-      // Retornar un mapa con éxito y el ID del usuario
-      return {'success': true, 'verID': id};
+        // Retornar un mapa con éxito y el ID del usuario
+        return {'success': true, 'verID': id};
+      } else {
+        print('Mensaje: ${responseData['message']}');
+        ApiWrapper.showToastMessage("${responseData['message']}");
+        return {'success': false};
+      }
     } else {
-      print('Mensaje: ${responseData['message']}');
-      ApiWrapper.showToastMessage("${responseData['message']}");
+      print('Error: ${response.reasonPhrase}');
+      print('Código de error: ${response.statusCode}');
       return {'success': false};
     }
-  } else {
-    print('Error: ${response.reasonPhrase}');
-    print('Código de error: ${response.statusCode}');
-    return {'success': false};
   }
-}
 
+  Future<Map<String, dynamic>> upDatePassword(
+      int id, String newPassword, String codigoVerificacion) async {
+    final Uri url = Uri.parse('$endpoin/api/auth/updatePassword');
+    final response = await http.post(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, dynamic>{
+        "idUser": id,
+        "code": codigoVerificacion,
+        "password": newPassword
+      }),
+    );
 
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseData = json.decode(response.body);
 
-  Future<Map<String, dynamic>> upDatePassword(int id, String newPassword, String codigoVerificacion) async {
-  final Uri url = Uri.parse('$endpoin/api/auth/updatePassword');
-  final response = await http.post(
-    url,
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(<String, dynamic>{
-      "idUser": id,
-      "code": codigoVerificacion,
-      "password": newPassword
-    }),
-  );
-
-  if (response.statusCode == 200) {
-    final Map<String, dynamic> responseData = json.decode(response.body);
-
-    if (responseData['rta'] == true) {
-      ApiWrapper.showToastMessage("${responseData['message']}");
-      return {'success': true};
+      if (responseData['rta'] == true) {
+        ApiWrapper.showToastMessage("${responseData['message']}");
+        return {'success': true};
+      } else {
+        print('Mensaje: ${responseData['message']}');
+        ApiWrapper.showToastMessage("${responseData['message']}");
+        return {'success': false};
+      }
     } else {
-      print('Mensaje: ${responseData['message']}');
-      ApiWrapper.showToastMessage("${responseData['message']}");
+      print('Error: ${response.reasonPhrase}');
+      print('Código de error: ${response.statusCode}');
       return {'success': false};
     }
-  } else {
-    print('Error: ${response.reasonPhrase}');
-    print('Código de error: ${response.statusCode}');
-    return {'success': false};
   }
-}
 
-Future<bool> reSendCode(int idUser) async {
-  final Uri url = Uri.parse('$endpoin/api/auth/reSendCode/$idUser');
-  final response = await http.get(
-    url,
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-  );
+  Future<bool> reSendCode(int idUser) async {
+    final Uri url = Uri.parse('$endpoin/api/auth/reSendCode/$idUser');
+    final response = await http.get(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
 
-  if (response.statusCode == 200) {
-    final Map<String, dynamic> responseData = json.decode(response.body);
-    if (responseData['rta'] == true) {
-      ApiWrapper.showToastMessage("${responseData['message']}");
-      return true;
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      if (responseData['rta'] == true) {
+        ApiWrapper.showToastMessage("${responseData['message']}");
+        return true;
+      } else {
+        print('Mensaje: ${responseData['message']}');
+        ApiWrapper.showToastMessage("${responseData['message']}");
+        return false;
+      }
     } else {
-      print('Mensaje: ${responseData['message']}');
-      ApiWrapper.showToastMessage("${responseData['message']}");
+      print('Error: ${response.reasonPhrase}');
+      print('Código de error: ${response.statusCode}');
       return false;
     }
-  } else {
-    print('Error: ${response.reasonPhrase}');
-    print('Código de error: ${response.statusCode}');
-    return false;
   }
-}
 
+  Future<Map<String, dynamic>> validarCode(
+      int id, String codigoVerificacion) async {
+    final Uri url = Uri.parse('$endpoin/api/auth/validCode');
+    final response = await http.post(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(
+          <String, dynamic>{"idUser": id, "code": codigoVerificacion}),
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseData = json.decode(response.body);
+
+      if (responseData['rta'] == true) {
+        ApiWrapper.showToastMessage("${responseData['message']}");
+        return {'success': true};
+      } else {
+        print('Mensaje: ${responseData['message']}');
+        ApiWrapper.showToastMessage("${responseData['message']}");
+        return {'success': false};
+      }
+    } else {
+      print('Error: ${response.reasonPhrase}');
+      print('Código de error: ${response.statusCode}');
+      return {'success': false};
+    }
+  }
 
   Future<bool> userExists(String email) async {
     final Uri url = Uri.parse('$endpoin/api/user_exists_reset_password/');

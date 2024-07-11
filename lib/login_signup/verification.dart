@@ -120,14 +120,22 @@ class _VerificationState extends State<Verification> {
     print(id);
     print('___________________________________');
 
-    Map<String, dynamic> result =
-        await login.upDatePassword(id, fpassword.text, otpController.text);
+    if (widget.isReset) {
+      Map<String, dynamic> result =
+          await login.upDatePassword(id, fpassword.text, otpController.text);
 
-    if (result['success']) {
-      Get.to(() => const Login());
+      if (result['success']) {
+        Get.to(() => const Login());
+      } else {
+        ApiWrapper.showToastMessage(
+            "No se pudo actualizar la contraseña. Inténtalo de nuevo.");
+      }
     } else {
-      ApiWrapper.showToastMessage(
-          "No se pudo actualizar la contraseña. Inténtalo de nuevo.");
+      Map<String, dynamic> result =
+          await login.validarCode(id, otpController.text);
+      if (result['success']) {
+        Get.to(() => const Login());
+      }
     }
   }
 
@@ -228,92 +236,98 @@ class _VerificationState extends State<Verification> {
             animatedBorders(),
             SizedBox(height: height / 30),
             SizedBox(height: height / 100),
-            Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 20),
-                  child: Text(
-                    "Change Password".tr,
-                    style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        fontFamily: 'Gilroy Medium',
-                        color: notifire.getwhitecolor),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: height / 100),
-            Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            Visibility(
+              visible: widget.isReset,
+              child: Column(
+                children: [
+                  Row(
                     children: [
-                      Text(
-                        "Por favor, ingrese su nueva contraseña".tr,
-                        style: TextStyle(
-                            fontSize: 15,
-                            fontFamily: 'Gilroy Medium',
-                            color: notifire.getwhitecolor),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 20),
+                        child: Text(
+                          "Change Password".tr,
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Gilroy Medium',
+                              color: notifire.getwhitecolor),
+                        ),
                       ),
-                      SizedBox(height: height / 400),
-                      
                     ],
                   ),
-                ),
-              ],
-            ),
-            SizedBox(height: height / 30),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18),
-              child: Customtextfild2.textField(
-                fpassword,
-                _obscureText,
-                "New Password".tr,
-                Colors.grey,
-                notifire.getwhitecolor,
-                "image/Lock.png",
-                GestureDetector(
-                    onTap: () {
-                      _toggle();
-                    },
-                    child: _obscureText
-                        ? Image.asset("image/Hide.png", height: 22)
-                        : Image.asset("image/Show.png", height: 22)),
-                context: context,
+                  SizedBox(height: height / 100),
+                  Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(left: 20),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Por favor, ingrese su nueva contraseña".tr,
+                              style: TextStyle(
+                                  fontSize: 15,
+                                  fontFamily: 'Gilroy Medium',
+                                  color: notifire.getwhitecolor),
+                            ),
+                            SizedBox(height: height / 400),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: height / 30),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 18),
+                    child: Customtextfild2.textField(
+                      fpassword,
+                      _obscureText,
+                      "New Password".tr,
+                      Colors.grey,
+                      notifire.getwhitecolor,
+                      "image/Lock.png",
+                      GestureDetector(
+                          onTap: () {
+                            _toggle();
+                          },
+                          child: _obscureText
+                              ? Image.asset("image/Hide.png", height: 22)
+                              : Image.asset("image/Show.png", height: 22)),
+                      context: context,
+                    ),
+                  ),
+                  SizedBox(height: Get.height * 0.02),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 18),
+                    child: Customtextfild2.textField(
+                      spassword,
+                      _obscureText1,
+                      "Confirm Password".tr,
+                      Colors.grey,
+                      notifire.getwhitecolor,
+                      "image/Lock.png",
+                      GestureDetector(
+                          onTap: () {
+                            _toggle2();
+                          },
+                          child: _obscureText1
+                              ? Image.asset("image/Hide.png", height: 22)
+                              : Image.asset("image/Show.png", height: 22)),
+                      context: context,
+                    ),
+                  ),
+                  SizedBox(height: height / 20),
+                ],
               ),
             ),
-            SizedBox(height: Get.height * 0.02),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 18),
-              child: Customtextfild2.textField(
-                spassword,
-                _obscureText1,
-                "Confirm Password".tr,
-                Colors.grey,
-                notifire.getwhitecolor,
-                "image/Lock.png",
-                GestureDetector(
-                    onTap: () {
-                      _toggle2();
-                    },
-                    child: _obscureText1
-                        ? Image.asset("image/Hide.png", height: 22)
-                        : Image.asset("image/Show.png", height: 22)),
-                context: context,
-              ),
-            ),
-            SizedBox(height: height / 20),
             SizedBox(height: height / 30),
             GestureDetector(
               onTap: () {
                 if (fpassword.text.isNotEmpty &&
                     spassword.text.isNotEmpty &&
-                    otpController.text.isNotEmpty) {
+                    otpController.text.isNotEmpty || !widget.isReset) {
                   print((fpassword.text == spassword.text));
-                  if (fpassword.text == spassword.text) {
+                  if (fpassword.text == spassword.text || !widget.isReset) {
                     verifyOTP(context);
                   } else {
                     ApiWrapper.showToastMessage("Password does not match");

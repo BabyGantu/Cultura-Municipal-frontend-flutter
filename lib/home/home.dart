@@ -369,6 +369,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   String? userId;
   String? fechaExpiracion;
 
+  String base64Image = "data:image/png;base64,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";
+
   getdarkmodepreviousstate() async {
     final prefs = await SharedPreferences.getInstance();
     bool? previusstate = prefs.getBool("setIsDark");
@@ -648,10 +650,15 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+/*
     Future.delayed(const Duration(seconds: 0), () {
       setState(() {});
     });
+*/
     notifire = Provider.of<ColorNotifire>(context, listen: true);
+    String base64String = base64Image.split(',').last;
+    // Decodifica la cadena base64 en bytes
+    Uint8List imageBytes = base64Decode(base64String);
     return Scaffold(
         backgroundColor: notifire.backgrounde,
         body: Column(
@@ -673,6 +680,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                       },
                       child: Text('Upload Image'),
                     ),
+
 
                     Padding(
                       padding: const EdgeInsets.only(left: 8),
@@ -999,17 +1007,22 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   }
 
   Widget treding(List<Categoria> catList, int i) {
-    Uint8List decodedbytes = base64.decode(catList[i].imagen);
+    // Eliminar el prefijo de la cadena base64
+    String base64Image = catList[i].imagen.split(',').last;
+
+    // Decodificar la cadena base64 en bytes
+    Uint8List imageBytes = base64Decode(base64Image);
+
     return InkWell(
       onTap: () {
-        //Get.to(() => TrndingPage(catdata: catList[i]));
+        // Handle onTap action
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 6),
         child: Container(
           decoration: BoxDecoration(
-            color: notifire.backgrounde,
-            border: Border.all(color: notifire.bordercolore, width: 0.5),
+            color: notifire.backgrounde, // Reemplaza notifire.backgrounde con un color
+            border: Border.all(color: notifire.bordercolore, width: 0.5), // Reemplaza notifire.bordercolore con un color
             borderRadius: BorderRadius.circular(25),
           ),
           child: Padding(
@@ -1017,16 +1030,15 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
             child: Row(
               children: [
                 Image.memory(
-                        base64Decode(catList[i].imagen.split(',')[1]),
-                        height: 30,
-                      ),
-                     
-                SizedBox(width: Get.width * 0.02),
+                  imageBytes,
+                  height: 70,
+                ),
+                SizedBox(width: 8.0), // Reemplaza Get.width * 0.02 con un valor fijo
                 Text(
                   catList[i].nombre,
                   style: TextStyle(
                     fontFamily: 'Gilroy Medium',
-                    color: notifire.textcolor,
+                    color: notifire.textcolor, // Reemplaza notifire.textcolor con un color
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                   ),
@@ -1038,6 +1050,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       ),
     );
   }
+
 
 /*
   treding(catList, i) {

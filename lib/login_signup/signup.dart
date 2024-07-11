@@ -560,6 +560,13 @@ ValueListenableBuilder buildNoMatchPasswordFieldWarning(
                 //"ReferralCode": referral.text.trim(),
               };
               save("User", register);
+              print('email: ${email.text}');
+              print('Nombre: ${name.text}');
+              print('Apellidos: ${lastname.text}');
+              print('Nombre usuario: ${userName.text}');
+              print('Telefono: ${number.text}');
+              print('contrasna: ${fpassword.text}');
+              
               login.registrarUsuario(
                   email: email.text,
                   nombreUsuario: userName.text,
