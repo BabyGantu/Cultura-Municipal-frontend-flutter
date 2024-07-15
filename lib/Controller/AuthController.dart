@@ -15,6 +15,10 @@ import '../login_signup/verification.dart';
 
 const String endpoin = 'http://216.225.205.93:3000';
 
+String? tokenUser;
+String? userId;
+String? fechaExpiracion;
+
 class AuthController extends GetxController {
   // UserData? userData;
   var countryCode = [];
@@ -123,6 +127,8 @@ class AuthController extends GetxController {
     }
   }
 
+  
+
   Future<void> crearEvento({
   required String tituloEvento,
   String? imagenEvento,
@@ -149,13 +155,8 @@ class AuthController extends GetxController {
   required int idCategoria,
   required int idPublicoObjetivo,
 }) async {
-  final Uri url = Uri.parse('$endpoin/api/eventos');
-  final response = await http.post(
-    url,
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(<String, dynamic>{
+  try {
+    final Map<String, dynamic> data = {
       'titulo_evento': tituloEvento,
       'imagen_evento': imagenEvento,
       'imagen_portada_evento': imagenPortadaEvento,
@@ -180,34 +181,56 @@ class AuthController extends GetxController {
       'id_municipio': idMunicipio,
       'id_categoria': idCategoria,
       'id_publico_objetivo': idPublicoObjetivo,
-    }),
-  );
+    };
 
-  if (response.statusCode == 201) {
-    final Map<String, dynamic> responseData = json.decode(response.body);
-    final bool rta = responseData['rta'];
-    final String message = responseData['message'];
+    // Imprimir los datos en formato JSON
+    print('Datos en formato JSON: ${jsonEncode(data)}');
 
-    if (rta) {
-      final Map<String, dynamic> evento = responseData['evento'];
-      final int id = evento['id'];
-      final String tituloEventoResponse = evento['titulo_evento'];
+    print('el token es: $tokenUser');
+    final Uri url = Uri.parse('$endpoin/api/eventos');
+    final response = await http.post(
+      url,
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $tokenUser',
+      },
+      body: jsonEncode(data),
+    );
 
-      print('__----------------Evento Registrado---------------__');
-      print('ID del usuario: $id');
-      print('El titulo del evento es: $tituloEventoResponse');
-      print('Mensaje: $message');
-      ApiWrapper.showToastMessage("$message");
+    if (response.statusCode == 201) {
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      final bool rta = responseData['rta'];
+      final String message = responseData['message'];
 
-      // Puedes navegar a otra pantalla o realizar otras acciones aquí
-      //Get.to(() => const Bottombar(), duration: Duration.zero);
+      if (rta) {
+        final Map<String, dynamic> evento = responseData['evento'];
+        final int id = evento['id'];
+        final String tituloEventoResponse = evento['titulo_evento'];
+
+        print('__----------------Evento Registrado---------------__');
+        print('ID del evento: $id');
+        print('El titulo del evento es: $tituloEventoResponse');
+        print('Mensaje: $message');
+        ApiWrapper.showToastMessage(message);
+
+        // Puedes navegar a otra pantalla o realizar otras acciones aquí
+        // Get.to(() => const Bottombar(), duration: Duration.zero);
+      } else {
+        print('Error: $message');
+      }
     } else {
-      print('Error: $message');
+      // Si la solicitud falla, imprime el mensaje de error
+      final Map<String, dynamic> responseData = json.decode(response.body);
+      final String message = responseData['message'];
+      print('Error: ${response.reasonPhrase}');
+      print('message de error: $message');
+      
+      print('Error: ${response.reasonPhrase}');
     }
-  } else {
-    // Si la solicitud falla, imprime el mensaje de error
-    print('Error: ${response.reasonPhrase}');
-    print('Código de error: ${response.statusCode}');
+  } catch (e) {
+    print('Error de formato: $e');
+    // Muestra un mensaje de error al usuario
+    
   }
 }
 
@@ -307,6 +330,7 @@ class AuthController extends GetxController {
 
         // Guardar token e ID del usuario usando UserPreferences
         await UserPreferences.setToken(token);
+        tokenUser =  token;
         await UserPreferences.setUserId(id.toString());
         await UserPreferences.setExpToken(fechaExpiracion);
 

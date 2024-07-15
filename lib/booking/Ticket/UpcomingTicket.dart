@@ -533,8 +533,8 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
       print('Categoria: ${cid.text}');
       print('Publico objetivo: ${target_audience.text}');
       print('Titulo del evento: ${event_title.text}');
-      print('Imagen evento: $pathEventImage');
-      print('Imagen cover: $pathCoverImage');
+      print('Imagen evento: ${pathEventImage[0]}');
+      print('Imagen cover: ${pathCoverImage[0]}');
       print('Fecha inicio: ${start_dateController.text}');
       print('Fecha fin: ${end_dateController.text}');
       print('Hora inicio: ${start_time.text}');
@@ -542,7 +542,9 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
       print('Precio: ${price.text}');
       print('Descripcion breve: ${event_about_short.text}');
       print('Descripcion: ${event_about.text}');
-      print('Galeria de imagenes: $event_gallery');
+      print('Galeria de imagenes 1: ${event_gallery[0]}');
+      print('Galeria de imagenes 2: ${event_gallery[1]}');
+      print('Galeria de imagenes 3: ${event_gallery[2]}');
       print('Organizador: ${Event_sponsore.text}');
       print('Telefono: ${phone.text}');
       print('Correo: ${email.text}');
@@ -572,6 +574,8 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
             galeriaImagen2: null,
             galeriaImagen3: null,
             organizador: Event_sponsore.text,
+            telefono: phone.text,
+            correo: email.text,
             tituloDireccion: event_address_title.text,
             direccionEvento: event_address.text,
             latitud: lat.text,

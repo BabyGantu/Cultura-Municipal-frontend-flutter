@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -5,11 +6,12 @@ import 'package:get/get_utils/src/extensions/internacionalization.dart';
 import 'package:image_picker/image_picker.dart';
 
 class CustomImageGallery extends StatefulWidget {
-  final List<String> imagePaths;
+  final List<String?> imagePaths;
   final Color labelclr;
   final Color textcolor;
   final String iconImagePath;
-  final BuildContext context;// Nueva función de devolución de llamada
+  final BuildContext context;
+
   const CustomImageGallery({
     Key? key,
     required this.imagePaths,
@@ -72,10 +74,12 @@ class _CustomImageGalleryState extends State<CustomImageGallery> {
                     border: Border.all(color: Colors.grey, width: 1),
                     borderRadius: BorderRadius.circular(10.0),
                   ),
-                  child: Image.file(
-                    File(widget.imagePaths[index]),
-                    //fit: BoxFit.cover,
-                  ),
+                  child: widget.imagePaths[index] != null
+                      ? Image.memory(
+                          base64Decode(widget.imagePaths[index]!.split(',')[1]),
+                          fit: BoxFit.cover,
+                        )
+                      : Container(), // Empty container for null images
                 );
               }
             },
@@ -86,15 +90,20 @@ class _CustomImageGalleryState extends State<CustomImageGallery> {
   }
 
   Future<void> _selectImage(BuildContext context) async {
-  final XFile? pickedImage = await _picker.pickImage(source: ImageSource.gallery);
-  if (pickedImage != null) {
-    setState(() {
-      if (widget.imagePaths.length < 3) {
-        widget.imagePaths.add(pickedImage.path);
-        //print('New image paths: ${widget.imagePaths}');
-      }
-    });
+    final XFile? pickedImage = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedImage != null) {
+      final bytes = await pickedImage.readAsBytes();
+      final base64Image = 'data:image/png;base64,${base64Encode(bytes.buffer.asUint8List())}';
+      setState(() {
+        if (widget.imagePaths.length < 3) {
+          widget.imagePaths.add(base64Image);
+        }
+      });
+    }
+    while (widget.imagePaths.length < 3) {
+      widget.imagePaths.add(null);
+    }
   }
 }
 
-}
+

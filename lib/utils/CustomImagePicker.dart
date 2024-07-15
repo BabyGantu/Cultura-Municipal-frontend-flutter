@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -45,7 +46,7 @@ class _CustomImagePickerState extends State<CustomImagePicker> {
         const SizedBox(height: 10.0),
         Row(
           children: List.generate(
-            widget.imagePaths.isEmpty ? widget.imagePaths.length + 1 : 1,
+            widget.imagePaths.length + 1,
             (index) {
               if (index == widget.imagePaths.length) {
                 return GestureDetector(
@@ -77,7 +78,7 @@ class _CustomImagePickerState extends State<CustomImagePicker> {
                   ),
                   child: Image.file(
                     File(widget.imagePaths[index]),
-                    //fit: BoxFit.cover,
+                    fit: BoxFit.cover,
                   ),
                 );
               }
@@ -89,13 +90,12 @@ class _CustomImagePickerState extends State<CustomImagePicker> {
   }
 
   Future<void> _selectImage(BuildContext context) async {
-    final XFile? pickedImage =
-        await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? pickedImage = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedImage != null) {
+      final bytes = await pickedImage.readAsBytes();
+      final base64Image = 'data:image/png;base64,${base64Encode(bytes.buffer.asUint8List())}';
       setState(() {
-        if (widget.imagePaths.isEmpty) {
-          widget.imagePaths.add(pickedImage.path); // Llama a la función de devolución de llamada
-        }
+        widget.imagePaths.add(base64Image); // Agrega la imagen en formato base 64
       });
     }
   }
