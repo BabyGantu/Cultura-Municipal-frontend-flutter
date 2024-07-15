@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:goevent2/Api/ApiWrapper.dart';
 import 'package:goevent2/Api/Config.dart';
 import 'package:goevent2/AppModel/Homedata/HomedataController.dart';
+import 'package:goevent2/Controller/AuthController.dart';
 import 'package:goevent2/booking/Ticket/TicketDetails.dart';
 import 'package:goevent2/utils/AppWidget.dart';
 import 'package:goevent2/utils/CustomImageGallery.dart';
@@ -36,6 +37,7 @@ class UpcomingTicket extends StatefulWidget {
 }
 
 class _UpcomingTicketState extends State<UpcomingTicket> {
+  final evento = Get.put(AuthController());
   var selectedRadioTile;
   final note = TextEditingController();
   String? rejectmsg = '';
@@ -84,7 +86,7 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
     final prefs = await SharedPreferences.getInstance();
     bool? previusstate = prefs.getBool("setIsDark");
     notifire.setIsDark = previusstate;
-    }
+  }
 
   @override
   void initState() {
@@ -149,7 +151,9 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                   labelColor: Colors.grey,
                   textColor: notifire.getwhitecolor,
                   onChanged: (value) {
-                    cid.text = value;
+                    setState(() {
+                      cid.text = value;
+                    });
                   },
                 ),
                 SizedBox(height: MediaQuery.of(context).size.height / 40),
@@ -157,7 +161,9 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                   labelColor: Colors.grey,
                   textColor: notifire.getwhitecolor,
                   onChanged: (value) {
-                    target_audience.text = value;
+                    setState(() {
+                      target_audience.text = value;
+                    });
                   },
                 ),
                 SizedBox(height: MediaQuery.of(context).size.height / 40),
@@ -176,7 +182,6 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                 buildEmptyFieldWarning(event_title, verificar),
 
                 SizedBox(height: MediaQuery.of(context).size.height / 40),
-
 
                 CustomShortTextArea.textArea(
                   controller: event_about_short,
@@ -211,7 +216,6 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                     height: MediaQuery.of(context).size.height /
                         40), // Ajustar altura según necesidad
 
-                
                 CustomDatePickerTextField(
                   controller: start_dateController,
                   name1: "Start date".tr,
@@ -396,7 +400,9 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                   labelColor: Colors.grey,
                   textColor: notifire.getwhitecolor,
                   onChanged: (value) {
-                    municipio.text = value;
+                    setState(() {
+                      municipio.text = value;
+                    });
                   },
                 ),
                 SizedBox(height: MediaQuery.of(context).size.height / 40),
@@ -407,7 +413,7 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                         await Get.to(() => SelectLocation());
                     lat.text = location![0].toString();
                     long.text = location[1].toString();
-                                    },
+                  },
                   child: SizedBox(
                     height: 30,
                     width: 200,
@@ -485,37 +491,7 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                       //isTitleEmpty = isFieldEmpty(event_title);
                     });
                     checkAllFieldsAndRegisterEvent(context);
-                    print('Categoria: ${cid.text}');
-                    print('Publico objetivo: ${target_audience.text}');
-                    print('Titulo del evento: ${event_title.text}');
-                    if (pathEventImage.isNotEmpty) {
-                      print('Imagen evento: ${pathEventImage[0]}');
-                    } else {
-                      print('La lista de rutas de imágenes está vacía.');
-                    }
-                    if (pathCoverImage.isNotEmpty) {
-                      print('Imagen evento: ${pathCoverImage[0]}');
-                    } else {
-                      print('La lista de rutas de imágenes está vacía.');
-                    }
-
-                    //print('Imagen cover: ${pathCoverImage[0]}');
-                    print('Fecha inicio: ${start_dateController.text}');
-                    print('Fecha fin: ${end_dateController.text}');
-                    print('Hora inicio: ${start_time.text}');
-                    print('Hora fin: ${end_time.text}');
-                    print('Precio: ${price.text}');
-                    print('Descripcion breve: ${event_about_short.text}');
-                    print('Descripcion: ${event_about.text}');
-                    print('Galeria de imagenes: $event_gallery');
-                    print('Organizador: ${Event_sponsore.text}');
-                    print('Telefono: ${phone.text}');
-                    print('Correo: ${email.text}');
-                    print('Titulo de direccion: ${event_address_title.text}');
-                    print('Direccion: ${event_address.text}');
-                    print('Municipio: ${municipio.text}');
-                    print('Latitud: ${lat.text}');
-                    print('Longitud: ${long.text}');
+                    
                     //authSignUp();
                   },
                   child: SizedBox(
@@ -575,6 +551,42 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
       print('Municipio: ${municipio.text}');
       print('Latitud: ${lat.text}');
       print('Longitud: ${long.text}');
+
+      try {
+        int idMunicipio = int.parse(municipio.text);
+        int idCategoria = int.parse(cid.text);
+        int idPublicoObjetivo = int.parse(target_audience.text);
+
+        evento.crearEvento(
+            tituloEvento: event_title.text,
+            imagenEvento: null,
+            imagenPortadaEvento: null,
+            fechaInicio: start_dateController.text,
+            fechaFin: end_dateController.text,
+            horaInicio: start_time.text,
+            horaFin: end_time.text,
+            precio: price.text,
+            descripcionBreve: event_about_short.text,
+            descripcion: event_about.text,
+            galeriaImagen1: null,
+            galeriaImagen2: null,
+            galeriaImagen3: null,
+            organizador: Event_sponsore.text,
+            tituloDireccion: event_address_title.text,
+            direccionEvento: event_address.text,
+            latitud: lat.text,
+            longitud: long.text,
+            idUsuario: 1,
+            idMunicipio: idMunicipio,
+            idCategoria: idCategoria,
+            idPublicoObjetivo: idPublicoObjetivo);
+      } catch (e) {
+        print('Error de formato: $e');
+        // Muestra un mensaje de error al usuario
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Por favor, introduce valores válidos.')),
+        );
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

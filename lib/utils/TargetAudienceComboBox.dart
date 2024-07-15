@@ -1,15 +1,12 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:get/get_utils/src/extensions/internacionalization.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 import 'colornotifire.dart';
 import 'ctextfield.dart';
-import 'package:http/http.dart' as http;
-
-
 
 class TargetAudienceComboBox extends StatefulWidget {
   final Function(String)? onChanged;
@@ -28,8 +25,9 @@ class TargetAudienceComboBox extends StatefulWidget {
 }
 
 class _TargetAudienceBoxState extends State<TargetAudienceComboBox> {
-  late int _selectedAudienceId = 1;
+  String? _selectedAudienceId;
   List<dynamic> _audienceList = [];
+  late ColorNotifire notifire;
 
   @override
   void initState() {
@@ -38,45 +36,33 @@ class _TargetAudienceBoxState extends State<TargetAudienceComboBox> {
     getdarkmodepreviousstate();
   }
 
-
   getdarkmodepreviousstate() async {
     final prefs = await SharedPreferences.getInstance();
     bool? previusstate = prefs.getBool("setIsDark");
     notifire.setIsDark = previusstate;
-    }
-
-
-
-  
+  }
 
   void cargarTargetAudienceApi() async {
-    // URL de tu API
     String apiUrl = 'http://216.225.205.93:3000/api/publico-objetivo';
 
-    // Realiza una solicitud GET a la API
     http.Response response = await http.get(Uri.parse(apiUrl));
 
-    // Verifica si la solicitud fue exitosa (código de estado 200)
     if (response.statusCode == 200) {
-      // Decodifica la respuesta JSON con codificación UTF-8
       var jsonResponse = json.decode(utf8.decode(response.bodyBytes));
       print('todo bien');
 
-      // Asegúrate de que jsonResponse es un mapa y contiene la clave 'categorias'
       if (jsonResponse is Map && jsonResponse['publicosObjetivos'] is List) {
         setState(() {
           _audienceList = jsonResponse['publicosObjetivos'];
           print(_audienceList);
           if (_audienceList.isNotEmpty) {
-        _selectedAudienceId = _audienceList.first['id'];
-        // Haz algo con la ID seleccionada...
-      }
+            _selectedAudienceId = _audienceList.first['id'].toString();
+          }
         });
       } else {
         print('Error: La respuesta no contiene una lista de publico.');
       }
     } else {
-      // Si la solicitud no fue exitosa, muestra un mensaje de error
       print('Error al cargar publico: ${response.statusCode}');
     }
   }
@@ -95,41 +81,36 @@ class _TargetAudienceBoxState extends State<TargetAudienceComboBox> {
           ),
         ),
         DropdownButtonFormField<String>(
-          value: _selectedAudienceId.toString(),
+          value: _selectedAudienceId,
           onChanged: (value) {
             setState(() {
-              _selectedAudienceId = value! as int;
+              _selectedAudienceId = value;
               if (widget.onChanged != null) {
-                widget.onChanged!(value);
+                widget.onChanged!(value!);
               }
             });
           },
           dropdownColor: notifire.getcardcolor,
-          decoration: const InputDecoration(
-            //filled: true,
-            //fillColor: notifire.getcardcolor,
-          ),
-          items: _audienceList
-              .map<DropdownMenuItem<String>>((categoria) {
+          decoration: const InputDecoration(),
+          items: _audienceList.map<DropdownMenuItem<String>>((audiencia) {
             return DropdownMenuItem<String>(
-              value: categoria['id'].toString(),
+              value: audiencia['id'].toString(),
               child: SizedBox(
-                width: 300, // Ancho fijo
+                width: 300,
                 child: Row(
                   children: [
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        categoria['nombre']!,
+                        audiencia['nombre'] ?? '',
                         style: TextStyle(color: widget.textColor),
-                        overflow: TextOverflow.visible, // Permite que el texto siga abajo si no cabe en una sola línea
-                        maxLines: null, // Permite múltiples líneas
+                        overflow: TextOverflow.visible,
+                        maxLines: null,
                       ),
                     ),
                   ],
                 ),
-              )
-
+              ),
             );
           }).toList(),
         ),

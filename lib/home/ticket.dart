@@ -720,6 +720,7 @@ class _TicketState extends State<Ticket> {
                   padding: const EdgeInsets.symmetric(horizontal: 10),
                   child: Row(
                     children: <Widget>[
+/*
                       Checkbox(
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         checkColor: Colors.white,
@@ -732,6 +733,7 @@ class _TicketState extends State<Ticket> {
                           });
                         },
                       ),
+*/
                       Text(
                         "I Confirm that I am healty".tr,
                         style: TextStyle(
