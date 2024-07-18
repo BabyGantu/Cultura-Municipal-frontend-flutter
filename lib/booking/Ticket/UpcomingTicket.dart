@@ -534,7 +534,7 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
       print('Publico objetivo: ${target_audience.text}');
       print('Titulo del evento: ${event_title.text}');
       print('Imagen evento: ${pathEventImage[0]}');
-      print('Imagen cover: ${pathCoverImage[0]}');
+      //print('Imagen cover: ${pathCoverImage[0]}');
       print('Fecha inicio: ${start_dateController.text}');
       print('Fecha fin: ${end_dateController.text}');
       print('Hora inicio: ${start_time.text}');
@@ -542,9 +542,9 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
       print('Precio: ${price.text}');
       print('Descripcion breve: ${event_about_short.text}');
       print('Descripcion: ${event_about.text}');
-      print('Galeria de imagenes 1: ${event_gallery[0]}');
-      print('Galeria de imagenes 2: ${event_gallery[1]}');
-      print('Galeria de imagenes 3: ${event_gallery[2]}');
+      //print('Galeria de imagenes 1: ${event_gallery[0]}');
+      //print('Galeria de imagenes 2: ${event_gallery[1]}');
+      //print('Galeria de imagenes 3: ${event_gallery[2]}');
       print('Organizador: ${Event_sponsore.text}');
       print('Telefono: ${phone.text}');
       print('Correo: ${email.text}');
@@ -561,8 +561,8 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
 
         evento.crearEvento(
             tituloEvento: event_title.text,
-            imagenEvento: null,
-            imagenPortadaEvento: null,
+            imagenEvento: pathEventImage[0],
+            imagenPortadaEvento: pathCoverImage[0],
             fechaInicio: start_dateController.text,
             fechaFin: end_dateController.text,
             horaInicio: start_time.text,
@@ -570,9 +570,9 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
             precio: price.text,
             descripcionBreve: event_about_short.text,
             descripcion: event_about.text,
-            galeriaImagen1: null,
-            galeriaImagen2: null,
-            galeriaImagen3: null,
+            galeriaImagen1: event_gallery[0],
+            galeriaImagen2: event_gallery[1],
+            galeriaImagen3: event_gallery[2],
             organizador: Event_sponsore.text,
             telefono: phone.text,
             correo: email.text,

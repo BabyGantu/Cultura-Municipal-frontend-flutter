@@ -127,112 +127,109 @@ class AuthController extends GetxController {
     }
   }
 
-  
-
   Future<void> crearEvento({
-  required String tituloEvento,
-  String? imagenEvento,
-  String? imagenPortadaEvento,
-  required String fechaInicio,
-  required String fechaFin,
-  required String horaInicio,
-  required String horaFin,
-  required String precio,
-  required String descripcionBreve,
-  required String descripcion,
-  String? galeriaImagen1,
-  String? galeriaImagen2,
-  String? galeriaImagen3,
-  required String organizador,
-  String? telefono,
-  String? correo,
-  required String tituloDireccion,
-  required String direccionEvento,
-  required String latitud,
-  required String longitud,
-  required int idUsuario,
-  required int idMunicipio,
-  required int idCategoria,
-  required int idPublicoObjetivo,
-}) async {
-  try {
-    final Map<String, dynamic> data = {
-      'titulo_evento': tituloEvento,
-      'imagen_evento': imagenEvento,
-      'imagen_portada_evento': imagenPortadaEvento,
-      'fecha_inicio': fechaInicio,
-      'fecha_fin': fechaFin,
-      'hora_inicio': horaInicio,
-      'hora_fin': horaFin,
-      'precio': precio,
-      'descripcion_breve': descripcionBreve,
-      'descripcion': descripcion,
-      'galeria_imagen_1': galeriaImagen1,
-      'galeria_imagen_2': galeriaImagen2,
-      'galeria_imagen_3': galeriaImagen3,
-      'organizador': organizador,
-      'telefono': telefono,
-      'correo': correo,
-      'titulo_direccion': tituloDireccion,
-      'direccion_evento': direccionEvento,
-      'latitud': latitud,
-      'longitud': longitud,
-      'id_usuario': idUsuario,
-      'id_municipio': idMunicipio,
-      'id_categoria': idCategoria,
-      'id_publico_objetivo': idPublicoObjetivo,
-    };
+    required String tituloEvento,
+    String? imagenEvento,
+    String? imagenPortadaEvento,
+    required String fechaInicio,
+    required String fechaFin,
+    required String horaInicio,
+    required String horaFin,
+    required String precio,
+    required String descripcionBreve,
+    required String descripcion,
+    String? galeriaImagen1,
+    String? galeriaImagen2,
+    String? galeriaImagen3,
+    required String organizador,
+    String? telefono,
+    String? correo,
+    required String tituloDireccion,
+    required String direccionEvento,
+    required String latitud,
+    required String longitud,
+    required int idUsuario,
+    required int idMunicipio,
+    required int idCategoria,
+    required int idPublicoObjetivo,
+  }) async {
+    try {
+      final Map<String, dynamic> data = {
+        'titulo_evento': tituloEvento,
+        'imagen_evento': imagenEvento,
+        'imagen_portada_evento': imagenPortadaEvento,
+        'fecha_inicio': fechaInicio,
+        'fecha_fin': fechaFin,
+        'hora_inicio': horaInicio,
+        'hora_fin': horaFin,
+        'precio': precio,
+        'descripcion_breve': descripcionBreve,
+        'descripcion': descripcion,
+        'galeria_imagen_1': galeriaImagen1,
+        'galeria_imagen_2': galeriaImagen2,
+        'galeria_imagen_3': galeriaImagen3,
+        'organizador': organizador,
+        'telefono': telefono,
+        'correo': correo,
+        'titulo_direccion': tituloDireccion,
+        'direccion_evento': direccionEvento,
+        'latitud': latitud,
+        'longitud': longitud,
+        'id_usuario': idUsuario,
+        'id_municipio': idMunicipio,
+        'id_categoria': idCategoria,
+        'id_publico_objetivo': idPublicoObjetivo,
+      };
 
-    // Imprimir los datos en formato JSON
-    print('Datos en formato JSON: ${jsonEncode(data)}');
+      // Imprimir los datos en formato JSON
+      print('Datos en formato JSON: ${jsonEncode(data)}');
 
-    print('el token es: $tokenUser');
-    final Uri url = Uri.parse('$endpoin/api/eventos');
-    final response = await http.post(
-      url,
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Bearer $tokenUser',
-      },
-      body: jsonEncode(data),
-    );
+      print('el token es: $tokenUser');
+      final Uri url = Uri.parse('$endpoin/api/eventos');
+      final response = await http.post(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $tokenUser',
+        },
+        body: jsonEncode(data),
+      );
 
-    if (response.statusCode == 201) {
-      final Map<String, dynamic> responseData = json.decode(response.body);
-      final bool rta = responseData['rta'];
-      final String message = responseData['message'];
+      if (response.statusCode == 201) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        final bool rta = responseData['rta'];
+        final String message = responseData['message'];
 
-      if (rta) {
-        final Map<String, dynamic> evento = responseData['evento'];
-        final int id = evento['id'];
-        final String tituloEventoResponse = evento['titulo_evento'];
+        if (rta) {
+          final Map<String, dynamic> evento = responseData['evento'];
+          final int id = evento['id'];
+          final String tituloEventoResponse = evento['titulo_evento'];
 
-        print('__----------------Evento Registrado---------------__');
-        print('ID del evento: $id');
-        print('El titulo del evento es: $tituloEventoResponse');
-        print('Mensaje: $message');
-        ApiWrapper.showToastMessage(message);
+          print('__----------------Evento Registrado---------------__');
+          print('ID del evento: $id');
+          print('El titulo del evento es: $tituloEventoResponse');
+          print('Mensaje: $message');
+          ApiWrapper.showToastMessage(message);
 
-        // Puedes navegar a otra pantalla o realizar otras acciones aquí
-        // Get.to(() => const Bottombar(), duration: Duration.zero);
+          // Puedes navegar a otra pantalla o realizar otras acciones aquí
+          // Get.to(() => const Bottombar(), duration: Duration.zero);
+        } else {
+          print('Error: $message');
+        }
       } else {
-        print('Error: $message');
+        // Si la solicitud falla, imprime el mensaje de error
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        final String message = responseData['message'];
+        print('Error: ${response.reasonPhrase}');
+        print('message de error: $message');
+
+        print('Error: ${response.reasonPhrase}');
       }
-    } else {
-      // Si la solicitud falla, imprime el mensaje de error
-      final Map<String, dynamic> responseData = json.decode(response.body);
-      final String message = responseData['message'];
-      print('Error: ${response.reasonPhrase}');
-      print('message de error: $message');
-      
-      print('Error: ${response.reasonPhrase}');
+    } catch (e) {
+      print('Error de formato: $e');
+      // Muestra un mensaje de error al usuario
     }
-  } catch (e) {
-    print('Error de formato: $e');
-    // Muestra un mensaje de error al usuario
-    
   }
-}
 
   Future<bool?> reenviarCodigo(int id) async {
     final Uri url = Uri.parse('$endpoin/reenviarapi/_codigo/');

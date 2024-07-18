@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get_utils/src/extensions/internacionalization.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:image/image.dart' as img;
 
 class CustomImagePicker extends StatefulWidget {
   final List<String> imagePaths;
@@ -76,10 +77,12 @@ class _CustomImagePickerState extends State<CustomImagePicker> {
                     border: Border.all(color: Colors.grey, width: 1),
                     borderRadius: BorderRadius.circular(10.0),
                   ),
-                  child: Image.file(
-                    File(widget.imagePaths[index]),
-                    fit: BoxFit.cover,
-                  ),
+                  child: widget.imagePaths[index] != null
+                      ? Image.memory(
+                          base64Decode(widget.imagePaths[index]!.split(',')[1]),
+                          fit: BoxFit.cover,
+                        )
+                      : Container(), // Empty container for null images
                 );
               }
             },
@@ -90,13 +93,27 @@ class _CustomImagePickerState extends State<CustomImagePicker> {
   }
 
   Future<void> _selectImage(BuildContext context) async {
-    final XFile? pickedImage = await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? pickedImage =
+        await _picker.pickImage(source: ImageSource.gallery);
     if (pickedImage != null) {
       final bytes = await pickedImage.readAsBytes();
-      final base64Image = 'data:image/png;base64,${base64Encode(bytes.buffer.asUint8List())}';
-      setState(() {
-        widget.imagePaths.add(base64Image); // Agrega la imagen en formato base 64
-      });
+      img.Image? image = img.decodeImage(bytes);
+
+      if (image != null) {
+        // Redimensionar la imagen
+        img.Image resizedImage = img.copyResize(image,
+            width: 50); // Puedes ajustar el tamaño según sea necesario
+        final resizedBytes = img.encodePng(resizedImage);
+        final base64Image =
+            'data:image/png;base64,${base64Encode(resizedBytes)}';
+
+        setState(() {
+          if (widget.imagePaths.length < 3) {
+            widget.imagePaths.add(base64Image);
+          }
+        });
+      }
     }
+    
   }
 }
