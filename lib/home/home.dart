@@ -6,6 +6,7 @@ import 'dart:math';
 import 'dart:ui';
 import 'package:goevent2/Controller/UserPreferences.dart';
 import 'package:goevent2/home/Categoria.dart';
+import 'package:goevent2/home/Evento.dart';
 
 import '../Search/searchpage2.dart';
 import '../utils/media.dart';
@@ -360,8 +361,9 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   String code = "0";
   //List<dynamic> categoriasList = [];
   List<Categoria> categoriasList = [];
+  List<Evento> upcomingEvent = [];
   List<dynamic> trendingEvent = [];
-  List<dynamic> upcomingEvent = [];
+  //List<dynamic> upcomingEvent = [];
   List<dynamic> nearbyEvent = [];
   List<dynamic> thisMonthEvent = [];
 
@@ -417,7 +419,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       if (jsonResponse is Map && jsonResponse['categorias'] is List) {
         setState(() {
           categoriasList = jsonResponse['categorias'];
-          print(categoriasList);
+          //print(categoriasList);
         });
       } else {
         print('Error: La respuesta no contiene una lista de categorías.');
@@ -436,43 +438,46 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     });
   }
 
-  /*
-  void cargarUpcomingEvent() {
-    // Decodifica la cadena JSON y guarda los eventos en la lista eventosList
-    Map<String, dynamic> upcomingEventData = json.decode(eventsJson);
-    setState(() {
-      upcomingEvent = upcomingEventData['events'];
-    });
-  }
-  */
-  void cargarUpcomingEvent() async {
-    // URL de tu API
-    String apiUrl = 'http://10.0.2.2:8000/eventdata/eventos/';
 
-    try {
-      // Realiza una solicitud GET a la API
-      http.Response response = await http.get(Uri.parse(apiUrl));
 
-      // Verifica si la solicitud fue exitosa (código de estado 200)
-      if (response.statusCode == 200) {
-        // Decodifica la respuesta JSON con codificación UTF-8
-        var jsonResponse = utf8.decode(response.bodyBytes);
 
-        // Decodifica la cadena JSON y guarda los eventos en la lista
-        List<dynamic> upcomingEventData = json.decode(jsonResponse);
+  Future<List<Evento>> cargarUpcomingEvent() async {
+  final String apiUrl = 'http://216.225.205.93:3000/api/eventos/buscarEventos';
 
-        setState(() {
-          upcomingEvent = upcomingEventData;
-        });
+  try {
+    final Map<String, dynamic> bodyData = {
+      'id_categoria': 3
+    };
+
+    final response = await http.post(
+      Uri.parse(apiUrl),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(bodyData),
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseData = jsonDecode(response.body);
+
+      if (responseData['rta'] == true) {
+        List<dynamic> eventos = responseData['eventos'];
+
+        for (var eventoJson in eventos) {
+          upcomingEvent.add(Evento.fromJson(eventoJson));
+        }
       } else {
-        // Si la solicitud no fue exitosa, muestra un mensaje de error
-        print('Error al cargar eventos: ${response.statusCode}');
+        print('Error en la respuesta: ${responseData['message']}');
       }
-    } catch (e) {
-      // Captura y muestra cualquier error ocurrido durante la solicitud
-      print('Error al cargar eventos: $e');
+    } else {
+      print('Error en la solicitud: ${response.statusCode}');
     }
+  } catch (e) {
+    print('Error en la conexión: $e');
   }
+
+  return upcomingEvent;
+}
 
   void cargarThisMonthEvent() {
     // Decodifica la cadena JSON y guarda los eventos en la lista eventosList
@@ -549,11 +554,27 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
       // Imprimir los datos de las categorías cargadas
       for (var categoria in categoriasList) {
-        print(
-            'ID: ${categoria.id}, Nombre: ${categoria.nombre}, Imagen: ${categoria.imagen}, Activo: ${categoria.statusActive}');
+        //print('ID: ${categoria.id}, Nombre: ${categoria.nombre}, Imagen: ${categoria.imagen}, Activo: ${categoria.statusActive}');
       }
     } catch (e) {
       print('Error al cargar categorías: $e');
+    }
+  }
+
+  Future<void> cargarEventos() async {
+    EventosService service = EventosService();
+    try {
+      List<Evento> eventos = await service.cargarEventosApi();
+      setState(() {
+        upcomingEvent = eventos;
+      });
+
+      // Imprimir los datos de las categorías cargadas
+      for (var evento in upcomingEvent) {
+        //print('ID: ${categoria.id}, Nombre: ${categoria.nombre}, Imagen: ${categoria.imagen}, Activo: ${categoria.statusActive}');
+      }
+    } catch (e) {
+      print('Error al cargar los eventos: $e');
     }
   }
 
@@ -570,7 +591,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     cargarCategorias();
     //cargarCategoriasApi();
     cargartrendingEvent();
-    cargarUpcomingEvent();
+    cargarEventos();
     cargarThisMonthEvent();
     cargarNearbyEvent();
     _loadUserData();
@@ -671,6 +692,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 child: Column(
                   children: [
                     //! --------- categoriesList ---------
+                    /*
                     Text('Token: $token'),
                     Text('fecha Expiracion: $fechaExpiracion'),
                     Text('User ID: $userId'),
@@ -681,7 +703,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                       child: Text('Upload Image'),
                     ),
 
-
+*/
                     Padding(
                       padding: const EdgeInsets.only(left: 8),
                       child: SizedBox(
@@ -1012,6 +1034,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
     // Decodificar la cadena base64 en bytes
     Uint8List imageBytes = base64Decode(base64Image);
+    //print('LA IMAGEN ES: $imageBytes');
 
     return InkWell(
       onTap: () {
@@ -1688,239 +1711,190 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   }
 
   List<String> upMember = [];
-  Widget events(upEvent, i) {
-    /*
-    upMember.clear();
-    upEvent["member_list"].forEach((e) {
-      upMember.add(Config.base_url + e);
-    });
+  Widget events(Evento evento, int i) {
+    String base64ImageEvento = evento.imagenEvento.split(',').last;
+    String base64PortadaEvento = evento.imagenPortadaEvento.split(',').last;
+    //String base64Image = catList[i].imagen.split(',').last;
 
-    int membercount = int.parse(upEvent["total_member_list"].toString()) > 3
-        ? 3
-        : int.parse(upEvent["total_member_list"].toString());
-        */
-    /*
-    for (var i = 0; i < membercount; i++) {
-      upMember.add(Config.userImage);
-    }
+    // Decodificar la cadena base64 en bytes
+    Uint8List imageEventoBytes = base64Decode(base64ImageEvento);
+    Uint8List portadaImageBytes = base64Decode(base64PortadaEvento);
 
-     */
-    return Stack(children: [
+  return Stack(
+    children: [
       InkWell(
         onTap: () {
-          Get.to(() => EventsDetails(eid: upEvent["id"].toString()),
-              duration: Duration.zero);
+          Get.to(() => EventsDetails(eid: evento.id.toString()), duration: Duration.zero);
         },
         child: Container(
           color: Colors.transparent,
-          width: width / 1.55,
+          width: Get.width / 1.55,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 25),
             child: Container(
               decoration: BoxDecoration(
-                  border: Border.all(color: notifire.bordercolore),
-                  borderRadius: BorderRadius.circular(17)),
-              child: Stack(children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      height: height / 5.5,
-                      width: width / 1.7,
-                      decoration: const BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(15)),
-                      ),
-                      child: Stack(
-                        children: [
-                          //! Event Image
-                          ClipRRect(
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(16)),
-
-                            /*
-                            child: SizedBox(
-                              height: Get.height * 0.20,
-                              width: Get.width * 0.62,
-                              child: FadeInImage.assetNetwork(
-                                  fadeInCurve: Curves.easeInCirc,
-                                  placeholder: "image/skeleton.gif",
-                                  fit: BoxFit.cover,
-                                  image:
-                                  Config.base_url + upEvent["event_img"]),
-                            ),
-
-                             */
-                            child: SizedBox(
-                              height: Get.height * 0.20,
-                              width: Get.width * 0.62,
-                              child: Image.network(
-                                upEvent["event_img"],
-                                fit: BoxFit.cover,
+                border: Border.all(color: notifire.bordercolore),
+                borderRadius: BorderRadius.circular(17),
+              ),
+              child: Stack(
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        height: Get.height / 5.5,
+                        width: Get.width / 1.7,
+                        decoration: const BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                        ),
+                        child: Stack(
+                          children: [
+                            ClipRRect(
+                              borderRadius: const BorderRadius.all(Radius.circular(16)),
+                              child: SizedBox(
+                                height: Get.height * 0.20,
+                                width: Get.width * 0.62,
+                                child: evento.imagenEvento != null
+                                    ? Image.memory(
+                                        imageEventoBytes,
+                                        fit: BoxFit.cover,
+                                        
+                                      )
+                                    : Container(
+                                        color: Colors.grey[200], // Color de marcador de posición
+                                        child: Icon(Icons.image, color: Colors.grey), // Icono de marcador de posición
+                                      ),
                               ),
                             ),
-                          ),
-
-                          Column(
-                            children: [
-                              SizedBox(height: height / 70),
-                              Row(
-                                children: [
-                                  SizedBox(width: width / 70),
-                                  const Spacer(),
-                                  ClipRRect(
-                                    borderRadius:
-                                        BorderRadius.circular(100 / 2),
-                                    child: BackdropFilter(
-                                      blendMode: BlendMode.srcIn,
-                                      filter: ImageFilter.blur(
-                                        sigmaX:
-                                            10, // mess with this to update blur
-                                        sigmaY: 10,
-                                      ),
-                                      child: CircleAvatar(
-                                        radius: 18,
-                                        backgroundColor: Colors.transparent,
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 3),
-                                          child: LikeButton(
-                                            onTap: (val) {
-                                              return onLikeButtonTapped(
-                                                  val, upEvent["id"]);
-                                            },
-                                            likeBuilder: (bool isLiked) {
-                                              return upEvent["is_bookmark"] != 0
-                                                  ? const Icon(Icons.favorite,
-                                                      color: Color(0xffF0635A),
-                                                      size: 22)
-                                                  : const Icon(
-                                                      Icons.favorite_border,
-                                                      color: Color(0xffF0635A),
-                                                      size: 22);
-                                            },
+                            Column(
+                              children: [
+                                SizedBox(height: Get.height / 70),
+                                Row(
+                                  children: [
+                                    SizedBox(width: Get.width / 70),
+                                    const Spacer(),
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(100 / 2),
+                                      child: BackdropFilter(
+                                        blendMode: BlendMode.srcIn,
+                                        filter: ImageFilter.blur(
+                                          sigmaX: 10, // Ajustar para modificar el desenfoque
+                                          sigmaY: 10,
+                                        ),
+                                        child: CircleAvatar(
+                                          radius: 18,
+                                          backgroundColor: Colors.transparent,
+                                          child: Padding(
+                                            padding: const EdgeInsets.only(left: 3),
+                                            child: LikeButton(
+                                              onTap: (val) {
+                                                return onLikeButtonTapped(val, evento.id);
+                                              },
+                                              likeBuilder: (bool isLiked) {
+                                                return Icon(
+                                                  evento.statusEvent != 0
+                                                      ? Icons.favorite
+                                                      : Icons.favorite_border,
+                                                  color: evento.statusEvent != 0
+                                                      ? const Color(0xffF0635A)
+                                                      : Colors.grey,
+                                                  size: 22,
+                                                );
+                                              },
+                                            ),
                                           ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                  SizedBox(width: width / 50),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
+                                    SizedBox(width: Get.width / 50),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    SizedBox(height: height / 50),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6),
-                      width: Get.width,
-                      child: Text(
-                        upEvent["event_title"],
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
+                      SizedBox(height: Get.height / 50),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6),
+                        width: Get.width,
+                        child: Text(
+                          evento.tituloEvento,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
                             fontFamily: 'Gilroy Medium',
                             color: notifire.textcolor,
                             fontSize: 16,
-                            fontWeight: FontWeight.w600),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
-                    ),
-                    /*
-                    SizedBox(height: height / 140),
-                    upEvent["total_member_list"] != "0"
-                        ? Row(
-                            children: [
-                              (upEvent["total_member_list"] != "0" &&
-                                      upMember.isNotEmpty)
-                                  ? FlutterImageStack(
-                                      totalCount: 0,
-                                      itemRadius: 30,
-                                      itemBorderWidth: 1.5,
-                                      imageList: upMember)
-                                  : const Image(
-                                      image: AssetImage("image/user.png"),
-                                      height: 28),
-                              SizedBox(width: Get.width * 0.01),
-                              Text(
-                                "${upEvent["total_member_list"]} + Going",
+                      SizedBox(height: Get.height / 80),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 6),
+                        child: Row(
+                          children: [
+                            Image.asset("image/location.png", height: Get.height / 50),
+                            SizedBox(width: Get.width * 0.01),
+                            SizedBox(
+                              width: Get.width * 0.49,
+                              child: Text(
+                                evento.direccionEvento,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
-                                    color: const Color(0xff5d56f3),
-                                    fontSize: 11,
-                                    fontFamily: 'Gilroy Bold'),
-                              ),
-                            ],
-                          )
-                        : const SizedBox(),
-                        */
-                    SizedBox(height: height / 80),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 6),
-                      child: Row(
-                        children: [
-                          Image.asset("image/location.png",
-                              height: height / 50),
-                          SizedBox(width: Get.width * 0.01),
-                          SizedBox(
-                            width: Get.width * 0.49,
-                            child: Text(
-                              upEvent["event_address"],
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
                                   fontFamily: 'Gilroy Medium',
                                   color: Colors.grey,
-                                  fontSize: 12),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                Column(
-                  children: [
-                    SizedBox(height: height / 6),
-                    Row(children: [
-                      const Spacer(),
-                      Container(
-                        decoration: BoxDecoration(
-                            color: notifire.getprimerycolor,
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(20))),
-                        height: height / 30,
-                        width: Get.width / 4,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: Get.width / 4,
-                              child: Center(
-                                child: Text(
-                                  upEvent["start_date"],
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                      color: const Color(0xffF0635A),
-                                      fontSize: 11,
-                                      fontFamily: 'Gilroy ExtraBold',
-                                      fontWeight: FontWeight.bold),
+                                  fontSize: 12,
                                 ),
                               ),
                             ),
                           ],
                         ),
                       ),
-                    ]),
-                  ],
-                ),
-              ]),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      SizedBox(height: Get.height / 6),
+                      Row(
+                        children: [
+                          const Spacer(),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: notifire.getprimerycolor,
+                              borderRadius: const BorderRadius.all(Radius.circular(20)),
+                            ),
+                            height: Get.height / 30,
+                            width: Get.width / 4,
+                            child: Center(
+                              child: Text(
+                                evento.fechaInicio.substring(0, 10),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  color: const Color(0xffF0635A),
+                                  fontSize: 11,
+                                  fontFamily: 'Gilroy ExtraBold',
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
       ),
-    ]);
-  }
+    ],
+  );
+}
 
   Future<void> share() async {
     await FlutterShare.share(

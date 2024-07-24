@@ -45,7 +45,7 @@ class _CustomImageGalleryState extends State<CustomImageGallery> {
         const SizedBox(height: 10.0),
         Row(
           children: List.generate(
-            widget.imagePaths.length < 3 ? widget.imagePaths.length + 1 : 3,
+            widget.imagePaths.length < 2 ? widget.imagePaths.length + 1 : 2,
             (index) {
               if (index == widget.imagePaths.length) {
                 return GestureDetector(
@@ -110,16 +110,15 @@ class _CustomImageGalleryState extends State<CustomImageGallery> {
   }
 
   Future<void> _selectImage(BuildContext context) async {
-    final XFile? pickedImage =
-        await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? pickedImage = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedImage != null) {
       final bytes = await pickedImage.readAsBytes();
       img.Image? image = img.decodeImage(bytes);
 
       if (image != null) {
-        // Redimensionar la imagen
-        img.Image resizedImage = img.copyResize(image, width: 100); // Puedes ajustar el tamaño según sea necesario
-        final resizedBytes = img.encodePng(resizedImage);
+        // Redimensionar la imagen a un tamaño más pequeño
+        img.Image resizedImage = img.copyResize(image, width: 800); // Ajusta el tamaño según sea necesario
+        final resizedBytes = img.encodePng(resizedImage, level: 9); // Usa nivel de compresión máximo
         final base64Image = 'data:image/png;base64,${base64Encode(resizedBytes)}';
 
         setState(() {
@@ -133,5 +132,6 @@ class _CustomImageGalleryState extends State<CustomImageGallery> {
       widget.imagePaths.add(null);
     }
   }
+
 }
 

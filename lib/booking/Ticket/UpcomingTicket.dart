@@ -491,7 +491,7 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                       //isTitleEmpty = isFieldEmpty(event_title);
                     });
                     checkAllFieldsAndRegisterEvent(context);
-                    
+
                     //authSignUp();
                   },
                   child: SizedBox(
@@ -515,7 +515,7 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
     return controller.text.isEmpty;
   }
 
-  void checkAllFieldsAndRegisterEvent(BuildContext context) {
+  Future<void> checkAllFieldsAndRegisterEvent(BuildContext context) async {
     if (event_title.text.isNotEmpty &&
         event_address_title.text.isNotEmpty &&
         event_address.text.isNotEmpty &&
@@ -533,7 +533,7 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
       print('Categoria: ${cid.text}');
       print('Publico objetivo: ${target_audience.text}');
       print('Titulo del evento: ${event_title.text}');
-      print('Imagen evento: ${pathEventImage[0]}');
+      //print('Imagen evento: ${pathEventImage[0]}');
       //print('Imagen cover: ${pathCoverImage[0]}');
       print('Fecha inicio: ${start_dateController.text}');
       print('Fecha fin: ${end_dateController.text}');
@@ -559,31 +559,59 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
         int idCategoria = int.parse(cid.text);
         int idPublicoObjetivo = int.parse(target_audience.text);
 
-        evento.crearEvento(
-            tituloEvento: event_title.text,
-            imagenEvento: pathEventImage[0],
-            imagenPortadaEvento: pathCoverImage[0],
-            fechaInicio: start_dateController.text,
-            fechaFin: end_dateController.text,
-            horaInicio: start_time.text,
-            horaFin: end_time.text,
-            precio: price.text,
-            descripcionBreve: event_about_short.text,
-            descripcion: event_about.text,
-            galeriaImagen1: event_gallery[0],
-            galeriaImagen2: event_gallery[1],
-            galeriaImagen3: event_gallery[2],
-            organizador: Event_sponsore.text,
-            telefono: phone.text,
-            correo: email.text,
-            tituloDireccion: event_address_title.text,
-            direccionEvento: event_address.text,
-            latitud: lat.text,
-            longitud: long.text,
-            idUsuario: 1,
-            idMunicipio: idMunicipio,
-            idCategoria: idCategoria,
-            idPublicoObjetivo: idPublicoObjetivo);
+        await evento.crearEvento(
+          tituloEvento: event_title.text,
+          imagenEvento: pathEventImage[0],
+          imagenPortadaEvento: pathCoverImage[0],
+          fechaInicio: start_dateController.text,
+          fechaFin: end_dateController.text,
+          horaInicio: start_time.text,
+          horaFin: end_time.text,
+          precio: price.text,
+          descripcionBreve: event_about_short.text,
+          descripcion: event_about.text,
+          galeriaImagen1: event_gallery[0],
+          galeriaImagen2: event_gallery[1],
+          // galeriaImagen3: event_gallery[2],
+          //organizador: Event_sponsore.text,
+          telefono: phone.text,
+          correo: email.text,
+          tituloDireccion: event_address_title.text,
+          direccionEvento: event_address.text,
+          latitud: lat.text,
+          longitud: long.text,
+          idUsuario: 1,
+          idMunicipio: idMunicipio,
+          idCategoria: idCategoria,
+          idPublicoObjetivo: idPublicoObjetivo,
+        );
+
+        ApiWrapper.showToastMessage("Evento Registrado Correctamente");
+
+        // Limpiar los controladores de texto y las listas de imágenes
+        /*
+        event_title.clear();
+        pathEventImage.clear();
+        pathCoverImage.clear();
+        start_dateController.clear();
+        end_dateController.clear();
+        start_time.clear();
+        end_time.clear();
+        price.clear();
+        event_about_short.clear();
+        event_about.clear();
+        // event_gallery.clear();
+        Event_sponsore.clear();
+        phone.clear();
+        email.clear();
+        event_address_title.clear();
+        event_address.clear();
+        lat.clear();
+        long.clear();
+        municipio.clear();
+        cid.clear();
+        target_audience.clear();
+        */
       } catch (e) {
         print('Error de formato: $e');
         // Muestra un mensaje de error al usuario

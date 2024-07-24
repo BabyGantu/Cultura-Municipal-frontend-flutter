@@ -47,7 +47,7 @@ class _CustomImagePickerState extends State<CustomImagePicker> {
         const SizedBox(height: 10.0),
         Row(
           children: List.generate(
-            widget.imagePaths.length + 1,
+            widget.imagePaths.length < 1 ? widget.imagePaths.length + 1 : 1,
             (index) {
               if (index == widget.imagePaths.length) {
                 return GestureDetector(
@@ -101,11 +101,9 @@ class _CustomImagePickerState extends State<CustomImagePicker> {
 
       if (image != null) {
         // Redimensionar la imagen
-        img.Image resizedImage = img.copyResize(image,
-            width: 50); // Puedes ajustar el tamaño según sea necesario
+        img.Image resizedImage = img.copyResize(image, width: 800); // Puedes ajustar el tamaño según sea necesario
         final resizedBytes = img.encodePng(resizedImage);
-        final base64Image =
-            'data:image/png;base64,${base64Encode(resizedBytes)}';
+        final base64Image = 'data:image/png;base64,${base64Encode(resizedBytes)}';
 
         setState(() {
           if (widget.imagePaths.length < 3) {
