@@ -1,11 +1,15 @@
 // ignore_for_file: prefer_final_fields, prefer_const_constructors
 
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:goevent2/Api/ApiWrapper.dart';
 import 'package:goevent2/Api/Config.dart';
 import 'package:goevent2/AppModel/Homedata/HomedataController.dart';
 import 'package:goevent2/home/EventDetails.dart';
+import 'package:goevent2/home/Evento.dart';
 import 'package:like_button/like_button.dart';
 
 import 'package:provider/provider.dart';
@@ -16,8 +20,8 @@ import '../utils/media.dart';
 
 class All extends StatefulWidget {
   final String? title;
-  final List? eventList;
-  const All({Key? key, this.title, this.eventList}) : super(key: key);
+  final List<Evento> eventList;
+  const All({Key? key, this.title, required this.eventList}) : super(key: key);
 
   @override
   _AllState createState() => _AllState();
@@ -80,7 +84,7 @@ class _AllState extends State<All> {
               itemCount: widget.eventList!.length,
               shrinkWrap: true,
               itemBuilder: (ctx, i) {
-                return events(widget.eventList, i);
+                return events(widget.eventList[i], i);
               },
             ),
           ),
@@ -91,7 +95,7 @@ class _AllState extends State<All> {
     );
   }
 
-  Widget events(user, i) {
+  Widget events(Evento evento, i) {
     /*
     _images.clear();
     user[i]["member_list"].forEach((e) {
@@ -106,14 +110,21 @@ class _AllState extends State<All> {
 
      */
 
+
+    String base64ImageEvento = evento.imagenEvento.split(',').last;
+    String base64PortadaEvento = evento.imagenPortadaEvento.split(',').last;
+    //String base64Image = catList[i].imagen.split(',').last;
+
+    // Decodificar la cadena base64 en bytes
+    Uint8List imageEventoBytes = base64Decode(base64ImageEvento);
+    Uint8List portadaImageBytes = base64Decode(base64PortadaEvento);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Stack(
         children: [
           GestureDetector(
             onTap: () {
-              Get.to(() => EventsDetails(eid: user[i]["id"]),
-                  duration: Duration.zero);
+              //Get.to(() => EventsDetails(eid: evento.id), duration: Duration.zero);
             },
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
@@ -142,11 +153,16 @@ class _AllState extends State<All> {
                                 child: SizedBox(
                                   height: height / 3.5,
                                   width: width,
-                                  child: 
-                                  Image.network(
-                                    user[i]["event_img"], // Ruta de la imagen en assets
-                                    fit: BoxFit.cover,
-                                  ),
+                                  child: evento.imagenEvento != null
+                                    ? Image.memory(
+                                        imageEventoBytes,
+                                        fit: BoxFit.cover,
+                                        
+                                      )
+                                    : Container(
+                                        color: Colors.grey[200], // Color de marcador de posición
+                                        child: Icon(Icons.image, color: Colors.grey), // Icono de marcador de posición
+                                      ),
                                 ),
                               ),
                               SizedBox(height: height / 70),
@@ -157,7 +173,7 @@ class _AllState extends State<All> {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 6),
                           child: Text(
-                            user[i]["event_title"],
+                            evento.tituloEvento,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -179,7 +195,7 @@ class _AllState extends State<All> {
                               Ink(
                                 width: Get.width * 0.77,
                                 child: Text(
-                                  user[i]["event_address"],
+                                  evento.direccionEvento,
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
@@ -197,6 +213,7 @@ class _AllState extends State<All> {
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
                           child: Row(
+/*
                             children: [
                               Spacer(),
                               CircleAvatar(
@@ -206,7 +223,7 @@ class _AllState extends State<All> {
                                   padding: const EdgeInsets.only(left: 3),
                                   child: LikeButton(
                                     onTap: (val) {
-                                      return onLikeButtonTapped(val, user[i]["id"]);
+                                      return onLikeButtonTapped(val, evento[i]["id"]);
                                     },
                                     likeBuilder: (bool isLiked) {
                                       return user[i]["is_bookmark"] != 0
@@ -217,6 +234,7 @@ class _AllState extends State<All> {
                                 ),
                               ),
                             ],
+*/
                           ),
                         ),
                       ],

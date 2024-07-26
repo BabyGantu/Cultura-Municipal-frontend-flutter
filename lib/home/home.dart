@@ -793,11 +793,13 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                           const Spacer(),
                           GestureDetector(
                             onTap: () {
+                              /*
                               Get.to(
                                   () => All(
                                       title: "Event This Month".tr,
                                       eventList: thisMonthEvent),
                                   duration: Duration.zero);
+                                  */
                             },
                             child: Container(
                               color: Colors.transparent,
@@ -849,11 +851,13 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                           const Spacer(),
                           GestureDetector(
                             onTap: () {
+                              /*
                               Get.to(
                                   () => All(
                                       title: "Nearby You".tr,
                                       eventList: nearbyEvent),
                                   duration: Duration.zero);
+                                  */
                             },
                             child: Container(
                               color: Colors.transparent,
@@ -901,11 +905,13 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                           const Spacer(),
                           GestureDetector(
                             onTap: () {
+                              /*
                               Get.to(
                                   () => All(
                                       title: "Trending Events".tr,
                                       eventList: trendingEvent),
                                   duration: Duration.zero);
+                                  */
                             },
                             child: Container(
                               color: Colors.transparent,
