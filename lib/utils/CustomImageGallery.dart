@@ -117,7 +117,7 @@ class _CustomImageGalleryState extends State<CustomImageGallery> {
 
       if (image != null) {
         // Redimensionar la imagen a un tamaño más pequeño
-        img.Image resizedImage = img.copyResize(image, width: 800); // Ajusta el tamaño según sea necesario
+        img.Image resizedImage = img.copyResize(image, width: 500); // Ajusta el tamaño según sea necesario
         final resizedBytes = img.encodePng(resizedImage, level: 9); // Usa nivel de compresión máximo
         final base64Image = 'data:image/png;base64,${base64Encode(resizedBytes)}';
 

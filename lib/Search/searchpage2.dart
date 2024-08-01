@@ -182,8 +182,7 @@ class _SearchPage2State extends State<SearchPage2> {
         onTap: () {
           FocusScope.of(context).requestFocus(FocusNode());
           Future.delayed(Duration(seconds: 1), () {
-            Get.to(() => EventsDetails(eid: event[i]["event_id"]),
-                duration: Duration.zero);
+            //Get.to(() => EventsDetails(eid: event[i]["event_id"]),duration: Duration.zero);
           });
         },
         child: Container(

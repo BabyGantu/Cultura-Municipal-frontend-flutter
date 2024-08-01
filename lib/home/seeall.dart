@@ -111,20 +111,15 @@ class _AllState extends State<All> {
      */
 
 
-    String base64ImageEvento = evento.imagenEvento.split(',').last;
-    String base64PortadaEvento = evento.imagenPortadaEvento.split(',').last;
-    //String base64Image = catList[i].imagen.split(',').last;
-
-    // Decodificar la cadena base64 en bytes
-    Uint8List imageEventoBytes = base64Decode(base64ImageEvento);
-    Uint8List portadaImageBytes = base64Decode(base64PortadaEvento);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Stack(
         children: [
           GestureDetector(
             onTap: () {
-              //Get.to(() => EventsDetails(eid: evento.id), duration: Duration.zero);
+              Get.to(
+                () => EventsDetails(eid: evento.id.toString(), evento: evento),
+                duration: Duration.zero);
             },
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
@@ -154,11 +149,10 @@ class _AllState extends State<All> {
                                   height: height / 3.5,
                                   width: width,
                                   child: evento.imagenEvento != null
-                                    ? Image.memory(
-                                        imageEventoBytes,
-                                        fit: BoxFit.cover,
-                                        
-                                      )
+                                    ? Image.network(
+                                          'http://216.225.205.93:3000${evento.imagenEvento}',
+                                          fit: BoxFit.cover,
+                                        )
                                     : Container(
                                         color: Colors.grey[200], // Color de marcador de posición
                                         child: Icon(Icons.image, color: Colors.grey), // Icono de marcador de posición

@@ -8,11 +8,12 @@ import 'package:goevent2/Api/ApiWrapper.dart';
 import 'package:goevent2/Api/Config.dart';
 import 'package:goevent2/AppModel/Homedata/HomedataController.dart';
 import 'package:goevent2/home/EventDetails.dart';
+import 'package:goevent2/home/Evento.dart';
 import 'package:goevent2/utils/colornotifire.dart';
+import 'package:goevent2/utils/media.dart';
 import 'package:like_button/like_button.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 
 const String eventsJson = '''
 {
@@ -221,10 +222,9 @@ const String eventsJson = '''
 }
 ''';
 
-
 class TrndingPage extends StatefulWidget {
-  final Map? catdata;
-  const TrndingPage({Key? key, this.catdata}) : super(key: key);
+  final int idCategoria;
+  const TrndingPage({Key? key, required this.idCategoria}) : super(key: key);
 
   @override
   State<TrndingPage> createState() => _TrndingPageState();
@@ -232,13 +232,25 @@ class TrndingPage extends StatefulWidget {
 
 class _TrndingPageState extends State<TrndingPage> {
   late ColorNotifire notifire;
-  List categoryEvent = [];
+  List<Evento> categoryEvent = [];
 
+  Future<void> cargarEventoCategoria() async {
+    EventosService service = EventosService();
+    try {
+      List<Evento> eventos =
+          await service.cargarEventosCategoria(widget.idCategoria);
+      setState(() {
+        categoryEvent = eventos;
+      });
+    } catch (e) {
+      print('Error al cargar los eventos de la categoria: $e');
+    }
+  }
 
   @override
   void initState() {
     getdarkmodepreviousstate();
-    catEventListApi();
+    cargarEventoCategoria();
     super.initState();
   }
 
@@ -246,8 +258,8 @@ class _TrndingPageState extends State<TrndingPage> {
     final prefs = await SharedPreferences.getInstance();
     bool? previusstate = prefs.getBool("setIsDark");
 
-    notifire.setIsDark = previusstate;
-    }
+    //notifire.setIsDark = previusstate;
+  }
 /*
   catEventListApi() {
     var data = {"uid": uID, "cid": widget.catdata!["id"]};
@@ -262,24 +274,6 @@ class _TrndingPageState extends State<TrndingPage> {
   }
 
  */
-
-  void catEventListApi() {
-    // Decodificar el JSON eventsJson como un objeto JSON
-    Map<String, dynamic> decodedJson = json.decode(eventsJson);
-
-    // Acceder a la lista de eventos dentro del objeto JSON
-    List<dynamic> events = decodedJson['events'];
-
-    // Filtrar los eventos basados en la categoría
-    String categoryId = widget.catdata!['id'].toString();
-    List filteredEvents = events.where((event) => event['cid'] == categoryId).toList();
-
-    // Actualizar la lista de eventos de la categoría
-    setState(() {
-      categoryEvent = filteredEvents;
-    });
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -316,7 +310,7 @@ class _TrndingPageState extends State<TrndingPage> {
                           color: notifire.getdarkscolor)),
                   SizedBox(width: Get.width / 80),
                   Text(
-                    widget.catdata!["title"],
+                    "Categoria",
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w900,
@@ -337,7 +331,7 @@ class _TrndingPageState extends State<TrndingPage> {
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             itemBuilder: (ctx, i) {
-                              return events(categoryEvent, i);
+                              return events(categoryEvent[i], i);
                             },
                           )
                         : Column(
@@ -363,12 +357,13 @@ class _TrndingPageState extends State<TrndingPage> {
     );
   }
 
-  Widget events(user, i) {
+  Widget events(Evento evento, int i) {
     return Stack(
       children: [
         GestureDetector(
           onTap: () {
-            Get.to(() => EventsDetails(eid: user[i]["event_id"]),
+            Get.to(
+                () => EventsDetails(eid: evento.id.toString(), evento: evento),
                 duration: Duration.zero);
           },
           child: Padding(
@@ -392,14 +387,23 @@ class _TrndingPageState extends State<TrndingPage> {
                           children: [
                             ClipRRect(
                               borderRadius: BorderRadius.circular(15),
-                              child: Image.asset(
-                                user[i]["event_img"],
-                                fit: BoxFit.cover,
-                                height: Get.height / 3.5,
-                                width: Get.width,
+                              child: SizedBox(
+                                height: height / 3.5,
+                                  width: width,
+                                child: evento.imagenEvento != null
+                                    ? Image.network(
+                                        'http://216.225.205.93:3000${evento.imagenEvento}',
+                                        fit: BoxFit.cover,
+                                      )
+                                    : Container(
+                                        color: Colors.grey[
+                                            200], // Color de marcador de posición
+                                        child: Icon(Icons.image,
+                                            color: Colors
+                                                .grey), // Icono de marcador de posición
+                                      ),
                               ),
                             ),
-
                             Column(
                               children: [
                                 SizedBox(height: Get.height / 70),
@@ -412,7 +416,7 @@ class _TrndingPageState extends State<TrndingPage> {
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 6),
                         child: Text(
-                          user[i]["event_title"],
+                          evento.tituloEvento,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
@@ -434,7 +438,7 @@ class _TrndingPageState extends State<TrndingPage> {
                             Ink(
                               width: Get.width * 0.77,
                               child: Text(
-                                user[i]["event_address"],
+                                evento.direccionEvento,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
@@ -446,7 +450,9 @@ class _TrndingPageState extends State<TrndingPage> {
                           ],
                         ),
                       ),
+
                       SizedBox(height: Get.height * 0.015),
+                      /*
                       Padding(
                         padding: const EdgeInsets.symmetric(
                             horizontal: 6, vertical: 6),
@@ -493,6 +499,7 @@ class _TrndingPageState extends State<TrndingPage> {
                           ],
                         ),
                       ),
+                      */
                     ],
                   ),
                 ],
@@ -509,7 +516,7 @@ class _TrndingPageState extends State<TrndingPage> {
     ApiWrapper.dataPost(Config.ebookmark, data).then((val) {
       if ((val != null) && (val.isNotEmpty)) {
         if ((val['ResponseCode'] == "200") && (val['Result'] == "true")) {
-          catEventListApi();
+          //catEventListApi();
         } else {
           ApiWrapper.showToastMessage(val["ResponseMsg"]);
         }

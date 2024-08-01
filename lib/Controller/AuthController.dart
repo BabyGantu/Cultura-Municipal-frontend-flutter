@@ -141,7 +141,7 @@ class AuthController extends GetxController {
     String? galeriaImagen1,
     String? galeriaImagen2,
     String? galeriaImagen3,
-    //required int organizador,
+    required String organizador,
     String? telefono,
     String? correo,
     required String tituloDireccion,

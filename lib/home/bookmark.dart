@@ -169,8 +169,7 @@ class _BookmarkState extends State<Bookmark> {
         GestureDetector(
           onTap: () {
             save("EID", user[i]["event_id"]);
-            Get.to(() => EventsDetails(eid: user[i]["event_id"]),
-                duration: Duration.zero);
+            //Get.to(() => EventsDetails(eid: user[i]["event_id"]),duration: Duration.zero);
           },
           child: Container(
             margin: const EdgeInsets.symmetric(vertical: 6),

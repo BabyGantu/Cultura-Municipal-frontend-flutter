@@ -93,16 +93,15 @@ class _CustomImagePickerState extends State<CustomImagePicker> {
   }
 
   Future<void> _selectImage(BuildContext context) async {
-    final XFile? pickedImage =
-        await _picker.pickImage(source: ImageSource.gallery);
+    final XFile? pickedImage = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedImage != null) {
       final bytes = await pickedImage.readAsBytes();
       img.Image? image = img.decodeImage(bytes);
 
       if (image != null) {
-        // Redimensionar la imagen
-        img.Image resizedImage = img.copyResize(image, width: 800); // Puedes ajustar el tamaño según sea necesario
-        final resizedBytes = img.encodePng(resizedImage);
+        // Redimensionar la imagen a un tamaño más pequeño
+        img.Image resizedImage = img.copyResize(image, width: 500); // Ajusta el tamaño según sea necesario
+        final resizedBytes = img.encodePng(resizedImage, level: 9); // Usa nivel de compresión máximo
         final base64Image = 'data:image/png;base64,${base64Encode(resizedBytes)}';
 
         setState(() {

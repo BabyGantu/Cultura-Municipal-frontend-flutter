@@ -573,7 +573,7 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
           galeriaImagen1: event_gallery[0],
           galeriaImagen2: event_gallery[1],
           // galeriaImagen3: event_gallery[2],
-          //organizador: Event_sponsore.text,
+          organizador: Event_sponsore.text,
           telefono: phone.text,
           correo: email.text,
           tituloDireccion: event_address_title.text,

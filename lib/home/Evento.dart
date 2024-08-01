@@ -67,8 +67,8 @@ class Evento {
       tituloEvento: json['titulo_evento'] ?? '',
       imagenEvento: json['imagen_evento'], // Puede ser null
       imagenPortadaEvento: json['imagen_portada_evento'], // Puede ser null
-      fechaInicio: json['fecha_inicio'] ?? '',
-      fechaFin: json['fecha_fin'] ?? '',
+      fechaInicio: formatDate(json['fecha_inicio']),
+      fechaFin: formatDate(json['fecha_fin']),
       horaInicio: json['hora_inicio'] ?? '',
       horaFin: json['hora_fin'] ?? '',
       precio: json['precio'] ?? '',
@@ -92,67 +92,174 @@ class Evento {
       statusActive: json['status_active'] == 1,
     );
   }
+  
+  static String formatDate(String dateStr) {
+  DateTime dateTime = DateTime.parse(dateStr);
+  return "${dateTime.day.toString().padLeft(2, '0')}-${dateTime.month.toString().padLeft(2, '0')}-${dateTime.year}";
 }
 
+}
+
+
 class EventosService {
-  Future<List<Evento>> cargarEventosApi() async {
-  String apiUrl = 'http://216.225.205.93:3000/api/eventos/buscarEventos';
+  
+  
+  Future<List<Evento>> cargarEventosEnUnaSemana() async {
+  final String apiUrl = 'http://216.225.205.93:3000/api/eventos/buscarEventos';
 
+  DateTime ahora = DateTime.now();
+  DateTime finSemana = ahora.add(Duration(days: 7));
+
+  String fechaInicio = "${ahora.year}-${ahora.month.toString().padLeft(2, '0')}-${ahora.day.toString().padLeft(2, '0')}";
+  String fechaFin = "${finSemana.year}-${finSemana.month.toString().padLeft(2, '0')}-${finSemana.day.toString().padLeft(2, '0')}";
+
+  print('fechaInicio: ${fechaInicio}');
+  print('fechaFin: ${fechaFin}');
   try {
-    final Map<String, dynamic> bodyData = {
-      'id_categoria': 3
-    };
-
     final response = await http.post(
       Uri.parse(apiUrl),
       headers: {
         'Content-Type': 'application/json',
       },
-      body: jsonEncode(bodyData),
+      body: jsonEncode({
+        'fecha_inicio': fechaInicio,
+        'fecha_fin': fechaFin,
+      }),
     );
 
-    // Imprimir la respuesta para depuración
-    //print('Respuesta del servidor: ${response.body}');
-
     if (response.statusCode == 200) {
-      var jsonResponse = json.decode(utf8.decode(response.bodyBytes));
+      final Map<String, dynamic> responseData = jsonDecode(response.body);
 
-      // Verificar el tipo de jsonResponse
-      //print('jsonResponse: $jsonResponse');
-
-      if (jsonResponse is Map && jsonResponse['eventos'] is List) {
-        List<dynamic> eventosJson = jsonResponse['eventos'];
-
-        List<Evento> tempEventosList = [];
-
-        for (var eventoJson in eventosJson) {
-          int id = eventoJson['id'];
-
-          // Obtener detalles del evento individual
-          try {
-            Evento evento = await obtenerDetallesEvento(id);
-            tempEventosList.add(evento);
-          } catch (e) {
-            print('Error al procesar el evento con ID $id: $e');
-            // Opcional: manejar el error según sea necesario
-          }
-        }
-
-        return tempEventosList;
+      if (responseData['rta'] == true) {
+        List<dynamic> eventosJson = responseData['eventos'];
+        List<Evento> eventos = eventosJson.map((eventoJson) => Evento.fromJson(eventoJson)).toList();
+        return eventos;
       } else {
-        throw Exception('La respuesta no contiene una lista de Eventos.');
+        print('Error en la respuesta: ${responseData['message']}');
+        return [];
       }
     } else {
-      throw Exception('Error al cargar Eventos: ${response.statusCode}');
+      print('Error en la solicitud: ${response.statusCode}');
+      return [];
     }
   } catch (e) {
-    print('Error en cargarEventosApi: $e');
-    throw Exception('Error al realizar la solicitud: $e');
+    print('Error en la conexión: $e');
+    return [];
   }
 }
 
 
-  Future<Evento> obtenerDetallesEvento(int id) async {
+Future<List<Evento>> cargarEventosDelMes() async {
+  final String apiUrl = 'http://216.225.205.93:3000/api/eventos/buscarEventos';
+
+  DateTime ahora = DateTime.now();
+  DateTime primerDiaMes = DateTime(ahora.year, ahora.month, 1);
+  DateTime ultimoDiaMes = DateTime(ahora.year, ahora.month + 1, 0);
+
+  String fechaInicio = "${primerDiaMes.year}-${primerDiaMes.month.toString().padLeft(2, '0')}-${primerDiaMes.day.toString().padLeft(2, '0')}";
+  String fechaFin = "${ultimoDiaMes.year}-${ultimoDiaMes.month.toString().padLeft(2, '0')}-${ultimoDiaMes.day.toString().padLeft(2, '0')}";
+
+  print('fechaInicio: $fechaInicio');
+  print('fechaFin: $fechaFin');
+
+  try {
+    final response = await http.post(
+      Uri.parse(apiUrl),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'fecha_inicio': fechaInicio,
+        'fecha_fin': fechaFin,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseData = jsonDecode(response.body);
+
+      if (responseData['rta'] == true) {
+        List<dynamic> eventosJson = responseData['eventos'];
+        List<Evento> eventos = eventosJson.map((eventoJson) => Evento.fromJson(eventoJson)).toList();
+        return eventos;
+      } else {
+        print('Error en la respuesta: ${responseData['message']}');
+        return [];
+      }
+    } else {
+      print('Error en la solicitud: ${response.statusCode}');
+      return [];
+    }
+  } catch (e) {
+    print('Error en la conexión: $e');
+    return [];
+  }
+}
+
+Future<List<Evento>> cargarEventosCategoria(int idCategoria) async {
+  final String apiUrl = 'http://216.225.205.93:3000/api/eventos/buscarEventos';
+
+
+
+  try {
+    final response = await http.post(
+      Uri.parse(apiUrl),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'id_categoria': idCategoria
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseData = jsonDecode(response.body);
+
+      if (responseData['rta'] == true) {
+        List<dynamic> eventosJson = responseData['eventos'];
+        List<Evento> eventos = eventosJson.map((eventoJson) => Evento.fromJson(eventoJson)).toList();
+        print('Eventossssss${eventosJson}');
+        print('id cat: ${idCategoria}');
+        return eventos;
+      } else {
+        print('Error en la respuesta: ${responseData['message']}');
+        return [];
+      }
+    } else {
+      print('Error en la solicitud: ${response.statusCode}');
+      return [];
+    }
+  } catch (e) {
+    print('Error en la conexión: $e');
+    return [];
+  }
+}
+
+Future<List<Evento>> cargarEventosCercanos(String latitud, String longitud) async {
+  final String apiUrl = 'http://216.225.205.93:3000/api/eventos/cercanos/$latitud/$longitud';
+  List<Evento> eventosConDetalles = [];
+
+  try {
+    final response = await http.get(Uri.parse(apiUrl));
+
+    if (response.statusCode == 200) {
+      List<dynamic> responseData = jsonDecode(response.body);
+
+      for (var eventoData in responseData) {
+        int eventoId = eventoData['id'];
+        Evento evento = await obtenerDetallesEvento(eventoId);
+        eventosConDetalles.add(evento);
+      }
+    } else {
+      print('Error en la solicitud de eventos cercanos: ${response.statusCode}');
+    }
+  } catch (e) {
+    print('Error en la conexión: $e');
+  }
+
+  return eventosConDetalles;
+}
+
+Future<Evento> obtenerDetallesEvento(int id) async {
   final Uri url = Uri.parse('http://216.225.205.93:3000/api/eventos/$id');
 
   try {
@@ -166,19 +273,15 @@ class EventosService {
     if (response.statusCode == 200) {
       var jsonResponse = json.decode(utf8.decode(response.bodyBytes));
 
-      // Verifica si 'rta' es verdadero y si 'eventos' no es null
       if (jsonResponse['rta'] == true) {
         var eventoJson = jsonResponse['evento'];
-        //print('Respuesta del servidor: ${eventoJson}');
-
-        // Asegúrate de que 'eventos' sea un mapa
         if (eventoJson != null && eventoJson is Map<String, dynamic>) {
           return Evento.fromJson(eventoJson);
         } else {
           throw Exception('La respuesta del servidor no contiene un evento válido.');
         }
       } else {
-        throw Exception('Error al obtener detalles del evento. es null');
+        throw Exception('Error al obtener detalles del evento.');
       }
     } else {
       throw Exception('Error al obtener detalles del evento: ${response.statusCode}');
@@ -188,5 +291,37 @@ class EventosService {
     throw Exception('Error al realizar la solicitud: $e');
   }
 }
+
+Future<bool> hayFavoritos(int userId) async {
+    final String apiUrl = 'http://216.225.205.93:3000/api/favoritos/byIdUser/$userId';
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var jsonResponse = json.decode(utf8.decode(response.bodyBytes));
+
+        if (jsonResponse['rta'] == true) {
+          var favoritoList = jsonResponse['favorito'];
+
+          // Verificar si la lista 'favorito' no está vacía
+          if (favoritoList is List && favoritoList.isNotEmpty) {
+            return true;
+          }
+        }
+      } else {
+        print('Error al obtener favoritos: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error en hayFavoritos: $e');
+    }
+
+    return false;
+  }
 
 }
