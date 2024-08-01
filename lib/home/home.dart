@@ -597,7 +597,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   Future<void> cargarEventosFavoritos() async {
     EventosService service = EventosService();
     try {
-      List<Evento> eventos = await service.cargarEventosCercanos(lat, long);
+      List<Evento> eventos = await service.obtenerEventosFavoritos();
       setState(() {
         trendingEvent = eventos;
       });

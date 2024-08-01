@@ -259,6 +259,47 @@ Future<List<Evento>> cargarEventosCercanos(String latitud, String longitud) asyn
   return eventosConDetalles;
 }
 
+Future<List<Evento>> obtenerEventosFavoritos() async {
+    final String favoritosUrl = 'http://216.225.205.93:3000/api/favoritos';
+
+    try {
+      final response = await http.get(
+        Uri.parse(favoritosUrl),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var jsonResponse = json.decode(utf8.decode(response.bodyBytes));
+
+        if (jsonResponse['rta'] == true) {
+          var favoritoList = jsonResponse['favorito'];
+
+          if (favoritoList is List && favoritoList.isNotEmpty) {
+            List<Evento> eventosFavoritos = [];
+
+            for (var favorito in favoritoList) {
+              int idEvento = favorito['id_event'];
+              Evento evento = await obtenerDetallesEvento(idEvento);
+              eventosFavoritos.add(evento);
+            }
+
+            return eventosFavoritos;
+          }
+        } else {
+          print('Error en la respuesta: ${jsonResponse['message']}');
+        }
+      } else {
+        print('Error al obtener favoritos: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error en obtenerEventosFavoritos: $e');
+    }
+
+    return [];
+  }
+
 Future<Evento> obtenerDetallesEvento(int id) async {
   final Uri url = Uri.parse('http://216.225.205.93:3000/api/eventos/$id');
 
