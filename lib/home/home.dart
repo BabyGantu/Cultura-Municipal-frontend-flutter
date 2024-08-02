@@ -1399,7 +1399,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                   color: Colors.transparent,
                   child: Padding(
                       padding: const EdgeInsets.all(7),
-                      child: Image.asset("image/logo.png")),
+                      child: Image.asset("image/Evson.png")),
                 ),
                 Expanded(
                   child: Column(
@@ -1997,11 +1997,11 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
   Future<void> share() async {
     await FlutterShare.share(
-        title: 'Evson App',
+        title: 'EvSon App',
         text:
             '¡Descubre todo lo que la cultura local tiene para ofrecer con la aplicación oficial de Evson! Descárgala ahora y únete a nosotros para celebrar la riqueza y diversidad cultural de nuestra comunidad.',
         linkUrl: 'https://play.google.com/store/apps/details?id=$packageName',
-        chooserTitle: 'Compartir Evson');
+        chooserTitle: 'Compartir EvSon');
   }
 
 /*

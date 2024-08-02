@@ -1549,17 +1549,17 @@ class LocaleString extends Translations {
           "Select Location" :"Seleccione el lugar",
           "Municipality" : "Municipio",
           "Next" : "Siguiente",
-          "Skip" : "Saltar",
+          "Skip" : "Omitir",
           "Start" : "Iniciar",
           "and " : "y ",
           "User name" : "Nombre de usuario",
           "Confirm email" : "Confirmar correo electnico",  
           "Last name" : "Apellidos",
           "Email not match" : "Correo electrónico no coincide",
-          "Accept terms & Condition is required" : "Se requiere aceptar términos y condiciones",
+          "It is necessary to accept terms of use and privacy policies" : "Es necesario aceptar términos de uso y políticas de privacidad",
           "Password not match" : "Contraseña no coincide",
           "Please enter valid email address" : "Por favor ingrese una dirección de correo electrónico válida",
-          "Please fill required field!" : "¡Por favor complete el campo requerido!",
+          "Please fill required field!" : "¡Por favor ingrese su usuario y contraseña!",
           "Email no match" : "Correo electrónico no coincide",
           "Password no match" : "Contraseña no coincide",
           "Add more prices" : "Agregar más precios",
@@ -1581,6 +1581,9 @@ class LocaleString extends Translations {
           "Did you forget your password?" : "¿Olvidaste tu contraseña?",
           "Remember me for 15 days" : "Recordarme por 15 dias",
           "You do not have an account? " : "¿No tienes una cuenta? ",
+          "User o Email" : "Usuario o Correo electronico",
+
+          
           
         },
 

@@ -744,7 +744,7 @@ class _EventsDetailsState extends State<EventsDetails> {
     children: [
       concert("image/date.png", 'Categoria', '${widget.evento.idCategoria}'),
       concert("image/date.png", 'Publico objetivo', '${widget.evento.idPublicoObjetivo}'),
-      concert("image/date.png", 'Fecha', '${formatDate(widget.evento.fechaInicio)} a ${formatDate(widget.evento.fechaFin)}'),
+      concert("image/date.png", 'Fecha', '${widget.evento.fechaInicio} a ${widget.evento.fechaFin}'),
       concert("image/date.png", 'Hora', '${widget.evento.horaInicio} a ${widget.evento.horaFin}'),
       concert("image/direction.png", widget.evento.tituloDireccion, widget.evento.direccionEvento),
       concert("image/date.png", 'Precio', widget.evento.precio),

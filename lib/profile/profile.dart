@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:goevent2/Api/ApiWrapper.dart';
 import 'package:goevent2/AppModel/Homedata/HomedataController.dart';
 import 'package:goevent2/Controller/AuthController.dart';
+import 'package:goevent2/Controller/UserPreferences.dart';
 import 'package:goevent2/home/bookmark.dart';
 import 'package:goevent2/profile/ReferFriend.dart';
 import 'package:goevent2/profile/Wallet/WalletHistory.dart';
@@ -67,7 +68,7 @@ class _ProfileState extends State<Profile> {
     final prefs = await SharedPreferences.getInstance();
     bool? previusstate = prefs.getBool("setIsDark");
     notifire.setIsDark = previusstate;
-    }
+  }
 
   @override
   void initState() {
@@ -89,7 +90,11 @@ class _ProfileState extends State<Profile> {
             children: [
               Text(
                 "Settings".tr,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, fontFamily: 'Gilroy Medium', color: notifire.textcolor),
+                style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                    fontFamily: 'Gilroy Medium',
+                    color: notifire.textcolor),
               ),
             ],
           ),
@@ -102,7 +107,11 @@ class _ProfileState extends State<Profile> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Account Settings".tr, style: TextStyle(fontSize: 16, fontFamily: 'Gilroy Bold', color: Colors.grey)),
+                    Text("Account Settings".tr,
+                        style: TextStyle(
+                            fontSize: 16,
+                            fontFamily: 'Gilroy Bold',
+                            color: Colors.grey)),
                     SizedBox(height: Get.height * 0.02),
                     settingWidget(
                       tital: "Profile".tr,
@@ -321,7 +330,7 @@ class _ProfileState extends State<Profile> {
 
   void signoutSheetMenu() {
     showModalBottomSheet(
-      backgroundColor: notifire.containercolore,
+        backgroundColor: notifire.containercolore,
         isDismissible: false,
         shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
@@ -379,9 +388,10 @@ class _ProfileState extends State<Profile> {
                       color: buttonColor,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(25)),
-                      onPressed: () {
-                        getData.remove("UserLogin");
-                        getData.remove("FirstUser");
+                      onPressed: () async {
+                        await UserPreferences.removeToken();
+                        await UserPreferences.removeUserId();
+                        await UserPreferences.removeExpToken();
                         Get.offAll(() => const Login());
                       },
                       child: Text(
@@ -448,7 +458,10 @@ class _ProfileState extends State<Profile> {
                                 print(locale[index]['name']);
                                 updateLanguage(locale[index]['locale']);
                               },
-                              child: Text(locale[index]['name'],style: TextStyle(color: notifire.textcolor),)),
+                              child: Text(
+                                locale[index]['name'],
+                                style: TextStyle(color: notifire.textcolor),
+                              )),
                         ]),
                       );
                     },
@@ -486,7 +499,8 @@ class _ProfileState extends State<Profile> {
             text = "";
           }
         }
-        print("jwgqdskdjchsjdilcuhsilcjsailkfhcjilsjfcsilkjfchidshfcid${dynamicPageDataList.length}");
+        print(
+            "jwgqdskdjchsjdilcuhsilcjsailkfhcjilsjfcsilkjfchidshfcid${dynamicPageDataList.length}");
         setState(() {
           isLodding = true;
         });

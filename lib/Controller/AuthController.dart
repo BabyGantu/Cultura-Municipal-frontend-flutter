@@ -72,7 +72,7 @@ class AuthController extends GetxController {
     required String nombreUsuario,
     required String nombre,
     required String apellido,
-    required int telefono,
+    required int? telefono,
     required String password,
   }) async {
     final Uri url = Uri.parse('http://216.225.205.93:3000/api/auth/register');
@@ -217,7 +217,7 @@ class AuthController extends GetxController {
         ApiWrapper.showToastMessage(message);
 
         // Puedes navegar a otra pantalla o realizar otras acciones aquí
-        // Get.to(() => const Bottombar(), duration: Duration.zero);
+        
       } else {
         print('Error: $message');
       }

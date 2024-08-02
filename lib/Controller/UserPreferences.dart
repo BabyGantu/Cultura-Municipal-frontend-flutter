@@ -30,4 +30,20 @@ class UserPreferences {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('id_user');
   }
+
+  // Métodos para eliminar los datos
+  static Future<void> removeToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('token');
+  }
+
+  static Future<void> removeExpToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('fechaExpiracion');
+  }
+
+  static Future<void> removeUserId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('id_user');
+  }
 }

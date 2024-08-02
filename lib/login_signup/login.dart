@@ -72,13 +72,13 @@ class _LoginState extends State<Login> {
                 SizedBox(height: height / 11),
                 Center(
                   child: Image.asset(
-                    "image/CajemeCultura.jpg",
+                    "image/Evson.png",
                     height: height / 13,
                   ),
                 ),
                 SizedBox(height: height / 100),
                 Text(
-                  "Evson".tr,
+                  "EvSon".tr,
                   style: TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.w700,
@@ -109,7 +109,7 @@ class _LoginState extends State<Login> {
                       Expanded(
                         child: Customtextfild.textField(
                           controller: email,
-                          name1: "Email".tr,
+                          name1: "User o Email".tr,
                           labelclr: Colors.grey,
                           textcolor: notifire.getwhitecolor,
                           prefixIcon: Image.asset(
@@ -219,7 +219,7 @@ class _LoginState extends State<Login> {
                     ),
                   ),
                 ),
-                SizedBox(height: Get.height * 0.25),
+                SizedBox(height: Get.height * 0.20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -227,7 +227,7 @@ class _LoginState extends State<Login> {
                       "You do not have an account? ".tr,
                       style: TextStyle(
                         color: notifire.getwhitecolor,
-                        fontSize: 12,
+                        fontSize: 15,
                         fontFamily: 'Gilroy Medium',
                       ),
                     ),

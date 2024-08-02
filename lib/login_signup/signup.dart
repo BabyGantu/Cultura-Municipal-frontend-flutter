@@ -125,7 +125,7 @@ class _SignupState extends State<Signup> {
                                     scale: 3.5, color: notifire.textcolor),
                                 context: context,
                               ),
-                              
+
                               buildEmptyFieldWarning(email, verificar),
                               SizedBox(height: height / 100),
 
@@ -139,7 +139,8 @@ class _SignupState extends State<Signup> {
                                 context: context,
                               ),
                               buildEmptyFieldWarning(semail, verificar),
-                              buildNoMatchEmailFieldWarning(email, semail, verificar),
+                              buildNoMatchEmailFieldWarning(
+                                  email, semail, verificar),
                               SizedBox(height: height / 100),
 
                               Customtextfild.textField(
@@ -157,7 +158,7 @@ class _SignupState extends State<Signup> {
                               Customtextfild.textField(
                                 controller: lastname,
                                 name1: "Last name".tr,
-                                labelclr:Colors.grey,
+                                labelclr: Colors.grey,
                                 textcolor: notifire.getwhitecolor,
                                 keyboardType: TextInputType.text,
                                 prefixIcon: Image.asset("image/Profile.png",
@@ -266,7 +267,8 @@ class _SignupState extends State<Signup> {
                                 context: context,
                               ),
                               buildEmptyFieldWarning(spassword, verificar),
-                              buildNoMatchPasswordFieldWarning(fpassword, spassword, verificar),
+                              buildNoMatchPasswordFieldWarning(
+                                  fpassword, spassword, verificar),
                               SizedBox(height: height / 100),
                               SizedBox(height: Get.height * 0.02),
                               Row(
@@ -403,61 +405,59 @@ class _SignupState extends State<Signup> {
     );
   }
 
-
-
-ValueListenableBuilder buildNoMatchPasswordFieldWarning(
-  TextEditingController controller1,
-  TextEditingController controller2,
-  bool condition,
-) {
-  return ValueListenableBuilder(
-    valueListenable: controller1, 
-    builder: (context, value, child) {
-      return ValueListenableBuilder(
-        valueListenable: controller2,
-        builder: (context, value, child) {
-          return Visibility(
-            visible: controller1.text != controller2.text && condition,
-            child: Text(
-              "Password no match".tr,
-              style: TextStyle(
-                color: Colors.red,
-                fontSize: 12.0,
+  ValueListenableBuilder buildNoMatchPasswordFieldWarning(
+    TextEditingController controller1,
+    TextEditingController controller2,
+    bool condition,
+  ) {
+    return ValueListenableBuilder(
+      valueListenable: controller1,
+      builder: (context, value, child) {
+        return ValueListenableBuilder(
+          valueListenable: controller2,
+          builder: (context, value, child) {
+            return Visibility(
+              visible: controller1.text != controller2.text && condition,
+              child: Text(
+                "Password no match".tr,
+                style: TextStyle(
+                  color: Colors.red,
+                  fontSize: 12.0,
+                ),
               ),
-            ),
-          );
-        },
-      );
-    },
-  );
-}
+            );
+          },
+        );
+      },
+    );
+  }
 
   ValueListenableBuilder buildNoMatchEmailFieldWarning(
-  TextEditingController controller1,
-  TextEditingController controller2,
-  bool condition,
-) {
-  return ValueListenableBuilder(
-    valueListenable: controller1, 
-    builder: (context, value, child) {
-      return ValueListenableBuilder(
-        valueListenable: controller2,
-        builder: (context, value, child) {
-          return Visibility(
-            visible: controller1.text != controller2.text && condition,
-            child: Text(
-              "Email no match".tr,
-              style: TextStyle(
-                color: Colors.red,
-                fontSize: 12.0,
+    TextEditingController controller1,
+    TextEditingController controller2,
+    bool condition,
+  ) {
+    return ValueListenableBuilder(
+      valueListenable: controller1,
+      builder: (context, value, child) {
+        return ValueListenableBuilder(
+          valueListenable: controller2,
+          builder: (context, value, child) {
+            return Visibility(
+              visible: controller1.text != controller2.text && condition,
+              child: Text(
+                "Email no match".tr,
+                style: TextStyle(
+                  color: Colors.red,
+                  fontSize: 12.0,
+                ),
               ),
-            ),
-          );
-        },
-      );
-    },
-  );
-}
+            );
+          },
+        );
+      },
+    );
+  }
 
   Widget log(clr, name, img, clr2) {
     return Center(
@@ -566,14 +566,27 @@ ValueListenableBuilder buildNoMatchPasswordFieldWarning(
               print('Nombre usuario: ${userName.text}');
               print('Telefono: ${number.text}');
               print('contrasna: ${fpassword.text}');
-              
-              login.registrarUsuario(
-                  email: email.text,
-                  nombreUsuario: userName.text,
-                  nombre: name.text,
-                  telefono: int.parse(number.text),
-                  apellido: lastname.text,
-                  password: fpassword.text);
+
+              try {
+                int? telefono;
+                if (number.text.isNotEmpty) {
+                  telefono = int.parse(number.text);
+                } else {
+                  telefono =
+                      null; // O el valor predeterminado que prefieras, como 0.
+                }
+
+                login.registrarUsuario(
+                    email: email.text,
+                    nombreUsuario: userName.text,
+                    nombre: name.text,
+                    telefono: telefono,
+                    apellido: lastname.text,
+                    password: fpassword.text);
+              } catch (e) {
+                ApiWrapper.showToastMessage(
+                    'Error al registrar el usuario. Por favor, verifica los datos ingresados o intentelo de nuevo mas tarde.');
+              }
 
               print('Chingon');
             } else {

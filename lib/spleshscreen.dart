@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:goevent2/Controller/AuthController.dart';
 import 'package:goevent2/Bottombar.dart';
+import 'package:goevent2/Controller/UserPreferences.dart';
 import 'package:goevent2/home/home.dart';
 import 'package:goevent2/utils/AppWidget.dart';
 import 'package:goevent2/utils/media.dart';
@@ -39,18 +40,37 @@ class _SpleshscreenState extends State<Spleshscreen> {
   late LocationPermission permission;
   late Position position;
 
+  String? token;
+  String? userId;
+  String? fechaExpiracion;
+
   late StreamSubscription<Position> positionStream;
+
+  Future<void> initializeAsyncDependencies() async {
+  token = await UserPreferences.getToken();
+  userId = await UserPreferences.getUserId();
+  fechaExpiracion = await UserPreferences.getFechaExpiracion();
+  
+  Timer(
+    const Duration(seconds: 4),
+    () {
+      print('id de usuario es: $userId');
+      print('el token de usuario es: $token');
+      print('la fecha de expiracion del token es: $fechaExpiracion');
+      if (userId == null) {
+        Get.to(() => const Onbonding(), duration: Duration.zero);
+      } else {
+        Get.to(() => const Bottombar(), duration: Duration.zero);
+      }
+    },
+  );
+}
   @override
   void initState() {
     super.initState();
     checkGps();
-
     getdarkmodepreviousstate();
-    Timer(
-        const Duration(seconds: 4),
-        () => getData.read("UserLogin") == null
-            ? Get.to(() => const Onbonding(), duration: Duration.zero)
-            : Get.to(() => const Bottombar(), duration: Duration.zero));
+    initializeAsyncDependencies();
   }
 
   late ColorNotifire notifire;
@@ -135,13 +155,13 @@ class _SpleshscreenState extends State<Spleshscreen> {
               Container(
                   color: Colors.transparent,
                   height: height / 7,
-                  child: Image.asset("image/CajemeCultura.jpg")),
+                  child: Image.asset("image/Evson.png")),
               SizedBox(height: height / 30),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Evson".tr,
+                    "EvSon".tr,
                     style: TextStyle(
                         fontSize: 35,
                         fontFamily: 'Gilroy ExtraBold',

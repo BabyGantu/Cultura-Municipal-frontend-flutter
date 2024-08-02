@@ -26,7 +26,7 @@ void main() async {
   runApp(MultiProvider(
     providers: [ChangeNotifierProvider(create: (_) => ColorNotifire())],
     child: MaterialApp( // Envuelve GetMaterialApp con MaterialApp aquí
-      title: 'Evson'.tr,
+      title: 'EvSon'.tr,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: false,

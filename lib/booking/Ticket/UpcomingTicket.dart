@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:goevent2/Api/ApiWrapper.dart';
 import 'package:goevent2/Api/Config.dart';
 import 'package:goevent2/AppModel/Homedata/HomedataController.dart';
+import 'package:goevent2/Bottombar.dart';
 import 'package:goevent2/Controller/AuthController.dart';
 import 'package:goevent2/booking/Ticket/TicketDetails.dart';
 import 'package:goevent2/utils/AppWidget.dart';
@@ -587,6 +588,7 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
         );
 
         ApiWrapper.showToastMessage("Evento Registrado Correctamente");
+        Get.to(() => const Bottombar(), duration: Duration.zero);
 
         // Limpiar los controladores de texto y las listas de imágenes
         /*

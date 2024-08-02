@@ -1,7 +1,7 @@
 class CustomStrings {
-  static const String goevet = 'Evson';
+  static const String goevet = 'EvSon';
   static const String onbonding1 = 'Bienvenido a';
-  static const String onbonding2 = 'Evson';
+  static const String onbonding2 = 'EvSon';
   static const String safe = 'Stay safe, be safe';
   static const String covid = 'Covid - 19 Self Health\nDeclaration';
   static const String details =
