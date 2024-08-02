@@ -1160,11 +1160,13 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
    */
 
   tredingEvents(Evento evento, int i) {
-    return InkWell(
+    return 
+    InkWell(
       onTap: () {
-        Get.to(() => EventsDetails(eid: evento.id.toString(), evento: evento),
-            duration: Duration.zero);
-      },
+            Get.to(
+                () => EventsDetails(eid: evento.id.toString(), evento: evento),
+                duration: Duration.zero);
+          },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8),
         child: SizedBox(

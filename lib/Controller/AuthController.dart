@@ -316,9 +316,11 @@ class AuthController extends GetxController {
     );
 
     if (response.statusCode == 200) {
-      final Map<String, dynamic> responseData = json.decode(response.body);
-      final List<dynamic> message = responseData['message'];
-      if (message.isNotEmpty) {
+      var jsonResponse = json.decode(utf8.decode(response.bodyBytes));
+      //final Map<String, dynamic> responseData = json.decode(response.body);
+      //final List<dynamic> message = responseData['message'];
+      if (jsonResponse['rta'] == true) {
+        var message = jsonResponse['message'];
         final user = message[0];
         final token = user['token'];
         final id = user['id_user'];
@@ -336,10 +338,19 @@ class AuthController extends GetxController {
 
         Get.to(() => const Bottombar(), duration: Duration.zero);
         return;
+      } else {
+        var jsonResponse = json.decode(utf8.decode(response.bodyBytes));
+        var message = jsonResponse['message'];
+        print('Error: ${response.reasonPhrase}');
+        print('Código de error: ${response.statusCode}');
+        ApiWrapper.showToastMessage('Error: ${message}');
       }
     } else {
+      var jsonResponse = json.decode(utf8.decode(response.bodyBytes));
+      var message = jsonResponse['message'];
       print('Error: ${response.reasonPhrase}');
       print('Código de error: ${response.statusCode}');
+      ApiWrapper.showToastMessage('Error: ${jsonResponse[message]}');
     }
   }
 
