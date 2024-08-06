@@ -7,7 +7,9 @@ import 'package:get/get.dart';
 import 'package:goevent2/Api/ApiWrapper.dart';
 import 'package:goevent2/Api/Config.dart';
 import 'package:goevent2/AppModel/Homedata/HomedataController.dart';
+import 'package:goevent2/Controller/UserPreferences.dart';
 import 'package:goevent2/home/EventDetails.dart';
+import 'package:goevent2/home/Evento.dart';
 import 'package:goevent2/utils/AppWidget.dart';
 import 'package:goevent2/utils/colornotifire.dart';
 import 'package:goevent2/utils/media.dart';
@@ -25,21 +27,30 @@ class Bookmark extends StatefulWidget {
 }
 
 class _BookmarkState extends State<Bookmark> {
-  List bookmarkList = [];
+  //List bookmarkList = [];
+  List<Evento> bookmarkList = [];
   late ColorNotifire notifire;
   bool isLoading = false;
+
+  String? token;
+  String? userId;
+  String? fechaExpiracion;
+  bool? status;
 
   getdarkmodepreviousstate() async {
     final prefs = await SharedPreferences.getInstance();
     bool? previusstate = prefs.getBool("setIsDark");
     notifire.setIsDark = previusstate;
-    }
+  }
 
   @override
   void initState() {
+    //initializeAsyncDependencies();
     super.initState();
     bookMarkListApi();
     getdarkmodepreviousstate();
+    
+    cargarEventosFavoritosPorId();
   }
 
 //!
@@ -52,7 +63,7 @@ class _BookmarkState extends State<Bookmark> {
       setState(() {});
       if ((val != null) && (val.isNotEmpty)) {
         if ((val['ResponseCode'] == "200") && (val['Result'] == "true")) {
-          bookmarkList = val["EventData"];
+          //bookmarkList = val["EventData"];
           setState(() {
             isLoading = false;
           });
@@ -65,12 +76,66 @@ class _BookmarkState extends State<Bookmark> {
     });
   }
 
+  Future<void> initializeAsyncDependencies() async {
+  token = await UserPreferences.getToken();
+  userId = await UserPreferences.getUserId();
+  fechaExpiracion = await UserPreferences.getFechaExpiracion();
+  status = await UserPreferences.getStatus();
+}
+
+Future<void> cargarEventosFavoritosPorId() async {
+  EventosService service = EventosService();
+  token = await UserPreferences.getToken();
+    userId = await UserPreferences.getUserId();
+    fechaExpiracion = await UserPreferences.getFechaExpiracion();
+    status = await UserPreferences.getStatus();
+
+  print('El id es: ${userId}');
+  
+  if (userId == null) {
+    print('El id de usuario es null, no se pueden cargar los eventos favoritos');
+    setState(() {
+      isLoading = false;
+    });
+    return;
+  }
+
+  int? userIdInt = int.tryParse(userId!);
+  if (userIdInt == null) {
+    print('Error: El id de usuario no es un número válido');
+    setState(() {
+      isLoading = false;
+    });
+    return;
+  }
+
+  setState(() {
+    isLoading = true;
+  });
+
+  try {
+    List<Evento> eventos = await service.obtenerEventosFavoritosPorId(userIdInt);
+    setState(() {
+      bookmarkList = eventos;
+      isLoading = false;
+    });
+  } catch (e) {
+    setState(() {
+      isLoading = false;
+    });
+    print('Error al cargar los eventos favoritos: $e');
+  }
+}
+
+
+
+
   Future<bool> onLikeButtonTapped(isLiked, eid) async {
     var data = {"eid": eid, "uid": uID};
     ApiWrapper.dataPost(Config.ebookmark, data).then((val) {
       if ((val != null) && (val.isNotEmpty)) {
         if ((val['ResponseCode'] == "200") && (val['Result'] == "true")) {
-          bookmarkList.clear();
+          //bookmarkList.clear();
           bookMarkListApi();
         } else {
           ApiWrapper.showToastMessage(val["ResponseMsg"]);
@@ -127,7 +192,7 @@ class _BookmarkState extends State<Bookmark> {
                                   shrinkWrap: true,
                                   physics: const NeverScrollableScrollPhysics(),
                                   itemBuilder: (ctx, i) {
-                                    return events(bookmarkList, i);
+                                    return events(bookmarkList[i], i);
                                   },
                                 )
                               : Column(
@@ -163,13 +228,15 @@ class _BookmarkState extends State<Bookmark> {
     );
   }
 
-  Widget events(user, i) {
+  Widget events(Evento evento, int i) {
     return Stack(
       children: [
         GestureDetector(
           onTap: () {
-            save("EID", user[i]["event_id"]);
-            //Get.to(() => EventsDetails(eid: user[i]["event_id"]),duration: Duration.zero);
+            //save("EID", user[i]["event_id"]);
+            Get.to(
+                () => EventsDetails(eid: evento.id.toString(), evento: evento),
+                duration: Duration.zero);
           },
           child: Container(
             margin: const EdgeInsets.symmetric(vertical: 6),
@@ -199,8 +266,8 @@ class _BookmarkState extends State<Bookmark> {
                                 fit: BoxFit.cover,
                                 height: height / 3.5,
                                 width: width,
-                                image:
-                                    Config.base_url + user[i]["event_img"]),
+                                image: 'http://216.225.205.93:3000${evento.imagenEvento}'
+                                ),
                           ),
                           SizedBox(height: height / 70),
                         ],
@@ -208,7 +275,7 @@ class _BookmarkState extends State<Bookmark> {
                     ),
                     SizedBox(height: height / 50),
                     Text(
-                      user[i]["event_title"],
+                      evento.tituloEvento,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
@@ -225,7 +292,7 @@ class _BookmarkState extends State<Bookmark> {
                         Ink(
                           width: Get.width * 0.77,
                           child: Text(
-                            user[i]["event_address"],
+                            evento.direccionEvento,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
@@ -243,7 +310,7 @@ class _BookmarkState extends State<Bookmark> {
                     right: 4,
                     top: 4,
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(100/2),
+                      borderRadius: BorderRadius.circular(100 / 2),
                       child: BackdropFilter(
                         blendMode: BlendMode.srcIn,
                         filter: ImageFilter.blur(
@@ -256,9 +323,14 @@ class _BookmarkState extends State<Bookmark> {
                           child: Padding(
                             padding: const EdgeInsets.only(left: 3),
                             child: LikeButton(
+                              /*
                               onTap: (val) {
-                                return onLikeButtonTapped(val, user[i]["event_id"]);
+                                
+                                return onLikeButtonTapped(
+                                    val, user[i]["event_id"]);
+                                    
                               },
+                              */
                               likeBuilder: (bool isLiked) {
                                 return !isLiked
                                     ? const Icon(Icons.favorite,

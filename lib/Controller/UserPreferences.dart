@@ -16,6 +16,16 @@ class UserPreferences {
     await prefs.setString('id_user', userId);
   }
 
+  static Future<void> setUserStatus(bool status) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('status', status);
+  }
+
+   static Future<bool?> getStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('status');
+  }
+
   static Future<String?> getFechaExpiracion() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('fechaExpiracion');
@@ -45,5 +55,10 @@ class UserPreferences {
   static Future<void> removeUserId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.remove('id_user');
+  }
+
+  static Future<void> removeStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('status');
   }
 }

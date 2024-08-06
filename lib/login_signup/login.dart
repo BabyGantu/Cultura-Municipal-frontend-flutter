@@ -18,7 +18,6 @@ import 'package:goevent2/utils/media.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
 
@@ -39,7 +38,7 @@ class _LoginState extends State<Login> {
     final prefs = await SharedPreferences.getInstance();
     bool? previusstate = prefs.getBool("setIsDark");
     notifire.setIsDark = previusstate;
-    }
+  }
 
   bool _obscureText = true;
   void _toggle() {
@@ -199,15 +198,14 @@ class _LoginState extends State<Login> {
                   onTap: () {
                     //FocusScope.of(context).requestFocus(FocusNode());
                     //Get.to(() => const Bottombar(), duration: Duration.zero);
-                    
+
                     if (email.text.isNotEmpty && password.text.isNotEmpty) {
-                      
-                      login.iniciarSesion(email.text, password.text);
+                      login.iniciarSesion(email.text, password.text, status);
+                      print('El status es: ${status}');
                     } else {
                       ApiWrapper.showToastMessage(
                           "Please fill required field!".tr);
                     }
-                    
                   },
                   child: SizedBox(
                     height: 45,
@@ -297,20 +295,20 @@ class _LoginState extends State<Login> {
           child: ButtonTheme(
             alignedDropdown: true,
             child: DropdownButton(
-                value: dropdownValue,
-                items: login.countryCode.map((value) {
-                  return DropdownMenuItem<String>(
-                      value: value,
-                      child: Text(value.toString(),
-                          style: TextStyle(
-                              fontSize: 14.0, color: notifire.getwhitecolor)));
-                }).toList(),
-                onChanged: (String? value) {
-                  setState(() {
-                    dropdownValue = value!;
-                  });
-                },
-                //style: Theme.of(context).textTheme.headline6
+              value: dropdownValue,
+              items: login.countryCode.map((value) {
+                return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value.toString(),
+                        style: TextStyle(
+                            fontSize: 14.0, color: notifire.getwhitecolor)));
+              }).toList(),
+              onChanged: (String? value) {
+                setState(() {
+                  dropdownValue = value!;
+                });
+              },
+              //style: Theme.of(context).textTheme.headline6
             ),
           ),
         ),

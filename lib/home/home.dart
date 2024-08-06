@@ -510,7 +510,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
       // Token fijo
       String token =
-          r'$2b$10$9K444oFztsFD91whsoRpHugVnuNXBFgLI6WDBt.A67oVKLOHqLNtu'; // Reemplaza esto con tu token
+          r'$2b$10$Tj1i1OIwucYbRsIFpt6Fm.7Us0HrBDIShd.TgiDpxKsn5QEoauhrm'; // Reemplaza esto con tu token
 
       // Realizar la solicitud POST con el token en los encabezados
       final Uri url = Uri.parse('http://216.225.205.93:3000/api/categorias');
@@ -549,10 +549,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
         categoriasList = categorias;
       });
 
-      // Imprimir los datos de las categorías cargadas
-      for (var categoria in categoriasList) {
-        //print('ID: ${categoria.id}, Nombre: ${categoria.nombre}, Imagen: ${categoria.imagen}, Activo: ${categoria.statusActive}');
-      }
     } catch (e) {
       print('Error al cargar categorías: $e');
     }
@@ -605,6 +601,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       print('Error al cargar los eventos cercanos: $e');
     }
   }
+
+  
 
   @override
   void initState() {
@@ -728,12 +726,12 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                     
                     ElevatedButton(
                       onPressed: () {
-                        enviarCategoria('Virtuales', 'image/fire.png');
+                        enviarCategoria('Museos y Exposiciones', 'image/Museos.png');
                       },
                       child: Text('Upload Image'),
                     ),
-*/
 
+*/
                     Padding(
                       padding: const EdgeInsets.only(left: 8),
                       child: SizedBox(
@@ -1399,7 +1397,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                   color: Colors.transparent,
                   child: Padding(
                       padding: const EdgeInsets.all(7),
-                      child: Image.asset("image/Evson.png")),
+                      child: Image.asset("image/CalendarioEvson.png")),
                 ),
                 Expanded(
                   child: Column(

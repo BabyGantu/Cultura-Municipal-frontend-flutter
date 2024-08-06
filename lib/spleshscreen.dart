@@ -1,6 +1,7 @@
 // ignore_for_file: avoid_print
 
 import 'dart:async';
+import 'dart:convert';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'AppModel/Homedata/HomedataController.dart';
 import 'onbonding.dart';
 import 'utils/colornotifire.dart';
+
+import 'package:http/http.dart' as http;
 
 String long = "", lat = "";
 double longD = 0, latD = 0;
@@ -43,28 +46,62 @@ class _SpleshscreenState extends State<Spleshscreen> {
   String? token;
   String? userId;
   String? fechaExpiracion;
+  bool? status;
 
   late StreamSubscription<Position> positionStream;
 
-  Future<void> initializeAsyncDependencies() async {
-  token = await UserPreferences.getToken();
-  userId = await UserPreferences.getUserId();
-  fechaExpiracion = await UserPreferences.getFechaExpiracion();
-  
-  Timer(
-    const Duration(seconds: 4),
-    () {
-      print('id de usuario es: $userId');
-      print('el token de usuario es: $token');
-      print('la fecha de expiracion del token es: $fechaExpiracion');
-      if (userId == null) {
-        Get.to(() => const Onbonding(), duration: Duration.zero);
+  Future<bool> validarToken(String token) async {
+    final Uri url =
+        Uri.parse('http://216.225.205.93:3000/api/auth/validToken/$token');
+
+    try {
+      final response = await http.get(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var jsonResponse = json.decode(utf8.decode(response.bodyBytes));
+        if (jsonResponse['rta'] == true) {
+          print('TOKEN VALIDO');
+          return true;
+        } else {
+          print('Error en la validación del token: ${jsonResponse['message']}');
+          print('TOKEN INVALIDO');
+          return false;
+        }
       } else {
-        Get.to(() => const Bottombar(), duration: Duration.zero);
+        print('Error en la solicitud: ${response.statusCode}');
+        return false;
       }
-    },
-  );
-}
+    } catch (e) {
+      print('Error en validarToken: $e');
+      return false;
+    }
+  }
+
+  
+
+  Future<void> initializeAsyncDependencies() async {
+    token = await UserPreferences.getToken();
+    userId = await UserPreferences.getUserId();
+    fechaExpiracion = await UserPreferences.getFechaExpiracion();
+    status = await UserPreferences.getStatus();
+
+    Timer(
+      const Duration(seconds: 4),
+      () async {
+        if (token == null || !await validarToken(token!)) {
+          Get.to(() => const Onbonding(), duration: Duration.zero);
+        } else {
+          Get.to(() => const Bottombar(), duration: Duration.zero);
+        }
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -80,7 +117,7 @@ class _SpleshscreenState extends State<Spleshscreen> {
     final prefs = await SharedPreferences.getInstance();
     bool? previusstate = prefs.getBool("setIsDark");
     notifire.setIsDark = previusstate;
-    }
+  }
 
 //! permission handel
   checkGps() async {
@@ -167,7 +204,6 @@ class _SpleshscreenState extends State<Spleshscreen> {
                         fontFamily: 'Gilroy ExtraBold',
                         color: notifire.gettextcolor),
                   ),
-                  
                 ],
               ),
             ],

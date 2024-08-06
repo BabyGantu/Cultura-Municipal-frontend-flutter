@@ -260,45 +260,51 @@ Future<List<Evento>> cargarEventosCercanos(String latitud, String longitud) asyn
 }
 
 Future<List<Evento>> obtenerEventosFavoritos() async {
-    final String favoritosUrl = 'http://216.225.205.93:3000/api/favoritos';
+  final String favoritosUrl = 'http://216.225.205.93:3000/api/favoritos/principales';
 
-    try {
-      final response = await http.get(
-        Uri.parse(favoritosUrl),
-        headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-      );
+  try {
+    final response = await http.get(
+      Uri.parse(favoritosUrl),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
 
-      if (response.statusCode == 200) {
-        var jsonResponse = json.decode(utf8.decode(response.bodyBytes));
+    if (response.statusCode == 200) {
+      var jsonResponse = json.decode(utf8.decode(response.bodyBytes));
 
-        if (jsonResponse['rta'] == true) {
-          var favoritoList = jsonResponse['favorito'];
+      if (jsonResponse['rta'] == true) {
+        var favoritoList = jsonResponse['favorito'];
 
-          if (favoritoList is List && favoritoList.isNotEmpty) {
-            List<Evento> eventosFavoritos = [];
+        if (favoritoList is List && favoritoList.isNotEmpty) {
+          List<Evento> eventosFavoritos = [];
 
-            for (var favorito in favoritoList) {
-              int idEvento = favorito['id_event'];
-              Evento evento = await obtenerDetallesEvento(idEvento);
-              eventosFavoritos.add(evento);
+          for (var favoritoGroup in favoritoList) {
+            var favoritos = favoritoGroup['Favoritos'];
+            if (favoritos is List) {
+              for (var favorito in favoritos) {
+                int idEvento = favorito['id_event'];
+                Evento evento = await obtenerDetallesEvento(idEvento);
+                eventosFavoritos.add(evento);
+              }
             }
-
-            return eventosFavoritos;
           }
-        } else {
-          print('Error en la respuesta: ${jsonResponse['message']}');
+
+          return eventosFavoritos;
         }
       } else {
-        print('Error al obtener favoritos: ${response.statusCode}');
+        print('Error en la respuesta: ${jsonResponse['message']}');
       }
-    } catch (e) {
-      print('Error en obtenerEventosFavoritos: $e');
+    } else {
+      print('Error al obtener favoritos: ${response.statusCode}');
     }
-
-    return [];
+  } catch (e) {
+    print('Error en obtenerEventosFavoritos: $e');
   }
+
+  return [];
+}
+
 
 Future<Evento> obtenerDetallesEvento(int id) async {
   final Uri url = Uri.parse('http://216.225.205.93:3000/api/eventos/$id');
@@ -365,4 +371,45 @@ Future<bool> hayFavoritos(int userId) async {
     return false;
   }
 
+
+Future<List<Evento>> obtenerEventosFavoritosPorId(int userId) async {
+    final String apiUrl = 'http://216.225.205.93:3000/api/favoritos/byIdUser/$userId';
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var jsonResponse = json.decode(utf8.decode(response.bodyBytes));
+
+        if (jsonResponse['rta'] == true) {
+          var favoritoList = jsonResponse['favorito'];
+
+          if (favoritoList is List && favoritoList.isNotEmpty) {
+            List<Evento> eventosFavoritos = [];
+
+            for (var favorito in favoritoList) {
+              int idEvento = favorito['id_event'];
+              Evento evento = await obtenerDetallesEvento(idEvento);
+              eventosFavoritos.add(evento);
+            }
+
+            return eventosFavoritos;
+          }
+        } else {
+          print('Error en la respuesta favorita: ${jsonResponse['message']}');
+        }
+      } else {
+        print('Error al obtener favoritos: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error en obtenerEventosFavoritos: $e');
+    }
+
+    return [];
+  }
 }

@@ -302,7 +302,7 @@ class AuthController extends GetxController {
     }
   }
 
-  Future<void> iniciarSesion(String email, String password) async {
+  Future<void> iniciarSesion(String email, String password, bool status) async {
     final Uri url = Uri.parse('$endpoin/api/auth/login');
     final response = await http.post(
       url,
@@ -335,6 +335,7 @@ class AuthController extends GetxController {
         tokenUser = token;
         await UserPreferences.setUserId(id.toString());
         await UserPreferences.setExpToken(fechaExpiracion);
+        await UserPreferences.setUserStatus(status);
 
         Get.to(() => const Bottombar(), duration: Duration.zero);
         return;
