@@ -54,7 +54,6 @@ class _SpleshscreenState extends State<Spleshscreen> {
     final Uri url =
         Uri.parse('http://216.225.205.93:3000/api/auth/validToken/$token');
 
-    try {
       final response = await http.get(
         url,
         headers: <String, String>{
@@ -76,10 +75,7 @@ class _SpleshscreenState extends State<Spleshscreen> {
         print('Error en la solicitud: ${response.statusCode}');
         return false;
       }
-    } catch (e) {
-      print('Error en validarToken: $e');
-      return false;
-    }
+    
   }
 
   
@@ -100,6 +96,7 @@ class _SpleshscreenState extends State<Spleshscreen> {
         }
       },
     );
+
   }
 
   @override

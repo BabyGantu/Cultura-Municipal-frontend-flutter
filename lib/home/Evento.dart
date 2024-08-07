@@ -339,37 +339,40 @@ Future<Evento> obtenerDetallesEvento(int id) async {
   }
 }
 
-Future<bool> hayFavoritos(int userId) async {
-    final String apiUrl = 'http://216.225.205.93:3000/api/favoritos/byIdUser/$userId';
+Future<List<dynamic>> obtenerFavoritos(int userId) async {
+  final String apiUrl = 'http://216.225.205.93:3000/api/favoritos/byIdUser/$userId';
 
-    try {
-      final response = await http.get(
-        Uri.parse(apiUrl),
-        headers: {
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-      );
+  try {
+    final response = await http.get(
+      Uri.parse(apiUrl),
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    );
 
-      if (response.statusCode == 200) {
-        var jsonResponse = json.decode(utf8.decode(response.bodyBytes));
+    if (response.statusCode == 200) {
+      var jsonResponse = json.decode(utf8.decode(response.bodyBytes));
 
-        if (jsonResponse['rta'] == true) {
-          var favoritoList = jsonResponse['favorito'];
+      if (jsonResponse['rta'] == true) {
+        var favoritoList = jsonResponse['favorito'];
 
-          // Verificar si la lista 'favorito' no está vacía
-          if (favoritoList is List && favoritoList.isNotEmpty) {
-            return true;
-          }
+        // Verificar si la lista 'favorito' no está vacía
+        if (favoritoList is List && favoritoList.isNotEmpty) {
+          return favoritoList;
         }
       } else {
-        print('Error al obtener favoritos: ${response.statusCode}');
+        print('Error en la respuesta: ${jsonResponse['message']}');
       }
-    } catch (e) {
-      print('Error en hayFavoritos: $e');
+    } else {
+      print('Error al obtener favoritos: ${response.statusCode}');
     }
-
-    return false;
+  } catch (e) {
+    print('Error en obtenerFavoritos: $e');
   }
+
+  return [];
+}
+
 
 
 Future<List<Evento>> obtenerEventosFavoritosPorId(int userId) async {

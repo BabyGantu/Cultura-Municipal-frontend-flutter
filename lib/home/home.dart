@@ -43,304 +43,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_image_stack/flutter_image_stack.dart';
 import 'package:goevent2/AppModel/Homedata/HomedataController.dart';
 
-const String categoriasJson = '''
-{
-  "categorias": [
-    {
-      "id": "1",
-      "title": "Artes Escénicas",
-      "image": "image/fire.png",
-      "cover_img": "image/fire.png"
-    },
-    {
-      "id": "2",
-      "title": "Música y Conciertos",
-      "image": "image/sport1.png",
-      "cover_img": "image/discover.png"
-    },
-    {
-      "id": "3",
-      "title": "Festivales y Ferias",
-      "image": "image/method.png",
-      "cover_img": "image/discover.png"
-    },
-    {
-      "id": "4",
-      "title": "Deportes",
-      "image": "image/american_express.png",
-      "cover_img": "image/discover.png"
-    },
-    {
-      "id": "5",
-      "title": "Museos y Exposiciones",
-      "image": "image/american_express.png",
-      "cover_img": "image/discover.png"
-    },
-    {
-      "id": "6",
-      "title": "Cursos y Talleres",
-      "image": "image/american_express.png",
-      "cover_img": "image/discover.png"
-    },
-    {
-      "id": "7",
-      "title": "Infantiles",
-      "image": "image/american_express.png",
-      "cover_img": "image/discover.png"
-    },
-    {
-      "id": "8",
-      "title": "Cine",
-      "image": "image/american_express.png",
-      "cover_img": "image/discover.png"
-    },
-    {
-      "id": "9",
-      "title": "Congresos y Convenciones",
-      "image": "image/american_express.png",
-      "cover_img": "image/discover.png"
-    },
-    {
-      "id": "10",
-      "title": "Eventos Literarios",
-      "image": "image/american_express.png",
-      "cover_img": "image/discover.png"
-    },
-    {
-      "id": "11",
-      "title": "Recorridos",
-      "image": "image/american_express.png",
-      "cover_img": "image/discover.png"
-    },
-    {
-      "id": "12",
-      "title": "Pueblos originarios",
-      "image": "image/american_express.png",
-      "cover_img": "image/discover.png"
-    }
-  ]
-}
-''';
-
-const String eventsJson = '''
-{
-  "events": [
-    {
-      "event_id": "1",
-      "cid": "1",
-      "event_title": "Evento de arte 1",
-      "event_img": "image/protection.png",
-      "event_address": "Calle Principal #123, Ciudad, País",
-      "event_sdate": "20-04-2024",
-      "IS_BOOKMARK": 1,
-      "member_list": ["image/p2.png", "image/p1.png", "image/p3.png"],
-      "total_member_list": 20,
-      "cover_img": "image/verve.png", 
-      "sponsore_list": {
-        "sponsore_img": "image/p1.png",
-        "sponsore_img": "image/p2.png"
-      }
-    },
-    {
-      "event_id": "2",
-      "cid": "1",
-      "event_title": "Evento de arte 2",
-      "event_img": "image/event.png",
-      "event_address": "Dirección del concierto de música",
-      "event_sdate": "25-04-2024",
-      "IS_BOOKMARK": 0,
-      "member_list": ["image/p1.png", "image/p4.png", "image/p2.png"],
-      "total_member_list": 15,
-      "cover_img": "image/verve.png", 
-      "sponsore_list": {
-        "sponsore_img": "image/p2.png",
-        "sponsore_img": "image/p1.png",
-        "sponsore_img": "image/p3.png",
-        "sponsore_img": "image/p4.png"
-      }
-    },
-    {
-      "event_id": "3",
-      "cid": "1",
-      "event_title": "Evento de arte 3",
-      "event_img": "image/p10.png",
-      "event_address": "Dirección del festival de cine",
-      "event_sdate": "30-04-2024",
-      "IS_BOOKMARK": 1,
-      "member_list": ["image/p1.png", "image/p4.png", "image/p2.png"],
-      "total_member_list": 30,
-      "cover_img": "image/verve.png", 
-      "sponsore_list": {
-        "sponsore_img": "image/p3.png",
-        "sponsore_img": "image/p4.png",
-        "sponsore_img": "image/p1.png"
-      }
-    },
-    {
-      "event_id": "4",
-      "cid": "2",
-      "event_title": "Concierto de música 1",
-      "event_img": "image/pay.png",
-      "event_address": "Dirección de la obra de teatro",
-      "event_sdate": "22-04-2024",
-      "IS_BOOKMARK": 0,
-      "member_list": ["image/p4.png", "image/p3.png", "image/p1.png"],
-      "total_member_list": 10,
-      "cover_img": "image/verve.png", 
-      "sponsore_list": {
-        "sponsore_img": "image/p4.png",
-        "sponsore_img": "image/p2.png",
-        "sponsore_img": "image/p1.png",
-        "sponsore_img": "image/p3.png",
-        "sponsore_img": "image/p1.png"
-      }
-    },
-    {
-      "event_id": "5",
-      "cid": "2",
-      "event_title": "Concierto de música 2",
-      "event_img": "image/event.png",
-      "event_address": "Dirección del concierto de música",
-      "event_sdate": "28-04-2024",
-      "IS_BOOKMARK": 0,
-      "member_list": ["image/p1.png", "image/p4.png", "image/p2.png"],
-      "total_member_list": 15,
-      "cover_img": "image/verve.png", 
-      "sponsore_list": {
-        "sponsore_img": "image/p2.png",
-        "sponsore_img": "image/p1.png",
-        "sponsore_img": "image/p3.png",
-        "sponsore_img": "image/p4.png"
-      }
-    },
-    {
-      "event_id": "6",
-      "cid": "2",
-      "event_title": "Concierto de música 3",
-      "event_img": "image/protection.png",
-      "event_address": "Dirección del concierto de música",
-      "event_sdate": "02-05-2024",
-      "IS_BOOKMARK": 1,
-      "member_list": ["image/p1.png", "image/p2.png", "image/p3.png"],
-      "total_member_list": 12,
-      "cover_img": "image/verve.png", 
-      "sponsore_list": {
-        "sponsore_img": "image/p2.png",
-        "sponsore_img": "image/p1.png",
-        "sponsore_img": "image/p3.png",
-        "sponsore_img": "image/p4.png"
-      }
-    },
-    {
-      "event_id": "7",
-      "cid": "3",
-      "event_title": "Festival de cine 1",
-      "event_img": "image/pay.png",
-      "event_address": "Dirección de la obra de teatro",
-      "event_sdate": "18-04-2024",
-      "IS_BOOKMARK": 0,
-      "member_list": ["image/p4.png", "image/p3.png", "image/p1.png"],
-      "total_member_list": 10,
-      "cover_img": "image/verve.png", 
-      "sponsore_list": {
-        "sponsore_img": "image/p4.png",
-        "sponsore_img": "image/p2.png",
-        "sponsore_img": "image/p1.png",
-        "sponsore_img": "image/p3.png",
-        "sponsore_img": "image/p1.png"
-      }
-    },
-    {
-      "event_id": "8",
-      "cid": "3",
-      "event_title": "Festival de cine 2",
-      "event_img": "image/event.png",
-      "event_address": "Dirección del concierto de música",
-      "event_sdate": "16-04-2024",
-      "IS_BOOKMARK": 1,
-      "member_list": ["image/p1.png", "image/p4.png", "image/p2.png"],
-      "total_member_list": 15,
-      "cover_img": "image/verve.png", 
-      "sponsore_list": {
-        "sponsore_img": "image/p2.png",
-        "sponsore_img": "image/p1.png",
-        "sponsore_img": "image/p3.png",
-        "sponsore_img": "image/p4.png"
-      }
-    },
-    {
-      "event_id": "9",
-      "cid": "3",
-      "event_title": "Festival de cine 3",
-      "event_img": "image/protection.png",
-      "event_address": "Dirección del concierto de música",
-      "event_sdate": "24-04-2024",
-      "IS_BOOKMARK": 0,
-      "member_list": ["image/p1.png", "image/p2.png", "image/p3.png"],
-      "total_member_list": 12,
-      "cover_img": "image/verve.png", 
-      "sponsore_list": {
-        "sponsore_img": "image/p2.png",
-        "sponsore_img": "image/p1.png",
-        "sponsore_img": "image/p3.png",
-        "sponsore_img": "image/p4.png"
-      }
-    },
-    {
-      "event_id": "10",
-      "cid": "4",
-      "event_title": "Obra de teatro 1",
-      "event_img": "image/protection.png",
-      "event_address": "Dirección de la obra de teatro",
-      "event_sdate": "27-04-2024",
-      "IS_BOOKMARK": 0,
-      "member_list": ["image/p2.png", "image/p1.png", "image/p3.png"],
-      "total_member_list": 20,
-      "cover_img": "image/verve.png", 
-      "sponsore_list": {
-        "sponsore_img": "image/p1.png",
-        "sponsore_img": "image/p2.png"
-      }
-    },
-    {
-      "event_id": "11",
-      "cid": "4",
-      "event_title": "Obra de teatro 2",
-      "event_img": "image/event.png",
-      "event_address": "Dirección del concierto de música",
-      "event_sdate": "29-04-2024",
-      "IS_BOOKMARK": 0,
-      "member_list": ["image/p1.png", "image/p4.png", "image/p2.png"],
-      "total_member_list": 15,
-      "cover_img": "image/verve.png", 
-      "sponsore_list": {
-        "sponsore_img": "image/p2.png",
-        "sponsore_img": "image/p1.png",
-        "sponsore_img": "image/p3.png",
-        "sponsore_img": "image/p4.png"
-      }
-    },
-    {
-      "event_id": "12",
-      "cid": "4",
-      "event_title": "Obra de teatro 3",
-      "event_img": "image/p10.png",
-      "event_address": "Dirección del festival de cine",
-      "event_sdate": "01-05-2024",
-      "IS_BOOKMARK": 1,
-      "member_list": ["image/p1.png", "image/p4.png", "image/p2.png"],
-      "total_member_list": 30,
-      "cover_img": "image/verve.png", 
-      "sponsore_list": {
-        "sponsore_img": "image/p3.png",
-        "sponsore_img": "image/p4.png",
-        "sponsore_img": "image/p1.png"
-      }
-    }
-  ]
-}
-''';
-
 final getData = GetStorage();
 
 class Home extends StatefulWidget {
@@ -363,6 +65,8 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   List<Categoria> categoriasList = [];
   List<Evento> upcomingEvent = [];
   List<Evento> trendingEvent = [];
+  List<dynamic> esFavoritos = [];
+
   //List<dynamic> upcomingEvent = [];
   List<Evento> nearbyEvent = [];
   List<Evento> thisMonthEvent = [];
@@ -431,14 +135,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     }
   }
 
-  void cargartrendingEvent() {
-    // Decodifica la cadena JSON y guarda los eventos en la lista eventosList
-    Map<String, dynamic> trendingEventData = json.decode(eventsJson);
-    setState(() {
-      trendingEvent = trendingEventData['events'];
-    });
-  }
-
   Future<List<Evento>> cargarUpcomingEvent() async {
     final String apiUrl =
         'http://216.225.205.93:3000/api/eventos/buscarEventos';
@@ -474,22 +170,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     }
 
     return upcomingEvent;
-  }
-
-  void cargarThisMonthEvent() {
-    // Decodifica la cadena JSON y guarda los eventos en la lista eventosList
-    Map<String, dynamic> thisMonthEventData = json.decode(eventsJson);
-    setState(() {
-      thisMonthEvent = thisMonthEventData['events'];
-    });
-  }
-
-  void cargarNearbyEvent() {
-    // Decodifica la cadena JSON y guarda los eventos en la lista eventosList
-    Map<String, dynamic> nearbyEventData = json.decode(eventsJson);
-    setState(() {
-      nearbyEvent = nearbyEventData['events'];
-    });
   }
 
   Future<void> enviarCategoria(String nombre, String imagePath) async {
@@ -548,7 +228,6 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
       setState(() {
         categoriasList = categorias;
       });
-
     } catch (e) {
       print('Error al cargar categorías: $e');
     }
@@ -602,7 +281,49 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     }
   }
 
-  
+  Future<void> cargarEventosFavoritosPorId() async {
+    EventosService service = EventosService();
+    token = await UserPreferences.getToken();
+    userId = await UserPreferences.getUserId();
+    fechaExpiracion = await UserPreferences.getFechaExpiracion();
+    //status = await UserPreferences.getStatus();
+
+    print('El id es: ${userId}');
+
+    if (userId == null) {
+      print(
+          'El id de usuario es null, no se pueden cargar los eventos favoritos');
+
+      return;
+    }
+
+    int? userIdInt = int.tryParse(userId!);
+    if (userIdInt == null) {
+      print('Error: El id de usuario no es un número válido');
+
+      return;
+    }
+
+    try {
+      List<dynamic> eventos = await service.obtenerFavoritos(userIdInt);
+      print('Eventos favoritos: $eventos');
+      setState(() {
+        esFavoritos = eventos;
+      });
+    } catch (e) {
+      setState(() {});
+      print('Error al cargar los eventos favoritos: $e');
+    }
+  }
+
+  bool esEventoFavorito(int idEvento) {
+    for (var favorito in esFavoritos) {
+      if (favorito['id_event'] == idEvento) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   @override
   void initState() {
@@ -617,6 +338,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     cargarCategorias();
     //cargarCategoriasApi();
     cargarEventosFavoritos();
+    cargarEventosFavoritosPorId();
     cargarEventos();
     cargarEventosDelMes();
     //cargarThisMonthEvent();
@@ -1158,13 +880,11 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
    */
 
   tredingEvents(Evento evento, int i) {
-    return 
-    InkWell(
+    return InkWell(
       onTap: () {
-            Get.to(
-                () => EventsDetails(eid: evento.id.toString(), evento: evento),
-                duration: Duration.zero);
-          },
+        Get.to(() => EventsDetails(eid: evento.id.toString(), evento: evento),
+            duration: Duration.zero);
+      },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8),
         child: SizedBox(
@@ -1211,11 +931,15 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                             return onLikeButtonTapped(val, evento.id);
                           },
                           likeBuilder: (bool isLiked) {
-                            return evento.statusEvent != 0
-                                ? const Icon(Icons.favorite,
-                                    color: Color(0xffF0635A), size: 22)
-                                : const Icon(Icons.favorite_border,
-                                    color: Color(0xffF0635A), size: 22);
+                            return Icon(
+                              esEventoFavorito(evento.id)
+                                  ? Icons.favorite
+                                  : Icons.favorite_border,
+                              color: esEventoFavorito(evento.id)
+                                  ? const Color(0xffF0635A)
+                                  : Colors.grey,
+                              size: 22,
+                            );
                           },
                         ),
                       ),
@@ -1339,37 +1063,37 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                 ),
               ),
               Column(
-                      children: [
-                        SizedBox(height: Get.height / 6),
-                        Row(
-                          children: [
-                            const Spacer(),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: notifire.getprimerycolor,
-                                borderRadius:
-                                    const BorderRadius.all(Radius.circular(20)),
-                              ),
-                              height: Get.height / 30,
-                              width: Get.width / 4,
-                              child: Center(
-                                child: Text(
-                                  evento.fechaInicio.substring(0, 10),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    color: const Color(0xffF0635A),
-                                    fontSize: 11,
-                                    fontFamily: 'Gilroy ExtraBold',
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+                children: [
+                  SizedBox(height: Get.height / 6),
+                  Row(
+                    children: [
+                      const Spacer(),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: notifire.getprimerycolor,
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(20)),
                         ),
-                      ],
-                    ),
+                        height: Get.height / 30,
+                        width: Get.width / 4,
+                        child: Center(
+                          child: Text(
+                            evento.fechaInicio.substring(0, 10),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: const Color(0xffF0635A),
+                              fontSize: 11,
+                              fontFamily: 'Gilroy ExtraBold',
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ],
           ),
         ),
@@ -1547,8 +1271,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                   ),
                                   child: CircleAvatar(
                                     radius: 18,
-                                    backgroundColor:
-                                        Colors.grey.withOpacity(0.2),
+                                    backgroundColor: Colors.transparent,
                                     child: Padding(
                                       padding: const EdgeInsets.only(left: 3),
                                       child: LikeButton(
@@ -1557,14 +1280,15 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                               val, evento.id);
                                         },
                                         likeBuilder: (bool isLiked) {
-                                          return evento.statusEvent != 0
-                                              ? const Icon(Icons.favorite,
-                                                  color: Color(0xffF0635A),
-                                                  size: 22)
-                                              : const Icon(
-                                                  Icons.favorite_border,
-                                                  color: Color(0xffF0635A),
-                                                  size: 22);
+                                          return Icon(
+                                            esEventoFavorito(evento.id)
+                                                ? Icons.favorite
+                                                : Icons.favorite_border,
+                                            color: esEventoFavorito(evento.id)
+                                                ? const Color(0xffF0635A)
+                                                : Colors.grey,
+                                            size: 22,
+                                          );
                                         },
                                       ),
                                     ),
@@ -1740,14 +1464,15 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                               val, evento.id);
                                         },
                                         likeBuilder: (bool isLiked) {
-                                          return evento.statusEvent != 0
-                                              ? const Icon(Icons.favorite,
-                                                  color: Color(0xffF0635A),
-                                                  size: 22)
-                                              : const Icon(
-                                                  Icons.favorite_border,
-                                                  color: Color(0xffF0635A),
-                                                  size: 22);
+                                          return Icon(
+                                            esEventoFavorito(evento.id)
+                                                ? Icons.favorite
+                                                : Icons.favorite_border,
+                                            color: esEventoFavorito(evento.id)
+                                                ? const Color(0xffF0635A)
+                                                : Colors.grey,
+                                            size: 22,
+                                          );
                                         },
                                       ),
                                     ),
@@ -1885,14 +1610,14 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                                 },
                                                 likeBuilder: (bool isLiked) {
                                                   return Icon(
-                                                    evento.statusEvent != 0
+                                                    esEventoFavorito(evento.id)
                                                         ? Icons.favorite
                                                         : Icons.favorite_border,
-                                                    color:
-                                                        evento.statusEvent != 0
-                                                            ? const Color(
-                                                                0xffF0635A)
-                                                            : Colors.grey,
+                                                    color: esEventoFavorito(
+                                                            evento.id)
+                                                        ? const Color(
+                                                            0xffF0635A)
+                                                        : Colors.grey,
                                                     size: 22,
                                                   );
                                                 },
