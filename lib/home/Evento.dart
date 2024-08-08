@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:goevent2/Controller/UserPreferences.dart';
 import 'package:http/http.dart' as http;
 
 class Evento {
@@ -341,12 +342,14 @@ Future<Evento> obtenerDetallesEvento(int id) async {
 
 Future<List<dynamic>> obtenerFavoritos(int userId) async {
   final String apiUrl = 'http://216.225.205.93:3000/api/favoritos/byIdUser/$userId';
+  
 
   try {
     final response = await http.get(
       Uri.parse(apiUrl),
       headers: {
         'Content-Type': 'application/json; charset=UTF-8',
+        
       },
     );
 
@@ -415,4 +418,45 @@ Future<List<Evento>> obtenerEventosFavoritosPorId(int userId) async {
 
     return [];
   }
+
+
+
+Future<bool> crearFavorito(int userId, int eventId) async {
+    final String apiUrl = 'http://216.225.205.93:3000/api/favoritos';
+    final token = await UserPreferences.getToken();
+
+    Map<String, dynamic> data = {
+      'id_user': userId,
+      'id_event': eventId,
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode(data),
+      );
+
+      if (response.statusCode == 201) {
+        var jsonResponse = json.decode(response.body);
+        if (jsonResponse['rta'] == true) {
+          print('Favorito creado correctamente');
+          return true;
+        } else {
+          print('Error al crear favorito: ${jsonResponse['message']}');
+        }
+      } else {
+        print('Error al crear favorito code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error en crearFavorito: $e');
+    }
+
+    return false;
+  }
+
+
 }

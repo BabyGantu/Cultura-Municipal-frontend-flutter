@@ -325,6 +325,40 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     return false;
   }
 
+  void agragarAFavoritos(int userId, int eventId) async {
+    EventosService service = EventosService();
+    bool resultado = await service.crearFavorito(userId, eventId);
+    if (resultado) {
+      print('Evento añadido a favoritos');
+
+      // Actualiza el estado o muestra un mensaje al usuario
+    } else {
+      print('No se pudo añadir el evento a favoritos');
+      // Maneja el error o muestra un mensaje al usuario
+    }
+  }
+
+  Future<bool> onLikeButtonTapped(bool isLiked, int eventId) async {
+    int userIdInt = int.parse(userId!);
+
+    if (isLiked) {
+      // Lógica para eliminar de favoritos (si la tienes implementada)
+    } else {
+      agragarAFavoritos(userIdInt, eventId);
+    }
+
+    // Actualiza el estado para reflejar el cambio
+    setState(() {
+      if (isLiked) {
+        // Remueve el evento de la lista de favoritos (si la tienes implementada)
+      } else {
+        cargarEventosFavoritosPorId();
+      }
+    });
+
+    return !isLiked;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -404,7 +438,7 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
   }
 
   //! ----- LikeButtonTapped -----
-  Future<bool> onLikeButtonTapped(isLiked, eid) async {
+  Future<bool> onLikeButtonTappedd(isLiked, eid) async {
     var data = {"eid": eid, "uid": uID};
     ApiWrapper.dataPost(Config.ebookmark, data).then((val) {
       if ((val != null) && (val.isNotEmpty)) {
@@ -1604,9 +1638,9 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                               padding: const EdgeInsets.only(
                                                   left: 3),
                                               child: LikeButton(
-                                                onTap: (val) {
+                                                onTap: (bool isLiked) {
                                                   return onLikeButtonTapped(
-                                                      val, evento.id);
+                                                      isLiked, evento.id);
                                                 },
                                                 likeBuilder: (bool isLiked) {
                                                   return Icon(
