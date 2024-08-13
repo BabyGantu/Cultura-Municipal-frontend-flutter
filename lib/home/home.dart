@@ -685,13 +685,13 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                           const Spacer(),
                           GestureDetector(
                             onTap: () {
-                              /*
+                              
                               Get.to(
                                   () => All(
                                       title: "Trending Events".tr,
                                       eventList: trendingEvent),
                                   duration: Duration.zero);
-                                  */
+                                  
                             },
                             child: Container(
                               color: Colors.transparent,

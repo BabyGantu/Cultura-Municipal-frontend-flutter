@@ -16,7 +16,7 @@ import '../login_signup/verification.dart';
 const String endpoin = 'http://216.225.205.93:3000';
 
 String? tokenUser;
-String? userId;
+//String? userId;
 String? fechaExpiracion;
 
 class AuthController extends GetxController {
@@ -141,18 +141,23 @@ class AuthController extends GetxController {
     String? galeriaImagen1,
     String? galeriaImagen2,
     String? galeriaImagen3,
-    required String organizador,
+    String? organizador,
     String? telefono,
     String? correo,
     required String tituloDireccion,
     required String direccionEvento,
     required String latitud,
     required String longitud,
-    required int idUsuario,
+    int? idUsuario,
     required int idMunicipio,
     required int idCategoria,
     required int idPublicoObjetivo,
   }) async {
+
+    final token = await UserPreferences.getToken();
+    final iduser = await UserPreferences.getUserId();
+    final intiduserInt =int.parse(iduser!);
+
     final Map<String, dynamic> data = {
       'titulo_evento': tituloEvento,
       'imagen_evento': imagenEvento,
@@ -167,14 +172,14 @@ class AuthController extends GetxController {
       'galeria_imagen_1': galeriaImagen1,
       'galeria_imagen_2': galeriaImagen2,
       //'galeria_imagen_3': galeriaImagen3,
-      'organizador': 19,
+      'organizador': iduser,
       'telefono': telefono,
       'correo': correo,
       'titulo_direccion': tituloDireccion,
       'direccion_evento': direccionEvento,
       'latitud': latitud,
       'longitud': longitud,
-      'id_usuario': idUsuario,
+      'id_usuario': intiduserInt,
       'id_municipio': idMunicipio,
       'id_categoria': idCategoria,
       'id_publico_objetivo': idPublicoObjetivo,
@@ -189,13 +194,16 @@ class AuthController extends GetxController {
 
     print('Datos en formato JSON: $jsonData');
 
-    print('el token es: $tokenUser');
+    
+    print('el token es: $token');
+    final encodedToken = Uri.encodeComponent(token!).replaceAll('%24', '\$');
+    print('el user id es: $intiduserInt');
     final Uri url = Uri.parse('$endpoin/api/eventos');
     final response = await http.post(
       url,
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Bearer $tokenUser',
+        'Authorization': 'Bearer $token',
       },
       body: jsonData,
     );
@@ -217,7 +225,6 @@ class AuthController extends GetxController {
         ApiWrapper.showToastMessage(message);
 
         // Puedes navegar a otra pantalla o realizar otras acciones aquí
-        
       } else {
         print('Error: $message');
       }
@@ -333,6 +340,7 @@ class AuthController extends GetxController {
         // Guardar token e ID del usuario usando UserPreferences
         await UserPreferences.setToken(token);
         tokenUser = token;
+        //userId = id;
         await UserPreferences.setUserId(id.toString());
         await UserPreferences.setExpToken(fechaExpiracion);
 

@@ -60,7 +60,7 @@ class _GalleryViewState extends State<GalleryView> {
                       onTap: () {
                         Navigator.push(context, MaterialPageRoute(builder: (_) {
                           return FullScreenImage(
-                            imageUrl: eventList[index]["img"], // Usar directamente la ruta de la imagen estática
+                            imageUrl: eventList[index], // Usar directamente la ruta de la imagen estática
                             tag: "imagen $index",
                           );
                         }));
@@ -81,8 +81,11 @@ class _GalleryViewState extends State<GalleryView> {
                         tag: "generate_a_unique_tag",
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(12),
-                          child: Image.asset(
-                            eventList[index]["img"], // Cambia eventList[index] a eventList[index]["img"]
+                          child: 
+
+
+                          Image.network(
+                            'http://216.225.205.93:3000${eventList[index]}',
                             fit: BoxFit.cover,
                           ),
 
@@ -126,8 +129,8 @@ class FullScreenImage extends StatelessWidget {
         child: Center(
           child: Hero(
             tag: tag!,
-            child: Image.asset(
-              imageUrl!, // Usar directamente la ruta de la imagen estática
+            child: Image.network(
+              'http://216.225.205.93:3000${imageUrl!}',
               width: MediaQuery.of(context).size.width,
               fit: BoxFit.contain,
             ),

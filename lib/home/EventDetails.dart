@@ -26,8 +26,6 @@ import 'package:url_launcher/url_launcher.dart';
 import '../utils/colornotifire.dart';
 import 'package:http/http.dart' as http;
 
-
-
 const String sponsoreJson = '''
 {
   "Event_sponsore": [
@@ -91,7 +89,8 @@ class _EventsDetailsState extends State<EventsDetails> {
   String? token;
   String? userId;
   String? fechaExpiracion;
-  
+
+  String nombrePublico = "";
 
   getdarkmodepreviousstate() async {
     final prefs = await SharedPreferences.getInstance();
@@ -109,9 +108,9 @@ class _EventsDetailsState extends State<EventsDetails> {
     } catch (e) {
       print('Error al cargar la categoría: $e');
     }
-}
+  }
 
-Future<void> cargarEventosFavoritosPorId() async {
+  Future<void> cargarEventosFavoritosPorId() async {
     EventosService service = EventosService();
     token = await UserPreferences.getToken();
     userId = await UserPreferences.getUserId();
@@ -146,7 +145,7 @@ Future<void> cargarEventosFavoritosPorId() async {
     }
   }
 
-bool esEventoFavorito(int idEvento) {
+  bool esEventoFavorito(int idEvento) {
     for (var favorito in esFavoritos) {
       if (favorito['id_event'] == idEvento) {
         return true;
@@ -155,14 +154,66 @@ bool esEventoFavorito(int idEvento) {
     return false;
   }
 
+  Future<void> obtenerNombrePublicoObjetivo(int id) async {
+    final String apiUrl = 'http://216.225.205.93:3000/api/publico-objetivo/$id';
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var jsonResponse = json.decode(utf8.decode(response.bodyBytes));
+
+        if (jsonResponse['rta'] == true) {
+          setState(() {
+            nombrePublico = "";
+            nombrePublico = jsonResponse['publicoObjetivo']['nombre'];
+            print('id del publico objetivo es: ${id}');
+            print('publico objetivo es: ${nombrePublico}');
+          });
+        } else {
+          print('Error: ${jsonResponse['message']}');
+        }
+      } else {
+        print('Error: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+  void agregarImagenesAGaleria() {
+    if (widget.evento.galeriaImagen1!.isNotEmpty) {
+      event_gallery.add(widget.evento.galeriaImagen1);
+    }
+    if (widget.evento.galeriaImagen2!.isNotEmpty) {
+      event_gallery.add(widget.evento.galeriaImagen2);
+    }
+    if (widget.evento.imagenEvento.isNotEmpty) {
+      event_gallery.add(widget.evento.imagenEvento);
+    }
+    if (widget.evento.imagenPortadaEvento.isNotEmpty) {
+      event_gallery.add(widget.evento.imagenPortadaEvento);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    cargarCategoria(widget.evento.idCategoria);
     //walletrefar();
     getPackage();
     eventDetailApi();
     getdarkmodepreviousstate();
     cargarEventosFavoritosPorId();
+    obtenerNombrePublicoObjetivo(widget.evento.idPublicoObjetivo);
+    print('id de usuario es: ${widget.evento.idUsuario}');
+    print('organizador es: ${widget.evento.organizador}');
+    agregarImagenesAGaleria();
   }
 
   void getPackage() async {
@@ -335,7 +386,7 @@ bool esEventoFavorito(int idEvento) {
     }
 
     notifire = Provider.of<ColorNotifire>(context, listen: true);
-    cargarCategoria(widget.evento.idCategoria);
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       backgroundColor: notifire.backgrounde,
@@ -367,28 +418,28 @@ bool esEventoFavorito(int idEvento) {
                         sigmaY: 10,
                       ),
                       child: CircleAvatar(
-                      radius: 18,
-                      backgroundColor: Colors.grey.withOpacity(0.2),
-                      child: Padding(
-                        padding: const EdgeInsets.only(left: 3),
-                        child: LikeButton(
-                          onTap: (val) {
-                            return onLikeButtonTapped(val, widget.eid);
-                          },
-                          likeBuilder: (bool isLiked) {
-                            return Icon(
-                              esEventoFavorito(widget.evento.id)
-                                  ? Icons.favorite
-                                  : Icons.favorite_border,
-                              color: esEventoFavorito(widget.evento.id)
-                                  ? const Color(0xffF0635A)
-                                  : Colors.grey,
-                              size: 22,
-                            );
-                          },
+                        radius: 18,
+                        backgroundColor: Colors.grey.withOpacity(0.2),
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 3),
+                          child: LikeButton(
+                            onTap: (val) {
+                              return onLikeButtonTapped(val, widget.eid);
+                            },
+                            likeBuilder: (bool isLiked) {
+                              return Icon(
+                                esEventoFavorito(widget.evento.id)
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
+                                color: esEventoFavorito(widget.evento.id)
+                                    ? const Color(0xffF0635A)
+                                    : Colors.grey,
+                                size: 22,
+                              );
+                            },
+                          ),
                         ),
                       ),
-                    ),
                     ),
                   ),
                 ],
@@ -574,10 +625,14 @@ bool esEventoFavorito(int idEvento) {
                               spacing: 2.0, // Space between items horizontally
                               runSpacing: 2.0, // Space between items vertically
                               children: [
-                                concert("image/date.png", 'Categoria',
-                                    '${categoriasList[0].nombre}'),
+                                categoriasList.isNotEmpty
+                                    ? concert("image/date.png", 'Categoria',
+                                        '${categoriasList[0].nombre}')
+                                    : concert(
+                                        "image/date.png", 'Categoria', ''),
+
                                 concert("image/date.png", 'Publico objetivo',
-                                    '${widget.evento.idPublicoObjetivo}'),
+                                    '${nombrePublico}'),
                                 concert("image/date.png", 'Fecha',
                                     '${widget.evento.fechaInicio} a ${widget.evento.fechaFin}'),
                                 concert("image/date.png", 'Hora',
@@ -620,10 +675,9 @@ bool esEventoFavorito(int idEvento) {
                                       color: Colors.white), // Icono de mapa
                                   label: Text('Ir al mapa'), // Texto del botón
                                   style: ElevatedButton.styleFrom(
-                                    primary: Colors
-                                        .blueAccent, // Color del fondo del botón
-                                    onPrimary:
-                                        Colors.white, // Color del texto e icono
+                                    foregroundColor: Colors.white,
+                                    backgroundColor: Colors
+                                        .blueAccent, // Color del texto e icono
                                     textStyle: TextStyle(
                                         fontSize: 16), // Tamaño del texto
                                     padding: EdgeInsets.symmetric(
@@ -696,9 +750,8 @@ bool esEventoFavorito(int idEvento) {
                                               color: notifire.textcolor)),
                                       InkWell(
                                         onTap: () {
-                                          Get.to(() => GalleryView(
-                                                list: event_gallery,
-                                              ));
+                                          Get.to(() =>
+                                              GalleryView(list: event_gallery));
                                           setState(() {});
                                         },
                                         child: Row(
@@ -753,19 +806,23 @@ bool esEventoFavorito(int idEvento) {
     );
   }
 
-  galeryEvent(gEvent, i) {
+  Widget galeryEvent(List<dynamic> gEvent, int i) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: Container(
         width: Get.width * 0.28,
         decoration: BoxDecoration(
-            // border: Border.all(color: Colors.grey.shade400, width: 1),
-            borderRadius: BorderRadius.circular(14),
-            image: DecorationImage(
-                image: AssetImage(gEvent[i]["img"]), fit: BoxFit.cover)),
+          borderRadius: BorderRadius.circular(14),
+          image: DecorationImage(
+            image: NetworkImage('http://216.225.205.93:3000${gEvent[i]}'), // Usar NetworkImage para cargar la imagen desde la URL
+            
+            fit: BoxFit.cover,
+          ),
+        ),
       ),
     );
   }
+
 /*
   galeryEvent(gEvent, i) {
     return Padding(
@@ -800,7 +857,7 @@ bool esEventoFavorito(int idEvento) {
         Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(name1,
               style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 16,
                   fontWeight: FontWeight.w500,
                   fontFamily: 'Gilroy Medium',
                   color: notifire.textcolor)),
@@ -810,7 +867,7 @@ bool esEventoFavorito(int idEvento) {
             child: Text(name2,
                 maxLines: 2,
                 style: TextStyle(
-                    fontSize: 10,
+                    fontSize: 12,
                     fontWeight: FontWeight.w500,
                     fontFamily: 'Gilroy Medium',
                     color: Colors.grey)),

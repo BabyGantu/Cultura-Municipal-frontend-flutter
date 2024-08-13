@@ -106,7 +106,7 @@ class EventosService {
   
   
   Future<List<Evento>> cargarEventosEnUnaSemana() async {
-  final String apiUrl = 'http://216.225.205.93:3000/api/eventos/buscarEventos';
+  String apiUrl = 'http://216.225.205.93:3000/api/eventos/buscarEventos';
 
   DateTime ahora = DateTime.now();
   DateTime finSemana = ahora.add(Duration(days: 7));
@@ -114,8 +114,6 @@ class EventosService {
   String fechaInicio = "${ahora.year}-${ahora.month.toString().padLeft(2, '0')}-${ahora.day.toString().padLeft(2, '0')}";
   String fechaFin = "${finSemana.year}-${finSemana.month.toString().padLeft(2, '0')}-${finSemana.day.toString().padLeft(2, '0')}";
 
-  print('fechaInicio: ${fechaInicio}');
-  print('fechaFin: ${fechaFin}');
   try {
     final response = await http.post(
       Uri.parse(apiUrl),
@@ -129,25 +127,33 @@ class EventosService {
     );
 
     if (response.statusCode == 200) {
-      final Map<String, dynamic> responseData = jsonDecode(response.body);
+      var jsonResponse = json.decode(utf8.decode(response.bodyBytes));
 
-      if (responseData['rta'] == true) {
-        List<dynamic> eventosJson = responseData['eventos'];
-        List<Evento> eventos = eventosJson.map((eventoJson) => Evento.fromJson(eventoJson)).toList();
-        return eventos;
+      if (jsonResponse['rta'] == true && jsonResponse['eventos'] is List) {
+        List<dynamic> eventosJson = jsonResponse['eventos'];
+
+        List<Evento> tempEventosList = [];
+
+        for (var eventoJson in eventosJson) {
+          int id = eventoJson['id'];
+
+          // Obtener detalles del evento individual
+          Evento evento = await obtenerDetallesEvento(id);
+          tempEventosList.add(evento);
+        }
+
+        return tempEventosList;
       } else {
-        print('Error en la respuesta: ${responseData['message']}');
-        return [];
+        throw Exception('La respuesta no contiene una lista de eventos.');
       }
     } else {
-      print('Error en la solicitud: ${response.statusCode}');
-      return [];
+      throw Exception('Error al cargar eventos: ${response.statusCode}');
     }
   } catch (e) {
-    print('Error en la conexión: $e');
-    return [];
+    throw Exception('Error al realizar la solicitud: $e');
   }
 }
+
 
 
 Future<List<Evento>> cargarEventosDelMes() async {

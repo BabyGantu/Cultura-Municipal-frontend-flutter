@@ -168,7 +168,7 @@ Future<void> cargarEventosFavoritosPorId() async {
                         },
                         child: const Icon(Icons.arrow_back))
                     : Container(),
-                Text("Bookmark".tr,
+                Text("Favorite".tr,
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.w900,

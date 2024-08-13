@@ -318,22 +318,7 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                   context: context,
                 ),
 
-                SizedBox(
-                    height: MediaQuery.of(context).size.height /
-                        40), // Ajustar altura según necesidad
-                Customtextfild.textField(
-                  controller: Event_sponsore,
-                  name1: "Organizer".tr,
-                  labelclr: Colors.grey,
-                  textcolor: notifire.getwhitecolor,
-                  prefixIcon: Image.asset(
-                    "image/organizer.png",
-                    scale: 3.5,
-                    //color: notifire.textcolor
-                  ),
-                  context: context,
-                ),
-                buildEmptyFieldWarning(Event_sponsore, verificar),
+                
                 SizedBox(height: MediaQuery.of(context).size.height / 40),
                 Customtextfild.textField(
                   controller: phone,
@@ -529,8 +514,8 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
       event_about_short.text.isNotEmpty &&
       price.text.isNotEmpty &&
       lat.text.isNotEmpty &&
-      long.text.isNotEmpty &&
-      Event_sponsore.text.isNotEmpty) {
+      long.text.isNotEmpty) {
+
 
     // Mostrar diálogo de carga
     showDialog(
@@ -571,30 +556,30 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
         descripcion: event_about.text,
         galeriaImagen1: event_gallery[0],
         galeriaImagen2: event_gallery[1],
-        organizador: Event_sponsore.text,
+        //organizador: Event_sponsore.text,
         telefono: phone.text,
         correo: email.text,
         tituloDireccion: event_address_title.text,
         direccionEvento: event_address.text,
         latitud: lat.text,
         longitud: long.text,
-        idUsuario: 1,
+        //idUsuario: 1,
         idMunicipio: idMunicipio,
         idCategoria: idCategoria,
         idPublicoObjetivo: idPublicoObjetivo,
       );
 
       // Ocultar el diálogo de carga
-      Navigator.of(context).pop(); 
+      //Navigator.of(context).pop(); 
 
       // Navegar a Bottombar
-      Get.to(() => const Bottombar(), duration: Duration.zero);
+      //Get.to(() => const Bottombar(), duration: Duration.zero);
 
       ApiWrapper.showToastMessage("Evento Registrado Correctamente");
 
     } catch (e) {
       // Ocultar el diálogo de carga en caso de error
-      Navigator.of(context).pop();
+      //Navigator.of(context).pop();
 
       print('Error de formato: $e');
       ScaffoldMessenger.of(context).showSnackBar(
