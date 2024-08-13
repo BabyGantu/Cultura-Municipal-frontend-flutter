@@ -288,17 +288,6 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
 
                 CustomImagePicker(
                   imagePaths:
-                      pathEventImage, // Lista de rutas de imágenes, puedes inicializarla con las imágenes existentes
-                  name: "Event Image".tr,
-                  labelclr: Colors.grey,
-                  textcolor: notifire.getwhitecolor,
-                  iconImagePath: "image/imagen_icon.png",
-                  context: context,
-                ),
-
-                SizedBox(height: MediaQuery.of(context).size.height / 60),
-                CustomImagePicker(
-                  imagePaths:
                       pathCoverImage, // Lista de rutas de imágenes, puedes inicializarla con las imágenes existentes
                   name: "Event Cover".tr,
                   labelclr: Colors.grey,
@@ -306,7 +295,19 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
                   iconImagePath: "image/imagen_icon.png",
                   context: context,
                 ),
+                
 
+                SizedBox(height: MediaQuery.of(context).size.height / 60),
+                
+                CustomImagePicker(
+                  imagePaths:
+                      pathEventImage, // Lista de rutas de imágenes, puedes inicializarla con las imágenes existentes
+                  name: "Event Image".tr,
+                  labelclr: Colors.grey,
+                  textcolor: notifire.getwhitecolor,
+                  iconImagePath: "image/imagen_icon.png",
+                  context: context,
+                ), 
                 SizedBox(height: MediaQuery.of(context).size.height / 60),
                 CustomImageGallery(
                   imagePaths:
@@ -517,119 +518,98 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
   }
 
   Future<void> checkAllFieldsAndRegisterEvent(BuildContext context) async {
-    if (event_title.text.isNotEmpty &&
-        event_address_title.text.isNotEmpty &&
-        event_address.text.isNotEmpty &&
-        end_dateController.text.isNotEmpty &&
-        start_dateController.text.isNotEmpty &&
-        end_time.text.isNotEmpty &&
-        start_time.text.isNotEmpty &&
-        event_about.text.isNotEmpty &&
-        event_about_short.text.isNotEmpty &&
-        price.text.isNotEmpty &&
-        lat.text.isNotEmpty &&
-        long.text.isNotEmpty &&
-        Event_sponsore.text.isNotEmpty) {
-      print("----------------------TODO FINO-----------------------------");
-      print('Categoria: ${cid.text}');
-      print('Publico objetivo: ${target_audience.text}');
-      print('Titulo del evento: ${event_title.text}');
-      //print('Imagen evento: ${pathEventImage[0]}');
-      //print('Imagen cover: ${pathCoverImage[0]}');
-      print('Fecha inicio: ${start_dateController.text}');
-      print('Fecha fin: ${end_dateController.text}');
-      print('Hora inicio: ${start_time.text}');
-      print('Hora fin: ${end_time.text}');
-      print('Precio: ${price.text}');
-      print('Descripcion breve: ${event_about_short.text}');
-      print('Descripcion: ${event_about.text}');
-      //print('Galeria de imagenes 1: ${event_gallery[0]}');
-      //print('Galeria de imagenes 2: ${event_gallery[1]}');
-      //print('Galeria de imagenes 3: ${event_gallery[2]}');
-      print('Organizador: ${Event_sponsore.text}');
-      print('Telefono: ${phone.text}');
-      print('Correo: ${email.text}');
-      print('Titulo de direccion: ${event_address_title.text}');
-      print('Direccion: ${event_address.text}');
-      print('Municipio: ${municipio.text}');
-      print('Latitud: ${lat.text}');
-      print('Longitud: ${long.text}');
+  if (event_title.text.isNotEmpty &&
+      event_address_title.text.isNotEmpty &&
+      event_address.text.isNotEmpty &&
+      end_dateController.text.isNotEmpty &&
+      start_dateController.text.isNotEmpty &&
+      end_time.text.isNotEmpty &&
+      start_time.text.isNotEmpty &&
+      event_about.text.isNotEmpty &&
+      event_about_short.text.isNotEmpty &&
+      price.text.isNotEmpty &&
+      lat.text.isNotEmpty &&
+      long.text.isNotEmpty &&
+      Event_sponsore.text.isNotEmpty) {
 
-      try {
-        int idMunicipio = int.parse(municipio.text);
-        int idCategoria = int.parse(cid.text);
-        int idPublicoObjetivo = int.parse(target_audience.text);
-
-        await evento.crearEvento(
-          tituloEvento: event_title.text,
-          imagenEvento: pathEventImage[0],
-          imagenPortadaEvento: pathCoverImage[0],
-          fechaInicio: start_dateController.text,
-          fechaFin: end_dateController.text,
-          horaInicio: start_time.text,
-          horaFin: end_time.text,
-          precio: price.text,
-          descripcionBreve: event_about_short.text,
-          descripcion: event_about.text,
-          galeriaImagen1: event_gallery[0],
-          galeriaImagen2: event_gallery[1],
-          // galeriaImagen3: event_gallery[2],
-          organizador: Event_sponsore.text,
-          telefono: phone.text,
-          correo: email.text,
-          tituloDireccion: event_address_title.text,
-          direccionEvento: event_address.text,
-          latitud: lat.text,
-          longitud: long.text,
-          idUsuario: 1,
-          idMunicipio: idMunicipio,
-          idCategoria: idCategoria,
-          idPublicoObjetivo: idPublicoObjetivo,
+    // Mostrar diálogo de carga
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(width: 16),
+                Text("Registrando evento..."),
+              ],
+            ),
+          ),
         );
+      },
+    );
 
-        ApiWrapper.showToastMessage("Evento Registrado Correctamente");
-        Get.to(() => const Bottombar(), duration: Duration.zero);
+    try {
+      int idMunicipio = int.parse(municipio.text);
+      int idCategoria = int.parse(cid.text);
+      int idPublicoObjetivo = int.parse(target_audience.text);
 
-        // Limpiar los controladores de texto y las listas de imágenes
-        /*
-        event_title.clear();
-        pathEventImage.clear();
-        pathCoverImage.clear();
-        start_dateController.clear();
-        end_dateController.clear();
-        start_time.clear();
-        end_time.clear();
-        price.clear();
-        event_about_short.clear();
-        event_about.clear();
-        // event_gallery.clear();
-        Event_sponsore.clear();
-        phone.clear();
-        email.clear();
-        event_address_title.clear();
-        event_address.clear();
-        lat.clear();
-        long.clear();
-        municipio.clear();
-        cid.clear();
-        target_audience.clear();
-        */
-      } catch (e) {
-        print('Error de formato: $e');
-        // Muestra un mensaje de error al usuario
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Por favor, introduce valores válidos.')),
-        );
-      }
-    } else {
+      await evento.crearEvento(
+        tituloEvento: event_title.text,
+        imagenEvento: pathEventImage[0],
+        imagenPortadaEvento: pathCoverImage[0],
+        fechaInicio: start_dateController.text,
+        fechaFin: end_dateController.text,
+        horaInicio: start_time.text,
+        horaFin: end_time.text,
+        precio: price.text,
+        descripcionBreve: event_about_short.text,
+        descripcion: event_about.text,
+        galeriaImagen1: event_gallery[0],
+        galeriaImagen2: event_gallery[1],
+        organizador: Event_sponsore.text,
+        telefono: phone.text,
+        correo: email.text,
+        tituloDireccion: event_address_title.text,
+        direccionEvento: event_address.text,
+        latitud: lat.text,
+        longitud: long.text,
+        idUsuario: 1,
+        idMunicipio: idMunicipio,
+        idCategoria: idCategoria,
+        idPublicoObjetivo: idPublicoObjetivo,
+      );
+
+      // Ocultar el diálogo de carga
+      Navigator.of(context).pop(); 
+
+      // Navegar a Bottombar
+      Get.to(() => const Bottombar(), duration: Duration.zero);
+
+      ApiWrapper.showToastMessage("Evento Registrado Correctamente");
+
+    } catch (e) {
+      // Ocultar el diálogo de carga en caso de error
+      Navigator.of(context).pop();
+
+      print('Error de formato: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Please fill all fields'.tr),
-          duration: Duration(seconds: 2),
-        ),
+        SnackBar(content: Text('Por favor, introduce valores válidos.')),
       );
     }
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Please fill all fields'.tr),
+        duration: Duration(seconds: 2),
+      ),
+    );
   }
+}
 
   Visibility buildEmptyFieldWarning(
     TextEditingController controller,

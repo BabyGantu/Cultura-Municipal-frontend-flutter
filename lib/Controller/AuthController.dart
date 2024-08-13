@@ -335,7 +335,6 @@ class AuthController extends GetxController {
         tokenUser = token;
         await UserPreferences.setUserId(id.toString());
         await UserPreferences.setExpToken(fechaExpiracion);
-        await UserPreferences.setUserStatus(status);
 
         Get.to(() => const Bottombar(), duration: Duration.zero);
         return;

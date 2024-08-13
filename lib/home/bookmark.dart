@@ -80,7 +80,6 @@ class _BookmarkState extends State<Bookmark> {
   token = await UserPreferences.getToken();
   userId = await UserPreferences.getUserId();
   fechaExpiracion = await UserPreferences.getFechaExpiracion();
-  status = await UserPreferences.getStatus();
 }
 
 Future<void> cargarEventosFavoritosPorId() async {
@@ -88,7 +87,6 @@ Future<void> cargarEventosFavoritosPorId() async {
   token = await UserPreferences.getToken();
     userId = await UserPreferences.getUserId();
     fechaExpiracion = await UserPreferences.getFechaExpiracion();
-    status = await UserPreferences.getStatus();
 
   print('El id es: ${userId}');
   

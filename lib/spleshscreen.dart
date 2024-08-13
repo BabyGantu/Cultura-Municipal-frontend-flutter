@@ -51,17 +51,26 @@ class _SpleshscreenState extends State<Spleshscreen> {
   late StreamSubscription<Position> positionStream;
 
   Future<bool> validarToken(String token) async {
-    final Uri url =
-        Uri.parse('http://216.225.205.93:3000/api/auth/validToken/$token');
+   final encodedToken = Uri.encodeComponent(token).replaceAll('%24', '\$');
+  final String apiUrl = 'http://216.225.205.93:3000/api/auth/validToken/$encodedToken';
 
-      final response = await http.get(
-        url,
-        headers: <String, String>{
+  print('URL completa: $apiUrl'); 
+  print(token);
+  try {
+    final response = await http.get(
+      Uri.parse(apiUrl),
+      headers: {
           'Content-Type': 'application/json; charset=UTF-8',
         },
-      );
+    );
 
-      if (response.statusCode == 200) {
+    // Imprime el código de estado y el cuerpo de la respuesta
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      // Intenta decodificar la respuesta solo si el código de estado es 200
+      try {
         var jsonResponse = json.decode(utf8.decode(response.bodyBytes));
         if (jsonResponse['rta'] == true) {
           print('TOKEN VALIDO');
@@ -71,32 +80,38 @@ class _SpleshscreenState extends State<Spleshscreen> {
           print('TOKEN INVALIDO');
           return false;
         }
-      } else {
-        print('Error en la solicitud: ${response.statusCode}');
+      } catch (e) {
+        print('Error al decodificar el JSON: $e');
         return false;
       }
-    
+    } else {
+      print('Error en la solicitud: ${response.statusCode}');
+      return false;
+    }
+  } catch (e) {
+    print('Error en en validar el token: $e');
+    throw Exception('Error al realizar la solicitud: $e');
   }
-
-  
+}
 
   Future<void> initializeAsyncDependencies() async {
-    token = await UserPreferences.getToken();
-    userId = await UserPreferences.getUserId();
-    fechaExpiracion = await UserPreferences.getFechaExpiracion();
-    status = await UserPreferences.getStatus();
+    try {
+      Timer(
+        const Duration(seconds: 4),
+        () async {
+          token = await UserPreferences.getToken();
 
-    Timer(
-      const Duration(seconds: 4),
-      () async {
-        if (token == null || !await validarToken(token!)) {
-          Get.to(() => const Onbonding(), duration: Duration.zero);
-        } else {
-          Get.to(() => const Bottombar(), duration: Duration.zero);
-        }
-      },
-    );
-
+          if (token == null || !await validarToken(token!)) {
+            Get.to(() => const Onbonding(), duration: Duration.zero);
+          } else {
+            Get.to(() => const Bottombar(), duration: Duration.zero);
+          }
+        },
+      );
+    } catch (e) {
+      print("problemaaaaaaaa: ${e}");
+      Get.to(() => const Onbonding(), duration: Duration.zero);
+    }
   }
 
   @override

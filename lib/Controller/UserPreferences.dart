@@ -21,10 +21,6 @@ class UserPreferences {
     await prefs.setBool('status', status);
   }
 
-   static Future<bool?> getStatus() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getBool('status');
-  }
 
   static Future<String?> getFechaExpiracion() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -57,8 +53,5 @@ class UserPreferences {
     await prefs.remove('id_user');
   }
 
-  static Future<void> removeStatus() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.remove('status');
-  }
+ 
 }
