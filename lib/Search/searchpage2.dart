@@ -8,6 +8,7 @@ import 'package:goevent2/Api/ApiWrapper.dart';
 import 'package:goevent2/Api/Config.dart';
 import 'package:goevent2/AppModel/Homedata/HomedataController.dart';
 import 'package:goevent2/home/EventDetails.dart';
+import 'package:goevent2/home/Evento.dart';
 import 'package:goevent2/utils/AppWidget.dart';
 import 'package:goevent2/utils/colornotifire.dart';
 import 'package:goevent2/utils/media.dart';
@@ -26,163 +27,173 @@ class SearchPage2 extends StatefulWidget {
 class _SearchPage2State extends State<SearchPage2> {
   late ColorNotifire notifire;
 
-  List eventAllList = [];
-  bool isLoading = false;
+  List<Evento> allEvent = [];
+  List<Evento> filteredEvent = [];
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    eventSearchApi("a");
     getdarkmodepreviousstate();
+    cargarEventos();
   }
 
-  eventSearchApi(String? val) {
-    isLoading = true;
-    setState(() {});
-    var data = {"title": val, "uid": uID};
-    print(data);
-    ApiWrapper.dataPost(Config.eventSearch, data).then((val) {
-      if ((val != null) && (val.isNotEmpty)) {
-        if ((val['ResponseCode'] == "200") && (val['Result'] == "true")) {
-          eventAllList = val["SearchData"];
-          isLoading = false;
-          setState(() {});
-          log(val.toString(), name: " Event Search Api :: ");
-        } else {
-          isLoading = false;
-          setState(() {});
-          // ApiWrapper.showToastMessage(val["ResponseMsg"]);
-        }
-      }
+  
+
+  Future<void> cargarEventos() async {
+  EventosService service = EventosService();
+  try {
+    List<Evento> eventos = await service.cargarEventos();
+    setState(() {
+      allEvent = eventos
+        ..sort((a, b) => a.tituloEvento.toLowerCase().compareTo(b.tituloEvento.toLowerCase())); // Ordena alfabéticamente
+      filteredEvent = allEvent; // Inicialmente muestra todos los eventos
+      isLoading = false;
     });
+  } catch (e) {
+    print('Error al cargar los eventos: $e');
   }
+}
+
+void eventSearch(String query) {
+  setState(() {
+    if (query.isEmpty) {
+      filteredEvent = allEvent; // Muestra todos los eventos si la búsqueda está vacía
+    } else {
+      filteredEvent = allEvent
+          .where((evento) =>
+              evento.tituloEvento.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    }
+  });
+}
+
 
   getdarkmodepreviousstate() async {
     final prefs = await SharedPreferences.getInstance();
     bool? previusstate = prefs.getBool("setIsDark");
     notifire.setIsDark = previusstate;
-    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    Future.delayed(const Duration(seconds: 0), () => setState(() {}));
-    notifire = Provider.of<ColorNotifire>(context, listen: true);
-    return Scaffold(
-      backgroundColor: notifire.backgrounde,
-      body: Column(
-        children: [
-          Container(
-            height: Get.height * 0.15,
-            width: double.infinity,
-            decoration: BoxDecoration(
-                color: notifire.homecontainercolore,
-                borderRadius: const BorderRadius.only(
-                    bottomRight: Radius.circular(20),
-                    bottomLeft: Radius.circular(20))),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 08),
-              child: Column(
-                children: [
-                  SizedBox(height: Get.height * 0.05),
-                  Padding(
-                    padding: EdgeInsets.only(left: Get.width * 0.04),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        widget.type == "0"
-                            ? InkWell(
-                          onTap: () {
-                            Get.back();
+  notifire = Provider.of<ColorNotifire>(context, listen: true);
+  return Scaffold(
+    backgroundColor: notifire.backgrounde,
+    body: Column(
+      children: [
+        Container(
+          height: Get.height * 0.15,
+          width: double.infinity,
+          decoration: BoxDecoration(
+              color: notifire.homecontainercolore,
+              borderRadius: const BorderRadius.only(
+                  bottomRight: Radius.circular(20),
+                  bottomLeft: Radius.circular(20))),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Column(
+              children: [
+                SizedBox(height: Get.height * 0.05),
+                Padding(
+                  padding: EdgeInsets.only(left: Get.width * 0.04),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      widget.type == "0"
+                          ? InkWell(
+                              onTap: () {
+                                Get.back();
+                              },
+                              child: const Icon(Icons.arrow_back,
+                                  color: Colors.white, size: 26),
+                            )
+                          : const SizedBox(),
+                      Text(
+                        "Search".tr,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w900,
+                          fontFamily: 'Gilroy Medium',
+                        ),
+                      ),
+                      const SizedBox()
+                    ],
+                  ),
+                ),
+                SizedBox(height: Get.height * 0.008),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Row(
+                    children: [
+                      Image.asset("image/search.png", height: height / 30),
+                      SizedBox(width: width / 90),
+                      Container(
+                          width: 1, height: height / 40, color: Colors.grey),
+                      SizedBox(width: width / 90),
+                      //! ------ Search TextField -------
+                      Container(
+                        color: Colors.transparent,
+                        height: height / 20,
+                        width: width / 1.7,
+                        child: TextField(
+                          onChanged: (val) {
+                            eventSearch(val);
                           },
-                          child: const Icon(Icons.arrow_back,
-                              color: Colors.white, size: 26),
-                        )
-                            : const SizedBox(),
-                        Text(
-                          "Search".tr,
                           style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w900,
-                            fontFamily: 'Gilroy Medium',
-                          ),
-                        ),
-                        const SizedBox()
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: Get.height * 0.008),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Row(
-                      children: [
-                        Image.asset("image/search.png", height: height / 30),
-                        SizedBox(width: width / 90),
-                        Container(
-                            width: 1, height: height / 40, color: Colors.grey),
-                        SizedBox(width: width / 90),
-                        //! ------ Search TextField -------
-                        Container(
-                          color: Colors.transparent,
-                          height: height / 20,
-                          width: width / 1.7,
-                          child: TextField(
-                            onChanged: (val) {
-                              val.length != 0
-                                  ? eventSearchApi(val)
-                                  : eventSearchApi("a");
-                            },
-                            style: TextStyle(
+                              fontFamily: 'Gilroy Medium',
+                              color: Colors.white,
+                              fontSize: 15),
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            errorBorder: InputBorder.none,
+                            disabledBorder: InputBorder.none,
+                            hintText: "Search...".tr,
+                            hintStyle: TextStyle(
                                 fontFamily: 'Gilroy Medium',
-                                color: Colors.white,
+                                color: const Color(0xffd2d2db),
                                 fontSize: 15),
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              focusedBorder: InputBorder.none,
-                              enabledBorder: InputBorder.none,
-                              errorBorder: InputBorder.none,
-                              disabledBorder: InputBorder.none,
-                              hintText: "Search...".tr,
-                              hintStyle: TextStyle(
-                                  fontFamily: 'Gilroy Medium',
-                                  color: const Color(0xffd2d2db),
-                                  fontSize: 15),
-                            ),
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-          SizedBox(height: Get.height * 0.01),
-          Expanded(
-            child: !isLoading
-                ? ListView.builder(
-              padding: EdgeInsets.zero,
-              itemCount: eventAllList.length,
-              shrinkWrap: true,
-              itemBuilder: (ctx, i) {
-                return conference(eventAllList, i);
-              },
-            )
-                : isLoadingCircular(),
-          ),
-        ],
-      ),
-    );
-  }
+        ),
+        SizedBox(height: Get.height * 0.01),
+        Expanded(
+          child: !isLoading
+              ? ListView.builder(
+                  padding: EdgeInsets.zero,
+                  itemCount: filteredEvent.length, // Usa la lista filtrada
+                  shrinkWrap: true,
+                  itemBuilder: (ctx, i) {
+                    return conference(filteredEvent[i], i);
+                  },
+                )
+              : isLoadingCircular(),
+        ),
+      ],
+    ),
+  );
+}
 
-  Widget conference(event, i) {
+
+  Widget conference(Evento evento, int i) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: GestureDetector(
         onTap: () {
           FocusScope.of(context).requestFocus(FocusNode());
           Future.delayed(Duration(seconds: 1), () {
-            //Get.to(() => EventsDetails(eid: event[i]["event_id"]),duration: Duration.zero);
+            Get.to(() => EventsDetails(eid: evento.id.toString(), evento: evento),
+              duration: Duration.zero);
           });
         },
         child: Container(
@@ -194,7 +205,7 @@ class _SearchPage2State extends State<SearchPage2> {
               border: Border.all(color: notifire.bordercolore)),
           child: Padding(
             padding:
-            const EdgeInsets.only(left: 8, right: 6, bottom: 5, top: 5),
+                const EdgeInsets.only(left: 8, right: 6, bottom: 5, top: 5),
             child: Row(children: [
               Container(
                   width: width / 5,
@@ -207,7 +218,8 @@ class _SearchPage2State extends State<SearchPage2> {
                         fadeInCurve: Curves.easeInCirc,
                         placeholder: "image/skeleton.gif",
                         fit: BoxFit.cover,
-                        image: Config.base_url + event[i]["event_img"]),
+                        image:
+                            'http://216.225.205.93:3000${evento.imagenEvento}'),
                   )),
               Column(children: [
                 SizedBox(height: height / 200),
@@ -218,7 +230,7 @@ class _SearchPage2State extends State<SearchPage2> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            event[i]["event_sdate"],
+                            evento.fechaInicio,
                             style: TextStyle(
                                 fontFamily: 'Gilroy Medium',
                                 color: const Color(0xff4A43EC),
@@ -229,7 +241,7 @@ class _SearchPage2State extends State<SearchPage2> {
                           SizedBox(
                             width: Get.width * 0.60,
                             child: Text(
-                              event[i]["event_title"],
+                              evento.tituloEvento,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
@@ -249,7 +261,7 @@ class _SearchPage2State extends State<SearchPage2> {
                                 SizedBox(
                                   width: Get.width * 0.55,
                                   child: Text(
-                                    event[i]["event_address"],
+                                    evento.direccionEvento,
                                     maxLines: 2,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(

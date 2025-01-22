@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:goevent2/Api/ApiWrapper.dart';
 import 'package:goevent2/Bottombar.dart';
@@ -128,6 +129,7 @@ class AuthController extends GetxController {
   }
 
   Future<void> crearEvento({
+    required BuildContext context, // Contexto como parámetro
     required String tituloEvento,
     String? imagenEvento,
     String? imagenPortadaEvento,
@@ -153,115 +155,99 @@ class AuthController extends GetxController {
     required int idCategoria,
     required int idPublicoObjetivo,
   }) async {
+    // Muestra la pantalla de carga y obtiene el contexto
+    BuildContext dialogContext = context; // Contexto de la pantalla de carga
 
-    final token = await UserPreferences.getToken();
-    final iduser = await UserPreferences.getUserId();
-    final intiduserInt =int.parse(iduser!);
-
-    final Map<String, dynamic> data = {
-      'titulo_evento': tituloEvento,
-      'imagen_evento': imagenEvento,
-      'imagen_portada_evento': imagenPortadaEvento,
-      'fecha_inicio': fechaInicio,
-      'fecha_fin': fechaFin,
-      'hora_inicio': horaInicio,
-      'hora_fin': horaFin,
-      'precio': precio,
-      'descripcion_breve': descripcionBreve,
-      'descripcion': descripcion,
-      'galeria_imagen_1': galeriaImagen1,
-      'galeria_imagen_2': galeriaImagen2,
-      //'galeria_imagen_3': galeriaImagen3,
-      'organizador': iduser,
-      'telefono': telefono,
-      'correo': correo,
-      'titulo_direccion': tituloDireccion,
-      'direccion_evento': direccionEvento,
-      'latitud': latitud,
-      'longitud': longitud,
-      'id_usuario': intiduserInt,
-      'id_municipio': idMunicipio,
-      'id_categoria': idCategoria,
-      'id_publico_objetivo': idPublicoObjetivo,
-    };
-
-    // Convertir los datos a JSON y calcular el tamaño
-    final jsonData = jsonEncode(data);
-    final byteData = utf8.encode(jsonData);
-    final int requestSize = byteData.length;
-
-    print('Tamaño de la solicitud: $requestSize bytes');
-
-    print('Datos en formato JSON: $jsonData');
-
-    
-    print('el token es: $token');
-    final encodedToken = Uri.encodeComponent(token!).replaceAll('%24', '\$');
-    print('el user id es: $intiduserInt');
-    final Uri url = Uri.parse('$endpoin/api/eventos');
-    final response = await http.post(
-      url,
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Bearer $token',
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        dialogContext = context; // Actualiza el contexto dentro del builder
+        return Center(
+          child: CircularProgressIndicator(),
+        );
       },
-      body: jsonData,
     );
 
-    if (response.statusCode == 201) {
-      final Map<String, dynamic> responseData = json.decode(response.body);
-      final bool rta = responseData['rta'];
-      final String message = responseData['message'];
+    try {
+      final token = await UserPreferences.getToken();
+      final iduser = await UserPreferences.getUserId();
+      final intiduserInt = int.parse(iduser!);
 
-      if (rta) {
-        final Map<String, dynamic> evento = responseData['evento'];
-        final int id = evento['id'];
-        final String tituloEventoResponse = evento['titulo_evento'];
+      final Map<String, dynamic> data = {
+        'titulo_evento': tituloEvento,
+        'imagen_evento': imagenEvento,
+        'imagen_portada_evento': imagenPortadaEvento,
+        'fecha_inicio': fechaInicio,
+        'fecha_fin': fechaFin,
+        'hora_inicio': horaInicio,
+        'hora_fin': horaFin,
+        'precio': precio,
+        'descripcion_breve': descripcionBreve,
+        'descripcion': descripcion,
+        'galeria_imagen_1': galeriaImagen1,
+        'galeria_imagen_2': galeriaImagen2,
+        'organizador': iduser,
+        'telefono': telefono,
+        'correo': correo,
+        'titulo_direccion': tituloDireccion,
+        'direccion_evento': direccionEvento,
+        'latitud': latitud,
+        'longitud': longitud,
+        'id_usuario': intiduserInt,
+        'id_municipio': idMunicipio,
+        'id_categoria': idCategoria,
+        'id_publico_objetivo': idPublicoObjetivo,
+      };
 
-        print('__----------------Evento Registrado---------------__');
-        print('ID del evento: $id');
-        print('El titulo del evento es: $tituloEventoResponse');
-        print('Mensaje: $message');
-        ApiWrapper.showToastMessage(message);
+      final jsonData = jsonEncode(data);
+      final Uri url = Uri.parse('$endpoin/api/eventos');
+      final response = await http.post(
+        url,
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonData,
+      );
 
-        // Puedes navegar a otra pantalla o realizar otras acciones aquí
+      Navigator.of(dialogContext).pop(); // Cierra la pantalla de carga
+
+      if (response.statusCode == 201) {
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        final bool rta = responseData['rta'];
+        final String message = responseData['message'];
+
+        if (rta) {
+          final Map<String, dynamic> evento = responseData['evento'];
+          final int id = evento['id'];
+          final String tituloEventoResponse = evento['titulo_evento'];
+
+          print('__----------------Evento Registrado---------------__');
+          print('ID del evento: $id');
+          print('El titulo del evento es: $tituloEventoResponse');
+          print('Mensaje: $message');
+          ApiWrapper.showToastMessage(message);
+
+          // Navega a la pantalla Bottombar
+         Get.offAll(() => const Bottombar()); // Esto reemplaza toda la pila de navegación y va directamente a Bottombar
+        } else {
+          print('Error: $message');
+        }
       } else {
-        print('Error: $message');
+        final Map<String, dynamic> responseData = json.decode(response.body);
+        final String message = responseData['message'];
+        print('Error: ${response.reasonPhrase}');
+        print('message de error: $message');
+        ApiWrapper.showToastMessage(
+            "Algo salió mal. Inténtalo de nuevo más tarde.");
       }
-    } else {
-      // Si la solicitud falla, imprime el mensaje de error
-      final Map<String, dynamic> responseData = json.decode(response.body);
-      final String message = responseData['message'];
-      print('Error: ${response.reasonPhrase}');
-      print('message de error: $message');
-
-      print('Error: ${response.reasonPhrase}');
+    } catch (e) {
+      Navigator.of(dialogContext)
+          .pop(); // Asegúrate de cerrar la pantalla de carga en caso de error
+      print('Error al crear el evento: $e');
       ApiWrapper.showToastMessage(
           "Algo salió mal. Inténtalo de nuevo más tarde.");
-    }
-  }
-
-  Future<bool?> reenviarCodigo(int id) async {
-    final Uri url = Uri.parse('$endpoin/reenviarapi/_codigo/');
-    final response = await http.post(
-      url,
-      body: {'id': id},
-    );
-
-    if (response.statusCode == 200) {
-      // Extracción del token del cuerpo de la respuesta
-      final Map<String, dynamic> responseData = json.decode(response.body);
-      final message = responseData['message'];
-      print(
-          '--------------------------------------------------------------------------------------------------');
-      print('mensaje: $message');
-      print(
-          '--------------------------------------------------------------------------------------------------');
-      return true;
-    } else {
-      // Si la solicitud falla, imprime el mensaje de error
-      print('Error: ${response.reasonPhrase}');
-      return false;
     }
   }
 

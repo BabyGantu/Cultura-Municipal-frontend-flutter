@@ -103,6 +103,48 @@ class Evento {
 
 
 class EventosService {
+
+  Future<List<Evento>> cargarEventos() async {
+  String apiUrl = 'http://216.225.205.93:3000/api/eventos/buscarEventos';
+
+  try {
+    final response = await http.post(
+      Uri.parse(apiUrl),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      var jsonResponse = json.decode(utf8.decode(response.bodyBytes));
+
+      if (jsonResponse['rta'] == true && jsonResponse['eventos'] is List) {
+        List<dynamic> eventosJson = jsonResponse['eventos'];
+
+        List<Evento> tempEventosList = [];
+
+        for (var eventoJson in eventosJson) {
+          int id = eventoJson['id'];
+
+          // Obtener detalles del evento individual
+          Evento evento = await obtenerDetallesEvento(id);
+          tempEventosList.add(evento);
+        }
+
+        return tempEventosList;
+      } else {
+        throw Exception('La respuesta no contiene una lista de eventos.');
+      }
+    } else {
+      throw Exception('Error al cargar eventos: ${response.statusCode}');
+    }
+  } catch (e) {
+    throw Exception('Error al realizar la solicitud: $e');
+  }
+}
   
   
   Future<List<Evento>> cargarEventosEnUnaSemana() async {
@@ -242,8 +284,9 @@ Future<List<Evento>> cargarEventosCategoria(int idCategoria) async {
 }
 
 Future<List<Evento>> cargarEventosCercanos(String latitud, String longitud) async {
-  final String apiUrl = 'http://216.225.205.93:3000/api/eventos/cercanos/$latitud/$longitud';
+  final String apiUrl = 'http://216.225.205.93:3000/api/eventos/cercanos/$longitud/$latitud';
   List<Evento> eventosConDetalles = [];
+  List<dynamic> eventosDistancia = [];
 
   try {
     final response = await http.get(Uri.parse(apiUrl));
@@ -255,7 +298,10 @@ Future<List<Evento>> cargarEventosCercanos(String latitud, String longitud) asyn
         int eventoId = eventoData['id'];
         Evento evento = await obtenerDetallesEvento(eventoId);
         eventosConDetalles.add(evento);
+        
       }
+      eventosDistancia = responseData;
+
     } else {
       print('Error en la solicitud de eventos cercanos: ${response.statusCode}');
     }
@@ -264,6 +310,28 @@ Future<List<Evento>> cargarEventosCercanos(String latitud, String longitud) asyn
   }
 
   return eventosConDetalles;
+}
+
+
+Future<List<Map<String, dynamic>>> obtenerEventosCercanos(
+    String latitud, String longitud) async {
+  final url = Uri.parse(
+      'http://216.225.205.93:3000/api/eventos/cercanos/$longitud/$latitud');
+  
+  try {
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      // Decodificar la respuesta JSON y retornarla como una lista de mapas
+      return List<Map<String, dynamic>>.from(json.decode(response.body));
+    } else {
+      // Manejar errores de la solicitud
+      throw Exception('Error al obtener eventos cercanos');
+    }
+  } catch (e) {
+    // Manejar cualquier excepción
+    throw Exception('Error al realizar la solicitud: $e');
+  }
 }
 
 Future<List<Evento>> obtenerEventosFavoritos() async {
@@ -462,6 +530,37 @@ Future<bool> crearFavorito(int userId, int eventId) async {
     }
 
     return false;
+  }
+
+  Future<bool> eliminarFavorito(int idUser, int idEvent) async {
+    final String baseUrl = "http://216.225.205.93:3000/api/favoritos/$idEvent";
+    final token = await UserPreferences.getToken();
+    final url = Uri.parse(baseUrl);
+    
+    final headers = {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+
+    final body = jsonEncode({
+      "id_user": idUser,
+      "id_event": idEvent,
+    });
+
+    try {
+      final response = await http.delete(url, headers: headers, body: body);
+      final responseData = jsonDecode(response.body);
+
+      if (response.statusCode == 201) {
+        return responseData['rta'] == true;
+      } else {
+        print('Error en la respuesta de la API: ${responseData['message']}');
+        return false;
+      }
+    } catch (e) {
+      print('Error al eliminar favorito: $e');
+      return false;
+    }
   }
 
 

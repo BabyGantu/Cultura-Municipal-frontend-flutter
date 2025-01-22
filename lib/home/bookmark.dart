@@ -143,6 +143,8 @@ Future<void> cargarEventosFavoritosPorId() async {
     return !isLiked;
   }
 
+  
+
   @override
   Widget build(BuildContext context) {
     Future.delayed(const Duration(seconds: 1), () {
@@ -316,29 +318,30 @@ Future<void> cargarEventosFavoritosPorId() async {
                           sigmaY: 10,
                         ),
                         child: CircleAvatar(
-                          radius: 18,
-                          backgroundColor: Colors.transparent,
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 3),
-                            child: LikeButton(
-                              /*
-                              onTap: (val) {
-                                
-                                return onLikeButtonTapped(
-                                    val, user[i]["event_id"]);
-                                    
-                              },
-                              */
-                              likeBuilder: (bool isLiked) {
-                                return !isLiked
-                                    ? const Icon(Icons.favorite,
-                                        color: Color(0xffF0635A), size: 24)
-                                    : const Icon(Icons.favorite_border,
-                                        color: Colors.grey, size: 24);
-                              },
-                            ),
-                          ),
+                      radius: 18,
+                      backgroundColor: Colors.transparent,
+                      child: Padding(
+                        padding: const EdgeInsets.only(left: 3),
+                        child: LikeButton(
+                          isLiked:true,
+                              //esEventoFavorito(evento.id), // Estado inicial
+                          onTap: (bool isLiked) async {
+                            // Manejo asincrónico del estado
+                            bool success =
+                                await onLikeButtonTapped(isLiked, evento.id);
+                            return !success;
+                          },
+                          likeBuilder: (bool isLiked) {
+                            return !isLiked
+                                ? const Icon(Icons.favorite_border,
+                                    color: Colors.grey, size: 24)
+                                : const Icon(Icons.favorite,
+                                    color: Color(0xffF0635A), size: 24);
+                          },
                         ),
+                      ),
+                    ),
+                        
                       ),
                     )),
               ],

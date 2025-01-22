@@ -1,6 +1,7 @@
 // ignore_for_file: file_names, avoid_print, prefer_const_constructors, prefer_is_empty, prefer_collection_literals
 
 import 'dart:convert';
+import 'dart:math' as mt;
 import 'dart:ui' as ui;
 import 'dart:developer';
 import 'package:flutter/foundation.dart';
@@ -10,6 +11,8 @@ import 'package:get/get.dart';
 import 'package:goevent2/Api/ApiWrapper.dart';
 import 'package:goevent2/Api/Config.dart';
 import 'package:goevent2/AppModel/Homedata/HomedataController.dart';
+import 'package:goevent2/home/EventDetails.dart';
+import 'package:goevent2/home/Evento.dart';
 import 'package:goevent2/spleshscreen.dart';
 import 'package:goevent2/utils/colornotifire.dart';
 import 'package:goevent2/utils/media.dart';
@@ -18,7 +21,6 @@ import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_map/flutter_map.dart';
-
 
 const String eventosJson = '''
 {
@@ -63,9 +65,6 @@ const String eventosJson = '''
 }
 ''';
 
-
-
-
 //! Done
 class SearchPage extends StatefulWidget {
   final String? type;
@@ -81,65 +80,105 @@ class _SearchPageState extends State<SearchPage> {
   List eventAllList = [];
   bool isLoading = false;
   bool isTapped = false;
-  List<dynamic> eventosList = []; // Lista para almacenar los eventos
-  List<bool> isMarkerTappedList = []; // Lista para mantener el estado de cada marcador
+  List<Evento> eventosList = []; // Lista para almacenar los eventos
+  List<bool> isMarkerTappedList =
+      []; // Lista para mantener el estado de cada marcador
   dynamic selectedConference;
 
+  double _currentSliderValue = 15.0; // Distancia en kilómetros
+  late MapController _mapController;
+  double _circleRadius = 0.0; // Valor inicial de la distancia
 
-
-
-
-
-/*
-  final MapController controller = MapController.customLayer(
-    initPosition: GeoPoint(
-      latitude: 47.4358055,
-      longitude: 8.4737324,
-    ),
-    customTile: CustomTile(
-      sourceName: "opentopomap",
-      tileExtension: ".png",
-      minZoomLevel: 2,
-      maxZoomLevel: 19,
-      urlsServers: [
-        TileURLs(
-          url: "https://tile.opentopomap.org/",
-          subdomains: [],
-        )
-      ],
-      tileSize: 256,
-
-    ),
-  );
-
-  final MapController _mapController = MapController(
-    initPosition: GeoPoint(latitude: 47.4358055, longitude: 8.4737324),
-  );
-
- */
-
-
-
+  List<Evento> eventosListFiltrados = []; // Lista de eventos filtrados según la distancia
+List<dynamic> eventosIdsList = []; // Lista de eventos con distancias obtenidas del servicio
 
   @override
   void initState() {
-    super.initState();
-    //controller.dispose();
-    //_mapController.dispose();
-    eventSearchApi("a");
-    cargarEventos();
-    getdarkmodepreviousstate();
-  }
+  super.initState();
+  _mapController = MapController();
 
-  void cargarEventos() {
-    // Decodifica la cadena JSON y guarda los eventos en la lista eventosList
-    Map<String, dynamic> eventosData = json.decode(eventosJson);
+  // Esperar un pequeño retraso para asegurar que _mapController esté listo
+  Future.delayed(Duration(milliseconds: 100), () {
+    _updateCircleRadius(); // Inicializar el radio cuando se carga el mapa
+  });
+
+  eventSearchApi("a");
+  cargarEventosCercanos(); // Cargar eventos cercanos al inicio
+  getdarkmodepreviousstate();
+}
+
+  void _updateCircleRadius() {
+  setState(() {
+    _circleRadius = _calculateRadiusInPixels();
+  });
+}
+
+double _calculateRadiusInPixels() {
+  // Tamaño en metros por píxel en el nivel de zoom actual
+  final metersPerPixel = 156543.03392 *
+      mt.cos(latD * pi / 180) /
+      mt.pow(2, _mapController.camera.zoom);
+  return (_currentSliderValue * 1000) / metersPerPixel;
+}
+
+// Método para cargar eventos cercanos al inicio
+Future<void> cargarEventosCercanos() async {
+  EventosService service = EventosService();
+  try {
+    // Cargar todos los eventos cercanos sin distancias
+    List<Evento> eventos = await service.cargarEventosCercanos(lat, long);
+    
+    // Cargar todos los eventos con distancias
+    List<dynamic> eventosIds = await service.obtenerEventosCercanos(lat, long);
+
+    // Guardar eventos y distancias en variables globales
     setState(() {
-      eventosList = eventosData['eventos'];
-      // Inicializa la lista de estados de los marcadores con `false` para indicar que ningún marcador está seleccionado inicialmente
-      isMarkerTappedList = List.generate(eventosList.length, (index) => false);
+      eventosList = eventos;
+      eventosIdsList = eventosIds;
     });
+
+    // Actualizar los eventos filtrados según el slider inicial
+    actualizarEventosFiltrados();
+
+  } catch (e) {
+    print('Error al cargar los eventos cercanos: $e');
   }
+}
+
+// Método para actualizar eventos según la distancia
+void actualizarEventosFiltrados() {
+  // Filtrar eventos que estén dentro de la distancia en kilómetros especificada
+  final eventosFiltrados = eventosIdsList.where((evento) {
+    return evento['distance'] <= _currentSliderValue;
+  }).map((evento) => evento['id']).toList();
+
+  setState(() {
+    // Filtrar los eventos en eventosList basándote en las IDs filtradas
+    eventosListFiltrados = eventosList.where((evento) {
+      return eventosFiltrados.contains(evento.id);
+    }).toList();
+
+    isMarkerTappedList = List.generate(eventosListFiltrados.length, (index) => false);
+
+    // Imprimir resultados filtrados
+    print('Eventos filtrados por distancia:');
+    for (var evento in eventosListFiltrados) {
+      print('Evento ID: ${evento.id}');
+    }
+  });
+}
+
+// Método para manejar el cambio del valor del slider
+void onSliderValueChanged(double newValue) {
+  setState(() {
+    _currentSliderValue = newValue;
+    _updateCircleRadius();
+    actualizarEventosFiltrados(); // Actualizar eventos filtrados según el nuevo valor del slider
+  });
+}
+
+
+
 
   // Método para cambiar el estado de selección de un marcador
   void toggleMarkerSelection(int index) {
@@ -148,7 +187,8 @@ class _SearchPageState extends State<SearchPage> {
       isMarkerTappedList[index] = !isMarkerTappedList[index];
       // Si se selecciona este marcador, deselecciona todos los demás
       if (isMarkerTappedList[index]) {
-        isMarkerTappedList = List.generate(isMarkerTappedList.length, (idx) => idx == index);
+        isMarkerTappedList =
+            List.generate(isMarkerTappedList.length, (idx) => idx == index);
       }
     });
   }
@@ -188,7 +228,7 @@ class _SearchPageState extends State<SearchPage> {
     final prefs = await SharedPreferences.getInstance();
     bool? previusstate = prefs.getBool("setIsDark");
     notifire.setIsDark = previusstate;
-    }
+  }
 
   Future<Uint8List> getImages(String path, int width) async {
     ByteData data = await rootBundle.load(path);
@@ -298,17 +338,21 @@ class _SearchPageState extends State<SearchPage> {
             ),
             //SizedBox(height: Get.height * 0.0001),
             Expanded(
-              child:
-              Stack(
+              child: Stack(
                 alignment: Alignment.bottomCenter,
                 children: [
-                  content(),
-                  showSelectedConference(),
+                  Container(
+                    child: content(),
+                  ),
+                  Container(
+                    child: showSelectedConference(),
+                  ),
+                  Container(
+                    child: barraDistancia(),
+                  ),
                 ],
-              )
-            ),
-
-
+              ),
+            )
           ],
         )
         //content(),
@@ -316,149 +360,214 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Widget content() {
-    return FlutterMap(
-      options: MapOptions(
-        initialCenter: LatLng(latD, longD),
-        initialZoom: 12,
-        interactionOptions:
-            const InteractionOptions(flags: ~InteractiveFlag.doubleTapZoom),
-      ),
-      children: [
-        openStreetMapTileLater,
-
-        MarkerLayer(
-          markers: List.generate(eventosList.length, (index) {
+  return FlutterMap(
+    mapController: _mapController,
+    options: MapOptions(
+      center: LatLng(latD, longD), // Cambiado a center para que el mapa se centre en la ubicación actual
+      zoom: 12,
+      onPositionChanged: (position, hasGesture) {
+        _updateCircleRadius(); // Actualizar el radio cuando cambia la posición o el zoom
+      },
+    ),
+    children: [
+      openStreetMapTileLater,
+      MarkerLayer(
+        markers: [
+          // Marcador para la ubicación actual
+          Marker(
+            point: LatLng(latD, longD),
+            width: 50, // Tamaño del marcador
+            height: 50,
+            child: GestureDetector(
+              onTap: () {
+                // Acción al tocar el marcador de la ubicación actual
+                print('Ubicación actual: $latD, $longD');
+              },
+              child: Image.asset('image/CurrentLocationPin.png'), // Asegúrate de tener una imagen para el marcador de ubicación actual
+            ),
+          ),
+          // Otros marcadores de eventos filtrados
+          ...List.generate(eventosListFiltrados.length, (index) {
             return Marker(
-              point: LatLng(eventosList[index]['latitud'], eventosList[index]['longitud']),
-              width: isMarkerTappedList[index] ? 70 : 50, // Ancho según si se ha tocado o no
-              height: isMarkerTappedList[index] ? 70 : 50, // Altura según si se ha tocado o no
+              point: LatLng(
+                eventosListFiltrados[index].latitud,
+                eventosListFiltrados[index].longitud,
+              ),
+              width: isMarkerTappedList[index] ? 70 : 50,
+              height: isMarkerTappedList[index] ? 70 : 50,
               child: GestureDetector(
                 onTap: () {
-                  toggleMarkerSelection(index); // Cambia el estado de selección del marcador en el índice dado
+                  toggleMarkerSelection(index);
                   setState(() {
-                    selectedConference = eventosList[index];
+                    selectedConference = eventosListFiltrados[index];
                   });
                 },
                 child: AnimatedContainer(
-                  duration: Duration(milliseconds: 900), // Duración de la animación
-                  width: isMarkerTappedList[index] ? 70 : 50, // Ancho final después de la animación
-                  height: isMarkerTappedList[index] ? 70 : 50, // Altura final después de la animación
+                  duration: Duration(milliseconds: 900),
+                  width: isMarkerTappedList[index] ? 70 : 50,
+                  height: isMarkerTappedList[index] ? 70 : 50,
                   child: Image.asset('image/Pin.png'),
                 ),
               ),
             );
           }),
-        ),
+        ],
+      ),
+      CircleLayer(
+        circles: [
+          CircleMarker(
+            point: LatLng(latD, longD),
+            radius: _circleRadius, // Radio en píxeles, se actualiza con el zoom
+            color: Colors.blue.withOpacity(0.3), // Color del área del radio
+            borderStrokeWidth: 2,
+            borderColor: Colors.blue,
+          ),
+        ],
+      ),
+    ],
+  );
+}
 
-      ],
 
+
+  Widget barraDistancia() {
+    return Padding(
+      padding: EdgeInsets.only(top: 10),
+      child: Column(
+        children: [
+          Text(
+            'Distancia: ${_currentSliderValue.toStringAsFixed(1)} km',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w900,
+              fontFamily: 'Gilroy Medium',
+            ),
+          ),
+          Slider(
+            value: _currentSliderValue,
+            min: 1,
+            max: 50, // Rango de kilómetros
+            divisions: 100, // Número de divisiones (1 división = 1 km)
+            label: _currentSliderValue.round().toString(),
+            onChanged: (double value) {
+              setState(() {
+                onSliderValueChanged(value); // Recalcular el radio cuando cambia el valor del deslizador
+              });
+            },
+          ),
+        ],
+      ),
     );
   }
 
-
-  Widget conference(dynamic selectedEvent) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
-      child: GestureDetector(
-        onTap: () {
-          FocusScope.of(context).requestFocus(FocusNode());
-          Future.delayed(Duration(seconds: 1), () {
+  Widget conference(Evento selectedEvent) {
+    return Positioned(
+      left: 5,
+      right: 5,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        child: GestureDetector(
+          onTap: () {
+            FocusScope.of(context).requestFocus(FocusNode());
+            Get.to(
+                () => EventsDetails(
+                    eid: selectedEvent.id.toString(), evento: selectedEvent),
+                duration: Duration.zero);
+            /*Future.delayed(Duration(seconds: 1), () {
+            Get.to(
+                () => EventsDetails(eid: selectedEvent.id.toString(), evento: selectedEvent),
+                duration: Duration.zero);
             // Aquí puedes navegar a una nueva pantalla pasando los datos del evento seleccionado
             // En este ejemplo, simplemente imprimo los datos del evento seleccionado en la consola
-            print("Evento seleccionado: ${selectedEvent['id']}, ${selectedEvent['titulo']}, ${selectedEvent['direccion']}");
+            print("Evento seleccionado: ${selectedEvent.id}, ${selectedEvent.tituloEvento}, ${selectedEvent.direccionEvento}");
           });
-        },
-        child: Container(
-          width: width, // Ancho del contenedor
-          height: height / 5, // Altura del contenedor (puedes ajustarlo según tus necesidades)
-          margin: EdgeInsets.symmetric(vertical: 6),
-          decoration: BoxDecoration(
-            color: notifire.containercolore,
-            borderRadius: BorderRadius.all(Radius.circular(10)),
-            border: Border.all(color: notifire.bordercolore),
-
-          ),
-          child: Padding(
-            padding: const EdgeInsets.only(left: 8, right: 6, bottom: 5, top: 10),
-            child: Row(
-              children: [
-                Container(
-                  width: width / 5,
-                  height: height / 8,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                    child: Image.asset(
-                      selectedEvent["imagen"], // Ruta de la imagen en tus activos
-                      fit: BoxFit.cover,
+          */
+          },
+          child: Container(
+            width: width, // Ancho del contenedor
+            height: height /
+                5, // Altura del contenedor (puedes ajustarlo según tus necesidades)
+            margin: EdgeInsets.symmetric(vertical: 6),
+            decoration: BoxDecoration(
+              color: notifire.containercolore,
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+              border: Border.all(color: notifire.bordercolore),
+            ),
+            child: Padding(
+              padding:
+                  const EdgeInsets.only(left: 8, right: 6, bottom: 5, top: 10),
+              child: Row(
+                children: [
+                  Container(
+                    width: width / 5,
+                    height: height / 8,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      child: Image.network(
+                        'http://216.225.205.93:3000${selectedEvent.imagenEvento}',
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
-                ),
-                SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        selectedEvent["fecha"],
-                        style: TextStyle(
-                          fontFamily: 'Gilroy Medium',
-                          color: const Color(0xff4A43EC),
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          selectedEvent.fechaInicio,
+                          style: TextStyle(
+                            fontFamily: 'Gilroy Medium',
+                            color: const Color(0xff4A43EC),
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 5),
-                      Text(
-                        selectedEvent["titulo"],
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          fontFamily: 'Gilroy Medium',
-                          color: notifire.textcolor,
-                          fontSize: 15,
-                          fontWeight: FontWeight.w600,
+                        SizedBox(height: 5),
+                        Text(
+                          selectedEvent.tituloEvento,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontFamily: 'Gilroy Medium',
+                            color: notifire.textcolor,
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
-                      ),
-                      SizedBox(height: 5),
-                      Row(
-                        children: [
-                          Image.asset("image/location.png", height: 20),
-                          SizedBox(width: 5),
-                          Expanded(
-                            child: Text(
-                              selectedEvent["direccion"],
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontFamily: 'Gilroy Medium',
-                                color: Colors.grey,
-                                fontSize: 13,
+                        SizedBox(height: 5),
+                        Row(
+                          children: [
+                            Image.asset("image/location.png", height: 20),
+                            SizedBox(width: 5),
+                            Expanded(
+                              child: Text(
+                                selectedEvent.direccionEvento,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontFamily: 'Gilroy Medium',
+                                  color: Colors.grey,
+                                  fontSize: 13,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
       ),
     );
   }
-
-
-
-
-
-
-
-
 
   PageController pageController = PageController();
   updateMapPosition({int? index}) {
@@ -469,9 +578,9 @@ class _SearchPageState extends State<SearchPage> {
 }
 
 TileLayer get openStreetMapTileLater => TileLayer(
-      //urlTemplate: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', //mapa blanco
-      //urlTemplate: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',  //mapa negro
-      //urlTemplate: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', //mapa feo
-      urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',  //mapa estandar
-      userAgentPackageName: 'com.goevent'
-    );
+    //urlTemplate: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png', //mapa blanco
+    //urlTemplate: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',  //mapa negro
+    //urlTemplate: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', //mapa feo
+    urlTemplate:
+        'https://tile.openstreetmap.org/{z}/{x}/{y}.png', //mapa estandar
+    userAgentPackageName: 'com.goevent');

@@ -14,6 +14,7 @@ import 'package:goevent2/Controller/UserPreferences.dart';
 import 'package:goevent2/home/Categoria.dart';
 import 'package:goevent2/home/Evento.dart';
 import 'package:goevent2/home/Gallery_View.dart';
+import 'package:goevent2/home/TrendingCatPage.dart';
 import 'package:goevent2/utils/AppWidget.dart';
 import 'package:goevent2/utils/media.dart';
 import 'package:intl/intl.dart';
@@ -155,6 +156,38 @@ class _EventsDetailsState extends State<EventsDetails> {
   }
 
   Future<void> obtenerNombrePublicoObjetivo(int id) async {
+    final String apiUrl = 'http://216.225.205.93:3000/api/publico-objetivo/$id';
+
+    try {
+      final response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var jsonResponse = json.decode(utf8.decode(response.bodyBytes));
+
+        if (jsonResponse['rta'] == true) {
+          setState(() {
+            nombrePublico = "";
+            nombrePublico = jsonResponse['publicoObjetivo']['nombre'];
+            print('id del publico objetivo es: ${id}');
+            print('publico objetivo es: ${nombrePublico}');
+          });
+        } else {
+          print('Error: ${jsonResponse['message']}');
+        }
+      } else {
+        print('Error: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+  Future<void> obtenerNombreOrganizador(int id) async {
     final String apiUrl = 'http://216.225.205.93:3000/api/publico-objetivo/$id';
 
     try {
@@ -342,19 +375,60 @@ class _EventsDetailsState extends State<EventsDetails> {
 
  */
 
+  Future<bool> agregarAFavoritos(int userId, int eventId) async {
+    EventosService service = EventosService();
+    bool resultado = await service.crearFavorito(userId, eventId);
+
+    if (resultado) {
+      print('Evento añadido a favoritos');
+      // Opcional: Actualiza el estado local si es necesario
+      return true;
+    } else {
+      print('No se pudo añadir el evento a favoritos');
+      // Maneja el error o muestra un mensaje al usuario
+      return false;
+    }
+  }
+
+  Future<bool> eliminarFavorito(int userId, int eventId) async {
+    EventosService service = EventosService();
+    bool resultado = await service.eliminarFavorito(userId, eventId);
+
+    if (resultado) {
+      print('Evento eliminado de favoritos');
+      // Opcional: Actualiza el estado local si es necesario
+      return true;
+    } else {
+      print('No se pudo eliminar de favoritos');
+      // Maneja el error o muestra un mensaje al usuario
+      return false;
+    }
+  }
+
   //! ----- LikeButtonTapped -----
-  Future<bool> onLikeButtonTapped(isLiked, eid) async {
-    var data = {"eid": eid, "uid": uID};
-    ApiWrapper.dataPost(Config.ebookmark, data).then((val) {
-      if ((val != null) && (val.isNotEmpty)) {
-        if ((val['ResponseCode'] == "200") && (val['Result'] == "true")) {
-          eventDetailApi();
-        } else {
-          ApiWrapper.showToastMessage(val["ResponseMsg"]);
-        }
-      }
-    });
-    return !isLiked;
+  Future<bool> onLikeButtonTapped(bool isLiked, int eventId) async {
+    int userIdInt = int.parse(userId!);
+
+    bool success;
+
+    if (isLiked) {
+      // Eliminar de favoritos
+      success = await eliminarFavorito(userIdInt, eventId);
+    } else {
+      // Agregar a favoritos
+      success = await agregarAFavoritos(userIdInt, eventId);
+    }
+
+    if (success) {
+      // Actualiza el estado para reflejar el cambio
+      setState(() {
+        // Puedes realizar acciones adicionales si es necesario
+        // Por ejemplo, recargar la lista de favoritos o eventos
+        cargarEventosFavoritosPorId();
+      });
+    }
+
+    return success; // Retorna el nuevo estado del botón
   }
 
   void abrirMapa(double latitud, double longitud) async {
@@ -403,7 +477,7 @@ class _EventsDetailsState extends State<EventsDetails> {
                   Text(
                     "Event Details".tr,
                     style: TextStyle(
-                        fontSize: 18,
+                        fontSize: 19,
                         fontWeight: FontWeight.w900,
                         fontFamily: 'Gilroy Medium',
                         color: Colors.white),
@@ -419,23 +493,24 @@ class _EventsDetailsState extends State<EventsDetails> {
                       ),
                       child: CircleAvatar(
                         radius: 18,
-                        backgroundColor: Colors.grey.withOpacity(0.2),
+                        backgroundColor: Colors.transparent,
                         child: Padding(
                           padding: const EdgeInsets.only(left: 3),
                           child: LikeButton(
-                            onTap: (val) {
-                              return onLikeButtonTapped(val, widget.eid);
+                            isLiked: esEventoFavorito(
+                                widget.evento.id), // Estado inicial
+                            onTap: (bool isLiked) async {
+                              // Manejo asincrónico del estado
+                              bool success = await onLikeButtonTapped(
+                                  isLiked, widget.evento.id);
+                              return !success;
                             },
                             likeBuilder: (bool isLiked) {
-                              return Icon(
-                                esEventoFavorito(widget.evento.id)
-                                    ? Icons.favorite
-                                    : Icons.favorite_border,
-                                color: esEventoFavorito(widget.evento.id)
-                                    ? const Color(0xffF0635A)
-                                    : Colors.grey,
-                                size: 22,
-                              );
+                              return !isLiked
+                                  ? const Icon(Icons.favorite_border,
+                                      color: Colors.grey, size: 24)
+                                  : const Icon(Icons.favorite,
+                                      color: Color(0xffF0635A), size: 24);
                             },
                           ),
                         ),
@@ -611,7 +686,7 @@ class _EventsDetailsState extends State<EventsDetails> {
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
-                                    fontSize: 28,
+                                    fontSize: 29,
                                     fontWeight: FontWeight.w500,
                                     fontFamily: 'Gilroy Medium',
                                     color: notifire.textcolor),
@@ -626,10 +701,25 @@ class _EventsDetailsState extends State<EventsDetails> {
                               runSpacing: 2.0, // Space between items vertically
                               children: [
                                 categoriasList.isNotEmpty
-                                    ? concert("image/date.png", 'Categoria',
-                                        '${categoriasList[0].nombre}')
+                                    ? GestureDetector(
+                                        onTap: () {
+                                          final selectedEvent = categoriasList[
+                                              0]; // Obtén el evento seleccionado
+                                          Get.to(() => TrndingPage(
+                                              idCategoria:
+                                                  categoriasList[0].id));
+                                        },
+                                        child: concert(
+                                          "image/date.png",
+                                          'Categoria',
+                                          '${categoriasList[0].nombre}',
+                                        ),
+                                      )
                                     : concert(
-                                        "image/date.png", 'Categoria', ''),
+                                        "image/date.png",
+                                        'Categoria',
+                                        '',
+                                      ),
 
                                 concert("image/date.png", 'Publico objetivo',
                                     '${nombrePublico}'),
@@ -679,7 +769,7 @@ class _EventsDetailsState extends State<EventsDetails> {
                                     backgroundColor: Colors
                                         .blueAccent, // Color del texto e icono
                                     textStyle: TextStyle(
-                                        fontSize: 16), // Tamaño del texto
+                                        fontSize: 17), // Tamaño del texto
                                     padding: EdgeInsets.symmetric(
                                         horizontal: 16,
                                         vertical: 12), // Espaciado del botón
@@ -708,7 +798,7 @@ class _EventsDetailsState extends State<EventsDetails> {
                               children: [
                                 Text("About Event".tr,
                                     style: TextStyle(
-                                        fontSize: 17,
+                                        fontSize: 18,
                                         fontWeight: FontWeight.w700,
                                         fontFamily: 'Gilroy Medium',
                                         color: notifire.textcolor)),
@@ -727,7 +817,7 @@ class _EventsDetailsState extends State<EventsDetails> {
                                   textStyle: TextStyle(
                                       fontWeight: FontWeight.w400,
                                       color: notifire.textcolor,
-                                      fontSize: 12,
+                                      fontSize: 13,
                                       fontFamily: 'Gilroy Medium'),
                                 )),
                           ),
@@ -744,7 +834,7 @@ class _EventsDetailsState extends State<EventsDetails> {
                                     children: [
                                       Text("Gallery".tr,
                                           style: TextStyle(
-                                              fontSize: 17,
+                                              fontSize: 18,
                                               fontWeight: FontWeight.w700,
                                               fontFamily: 'Gilroy Medium',
                                               color: notifire.textcolor)),
@@ -758,7 +848,7 @@ class _EventsDetailsState extends State<EventsDetails> {
                                           children: [
                                             Text("View All".tr,
                                                 style: TextStyle(
-                                                    fontSize: 13,
+                                                    fontSize: 14,
                                                     fontWeight: FontWeight.w700,
                                                     fontFamily: 'Gilroy Medium',
                                                     color: const Color(
@@ -814,8 +904,9 @@ class _EventsDetailsState extends State<EventsDetails> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(14),
           image: DecorationImage(
-            image: NetworkImage('http://216.225.205.93:3000${gEvent[i]}'), // Usar NetworkImage para cargar la imagen desde la URL
-            
+            image: NetworkImage(
+                'http://216.225.205.93:3000${gEvent[i]}'), // Usar NetworkImage para cargar la imagen desde la URL
+
             fit: BoxFit.cover,
           ),
         ),
@@ -857,7 +948,7 @@ class _EventsDetailsState extends State<EventsDetails> {
         Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(name1,
               style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 17,
                   fontWeight: FontWeight.w500,
                   fontFamily: 'Gilroy Medium',
                   color: notifire.textcolor)),

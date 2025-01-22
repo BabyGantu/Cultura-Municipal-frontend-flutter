@@ -32,8 +32,8 @@ class _BottombarState extends State<Bottombar> {
   final _pageOption = [
     const Home(),
     const SearchPage(),
-    const TicketStatusPage(),
     const Bookmark(),
+    const TicketStatusPage(),
     const Profile(""),
   ];
 
@@ -97,13 +97,6 @@ class _BottombarState extends State<Bottombar> {
                     icon: Image.asset(Images.search, color: _selectedIndex == 1 ? buttonColor : notifire.bottommenucolore, height: MediaQuery.of(context).size.height / 33),
                     label: 'Map'.tr),
                 BottomNavigationBarItem(
-                    icon: Image.asset(Images.calendar,
-                        color: _selectedIndex == 2
-                            ? buttonColor
-                            : notifire.bottommenucolore,
-                        height: MediaQuery.of(context).size.height / 35),
-                    label: 'Events'.tr),
-                BottomNavigationBarItem(
                   icon: Image.asset(Images.rectangle,
                       color: _selectedIndex == 3
                           ? buttonColor
@@ -111,6 +104,13 @@ class _BottombarState extends State<Bottombar> {
                       height: MediaQuery.of(context).size.height / 35),
                   label: 'Favorite'.tr,
                 ),
+                BottomNavigationBarItem(
+                    icon: Image.asset(Images.calendar,
+                        color: _selectedIndex == 2
+                            ? buttonColor
+                            : notifire.bottommenucolore,
+                        height: MediaQuery.of(context).size.height / 35),
+                    label: 'Events'.tr),
                 BottomNavigationBarItem(
                   icon: Image.asset(Images.user,
                       color: _selectedIndex == 4

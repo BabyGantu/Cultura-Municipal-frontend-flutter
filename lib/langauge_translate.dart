@@ -1582,6 +1582,7 @@ class LocaleString extends Translations {
           "Remember me for 15 days" : "Recordarme por 15 dias",
           "You do not have an account? " : "¿No tienes una cuenta? ",
           "User o Email" : "Usuario o Correo electronico",
+          "Map" : "Mapa",
 
           
           

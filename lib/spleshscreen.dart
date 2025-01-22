@@ -162,8 +162,8 @@ class _SpleshscreenState extends State<Spleshscreen> {
   getLocation() async {
     position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
-    print(position.longitude); //Output: 80.24599079
-    print(position.latitude); //Output: 29.6593457
+    print("Long${position.longitude}"); //Output: 80.24599079
+    print("lat${position.latitude}");
 
     long = position.longitude.toString();
     lat = position.latitude.toString();

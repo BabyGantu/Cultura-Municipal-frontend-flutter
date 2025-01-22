@@ -516,7 +516,7 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
       lat.text.isNotEmpty &&
       long.text.isNotEmpty) {
 
-
+/*
     // Mostrar diálogo de carga
     showDialog(
       context: context,
@@ -537,13 +537,14 @@ class _UpcomingTicketState extends State<UpcomingTicket> {
         );
       },
     );
-
+*/
     try {
       int idMunicipio = int.parse(municipio.text);
       int idCategoria = int.parse(cid.text);
       int idPublicoObjetivo = int.parse(target_audience.text);
 
       await evento.crearEvento(
+        context: context,
         tituloEvento: event_title.text,
         imagenEvento: pathEventImage[0],
         imagenPortadaEvento: pathCoverImage[0],

@@ -325,38 +325,59 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
     return false;
   }
 
-  void agragarAFavoritos(int userId, int eventId) async {
+  Future<bool> agregarAFavoritos(int userId, int eventId) async {
     EventosService service = EventosService();
     bool resultado = await service.crearFavorito(userId, eventId);
+
     if (resultado) {
       print('Evento añadido a favoritos');
-
-      // Actualiza el estado o muestra un mensaje al usuario
+      // Opcional: Actualiza el estado local si es necesario
+      return true;
     } else {
       print('No se pudo añadir el evento a favoritos');
       // Maneja el error o muestra un mensaje al usuario
+      return false;
+    }
+  }
+
+  Future<bool> eliminarFavorito(int userId, int eventId) async {
+    EventosService service = EventosService();
+    bool resultado = await service.eliminarFavorito(userId, eventId);
+
+    if (resultado) {
+      print('Evento eliminado de favoritos');
+      // Opcional: Actualiza el estado local si es necesario
+      return true;
+    } else {
+      print('No se pudo eliminar de favoritos');
+      // Maneja el error o muestra un mensaje al usuario
+      return false;
     }
   }
 
   Future<bool> onLikeButtonTapped(bool isLiked, int eventId) async {
     int userIdInt = int.parse(userId!);
 
+    bool success;
+
     if (isLiked) {
-      // Lógica para eliminar de favoritos (si la tienes implementada)
+      // Eliminar de favoritos
+      success = await eliminarFavorito(userIdInt, eventId);
     } else {
-      agragarAFavoritos(userIdInt, eventId);
+      // Agregar a favoritos
+      success = await agregarAFavoritos(userIdInt, eventId);
     }
 
-    // Actualiza el estado para reflejar el cambio
-    setState(() {
-      if (isLiked) {
-        // Remueve el evento de la lista de favoritos (si la tienes implementada)
-      } else {
+    if (success) {
+      // Actualiza el estado para reflejar el cambio
+      setState(() {
+        // Puedes realizar acciones adicionales si es necesario
+        // Por ejemplo, recargar la lista de favoritos o eventos
         cargarEventosFavoritosPorId();
-      }
-    });
+      });
+    }
 
-    return !isLiked;
+    return success; // Retorna el nuevo estado del botón
   }
 
   @override
@@ -685,13 +706,11 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                           const Spacer(),
                           GestureDetector(
                             onTap: () {
-                              
                               Get.to(
                                   () => All(
                                       title: "Trending Events".tr,
                                       eventList: trendingEvent),
                                   duration: Duration.zero);
-                                  
                             },
                             child: Container(
                               color: Colors.transparent,
@@ -957,23 +976,24 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                     ),
                     child: CircleAvatar(
                       radius: 18,
-                      backgroundColor: Colors.grey.withOpacity(0.2),
+                      backgroundColor: Colors.transparent,
                       child: Padding(
                         padding: const EdgeInsets.only(left: 3),
                         child: LikeButton(
-                          onTap: (val) {
-                            return onLikeButtonTapped(val, evento.id);
+                          isLiked:
+                              esEventoFavorito(evento.id), // Estado inicial
+                          onTap: (bool isLiked) async {
+                            // Manejo asincrónico del estado
+                            bool success =
+                                await onLikeButtonTapped(isLiked, evento.id);
+                            return !success;
                           },
                           likeBuilder: (bool isLiked) {
-                            return Icon(
-                              esEventoFavorito(evento.id)
-                                  ? Icons.favorite
-                                  : Icons.favorite_border,
-                              color: esEventoFavorito(evento.id)
-                                  ? const Color(0xffF0635A)
-                                  : Colors.grey,
-                              size: 22,
-                            );
+                            return !isLiked
+                                ? const Icon(Icons.favorite_border,
+                                    color: Colors.grey, size: 24)
+                                : const Icon(Icons.favorite,
+                                    color: Color(0xffF0635A), size: 24);
                           },
                         ),
                       ),
@@ -1309,20 +1329,24 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                     child: Padding(
                                       padding: const EdgeInsets.only(left: 3),
                                       child: LikeButton(
-                                        onTap: (val) {
-                                          return onLikeButtonTapped(
-                                              val, evento.id);
+                                        isLiked: esEventoFavorito(
+                                            evento.id), // Estado inicial
+                                        onTap: (bool isLiked) async {
+                                          // Manejo asincrónico del estado
+                                          bool success =
+                                              await onLikeButtonTapped(
+                                                  isLiked, evento.id);
+                                          return !success;
                                         },
                                         likeBuilder: (bool isLiked) {
-                                          return Icon(
-                                            esEventoFavorito(evento.id)
-                                                ? Icons.favorite
-                                                : Icons.favorite_border,
-                                            color: esEventoFavorito(evento.id)
-                                                ? const Color(0xffF0635A)
-                                                : Colors.grey,
-                                            size: 22,
-                                          );
+                                          return !isLiked
+                                              ? const Icon(
+                                                  Icons.favorite_border,
+                                                  color: Colors.grey,
+                                                  size: 24)
+                                              : const Icon(Icons.favorite,
+                                                  color: Color(0xffF0635A),
+                                                  size: 24);
                                         },
                                       ),
                                     ),
@@ -1488,25 +1512,28 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                   ),
                                   child: CircleAvatar(
                                     radius: 18,
-                                    backgroundColor:
-                                        Colors.grey.withOpacity(0.2),
+                                    backgroundColor: Colors.transparent,
                                     child: Padding(
                                       padding: const EdgeInsets.only(left: 3),
                                       child: LikeButton(
-                                        onTap: (val) {
-                                          return onLikeButtonTapped(
-                                              val, evento.id);
+                                        isLiked: esEventoFavorito(
+                                            evento.id), // Estado inicial
+                                        onTap: (bool isLiked) async {
+                                          // Manejo asincrónico del estado
+                                          bool success =
+                                              await onLikeButtonTapped(
+                                                  isLiked, evento.id);
+                                          return !success;
                                         },
                                         likeBuilder: (bool isLiked) {
-                                          return Icon(
-                                            esEventoFavorito(evento.id)
-                                                ? Icons.favorite
-                                                : Icons.favorite_border,
-                                            color: esEventoFavorito(evento.id)
-                                                ? const Color(0xffF0635A)
-                                                : Colors.grey,
-                                            size: 22,
-                                          );
+                                          return !isLiked
+                                              ? const Icon(
+                                                  Icons.favorite_border,
+                                                  color: Colors.grey,
+                                                  size: 24)
+                                              : const Icon(Icons.favorite,
+                                                  color: Color(0xffF0635A),
+                                                  size: 24);
                                         },
                                       ),
                                     ),
@@ -1638,22 +1665,26 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                               padding: const EdgeInsets.only(
                                                   left: 3),
                                               child: LikeButton(
-                                                onTap: (bool isLiked) {
-                                                  return onLikeButtonTapped(
-                                                      isLiked, evento.id);
+                                                isLiked: esEventoFavorito(evento
+                                                    .id), // Estado inicial
+                                                onTap: (bool isLiked) async {
+                                                  // Manejo asincrónico del estado
+                                                  bool success =
+                                                      await onLikeButtonTapped(
+                                                          isLiked, evento.id);
+                                                  return !success;
                                                 },
                                                 likeBuilder: (bool isLiked) {
-                                                  return Icon(
-                                                    esEventoFavorito(evento.id)
-                                                        ? Icons.favorite
-                                                        : Icons.favorite_border,
-                                                    color: esEventoFavorito(
-                                                            evento.id)
-                                                        ? const Color(
-                                                            0xffF0635A)
-                                                        : Colors.grey,
-                                                    size: 22,
-                                                  );
+                                                  return !isLiked
+                                                      ? const Icon(
+                                                          Icons.favorite_border,
+                                                          color: Colors.grey,
+                                                          size: 24)
+                                                      : const Icon(
+                                                          Icons.favorite,
+                                                          color:
+                                                              Color(0xffF0635A),
+                                                          size: 24);
                                                 },
                                               ),
                                             ),
